@@ -7,6 +7,14 @@
 //
 
 #import "TAAppDelegate.h"
+#import "StringHelper.h"
+#import "TAProfileVC.h"
+
+NSString* const DEMO_PASSWORD = @"pass";
+NSString* const DEMO_USERNAME = @"fuzzyhead";
+NSString* const API_ADDRESS = @"http://want.supergloo.net.au/api/";
+NSString* const FRONT_END_ADDRESS = @"http://want.supergloo.net.au"; 
+NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 
 @implementation TAAppDelegate
 
@@ -14,9 +22,15 @@
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
+@synthesize profileVC, tabBarController;
+@synthesize sessionToken, loggedInUsername;
 
-- (void)dealloc
-{
+- (void)dealloc {
+	
+	[sessionToken release];
+	[loggedInUsername release];
+	[tabBarController release];
+	[profileVC release];
 	[_window release];
 	[__managedObjectContext release];
 	[__managedObjectModel release];
@@ -24,8 +38,11 @@
     [super dealloc];
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	
+	// Setup any test/temporary data in here
+	// FOR NOW, the log-in data iset in here
+	[self initApp];
 	
 	// Add Feed tab
 	
@@ -36,11 +53,41 @@
 	// Add News tab
 	
 	// Add Profile tab
+	profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
 	
+	UINavigationController *navcon = [[UINavigationController alloc] init];
+	[navcon.navigationBar setTintColor:[UIColor redColor]];
+	[navcon pushViewController:profileVC animated:NO];
+	[profileVC release];
 	
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-    // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+	
+	// Create a tabbar controller and an array to contain the view controllers
+	tabBarController = [[UITabBarController alloc] init];
+	NSMutableArray *localViewControllersArray = [[NSMutableArray alloc] initWithCapacity:5];
+	[localViewControllersArray addObject:navcon];
+	/*[localViewControllersArray addObject:navcon5];
+	[localViewControllersArray addObject:navcon3];
+	[localViewControllersArray addObject:navcon4];
+	[localViewControllersArray addObject:navcon2];*/
+	[navcon release];
+	/*[navcon2 release];
+	[navcon5 release];
+	[navcon3 release];
+	[navcon4 release];*/
+	
+	// set the tab bar controller view controller array to the localViewControllersArray
+	tabBarController.viewControllers = localViewControllersArray;
+	
+	// the localViewControllersArray data is now retained by the tabBarController
+	// so we can release this version
+	[localViewControllersArray release];
+	
+	// Add the view controller's view to the window and display.
+    //[self.window addSubview:[tabBarController view]];
+	[self.window insertSubview:[self.tabBarController view] atIndex:0];
+	
     [self.window makeKeyAndVisible];
     return YES;
 }
@@ -167,5 +214,52 @@
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
+
+
+#pragma MY-METHODS
+
+- (void)initApp {
+
+	self.loggedInUsername = @"rich";
+}
+
+// The sessionToken property can be set here
+// by passing it as an argument
+- (void)setToken:(NSString *)token {
+	
+	self.sessionToken = token;
+}
+
+- (NSMutableURLRequest *)createPostRequestWithURL:(NSURL *)url postData:(NSData *)postData {
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = (NSMutableURLRequest*)[NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];
+	
+	// Add the Authorization header with the credentials made above. 
+	[request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+	[request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+	[request setValue:[NSString stringWithFormat:@"%d", [postData length]] forHTTPHeaderField:@"Content-Length"];
+	[request setHTTPMethod:@"POST"];
+	[request setHTTPBody:postData];
+	
+	return request;
+}
+
+
+- (NSURL *)createRequestURLWithMethod:(NSString *)methodName testMode:(BOOL)test {
+	
+	NSString *api = (test ? TEST_API_ADDRESS : API_ADDRESS);
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *urlString = [NSString stringWithFormat:@"%@%@", api, methodName];
+	
+	// Print the URL to the console
+	NSLog(@"URL:%@", urlString);
+	
+	NSURL *url = [urlString convertToURL];
+	
+	return url;
+} 
+
 
 @end

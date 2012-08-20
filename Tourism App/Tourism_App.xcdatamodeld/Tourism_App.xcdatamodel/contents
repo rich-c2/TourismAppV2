@@ -1,4 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="Test1.xcdatamodel" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <elements/>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1171" systemVersion="11D50" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="City" syncable="YES">
+        <attribute name="cityID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="locationForGuide" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="city" inverseEntity="Guide" syncable="YES"/>
+        <relationship name="photosTakenHere" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="city" inverseEntity="Photo" syncable="YES"/>
+    </entity>
+    <entity name="Comment" syncable="YES">
+        <attribute name="commentID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="author" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="comments" inverseEntity="User" syncable="YES"/>
+        <relationship name="onPhoto" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" inverseName="comments" inverseEntity="Photo" syncable="YES"/>
+    </entity>
+    <entity name="Guide" syncable="YES">
+        <attribute name="frontEndURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="guideID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="imageIDs" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="private" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="author" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="guides" inverseEntity="User" syncable="YES"/>
+        <relationship name="city" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="locationForGuide" inverseEntity="City" syncable="YES"/>
+        <relationship name="followedBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="followingGuides" inverseEntity="User" syncable="YES"/>
+        <relationship name="photos" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" inverseName="inGuides" inverseEntity="Photo" syncable="YES"/>
+        <relationship name="tag" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="forGuides" inverseEntity="Tag" syncable="YES"/>
+    </entity>
+    <entity name="Photo" syncable="YES">
+        <attribute name="caption" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="lovesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="photoID" attributeType="String" syncable="YES"/>
+        <attribute name="thumbURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="vouchesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <relationship name="city" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="photosTakenHere" inverseEntity="City" syncable="YES"/>
+        <relationship name="comments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Comment" inverseName="onPhoto" inverseEntity="Comment" syncable="YES"/>
+        <relationship name="inGuides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="photos" inverseEntity="Guide" syncable="YES"/>
+        <relationship name="tag" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="onPhoto" inverseEntity="Tag" syncable="YES"/>
+        <relationship name="venue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="photosTakenHere" inverseEntity="Venue" syncable="YES"/>
+    </entity>
+    <entity name="Tag" syncable="YES">
+        <attribute name="tagID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="forGuides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="tag" inverseEntity="Guide" syncable="YES"/>
+        <relationship name="onPhoto" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="tag" inverseEntity="Photo" syncable="YES"/>
+    </entity>
+    <entity name="User" syncable="YES">
+        <attribute name="avatarThumbURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="avatarURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="emailAddress" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="firstName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="followersCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="followingCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="guidesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="lastName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="photosCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="username" attributeType="String" syncable="YES"/>
+        <relationship name="comments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Comment" inverseName="author" inverseEntity="Comment" syncable="YES"/>
+        <relationship name="followingGuides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="followedBy" inverseEntity="Guide" syncable="YES"/>
+        <relationship name="guides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="author" inverseEntity="Guide" syncable="YES"/>
+    </entity>
+    <entity name="Venue" syncable="YES">
+        <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <attribute name="venueID" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="photosTakenHere" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="venue" inverseEntity="Photo" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="User" positionX="160" positionY="192" width="128" height="255"/>
+        <element name="City" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="Tag" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="Venue" positionX="160" positionY="192" width="128" height="135"/>
+        <element name="Comment" positionX="160" positionY="192" width="128" height="120"/>
+        <element name="Photo" positionX="160" positionY="192" width="128" height="225"/>
+        <element name="Guide" positionX="160" positionY="192" width="128" height="195"/>
+    </elements>
 </model>
