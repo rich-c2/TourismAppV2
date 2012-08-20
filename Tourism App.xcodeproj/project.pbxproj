@@ -166,6 +166,7 @@
 		9B09862E15D89F27006F8B63 /* Tourism App */ = {
 			isa = PBXGroup;
 			children = (
+				9B35806E15E1C19E007309C0 /* Profile */,
 				9B09863715D89F27006F8B63 /* TAAppDelegate.h */,
 				9B09863815D89F27006F8B63 /* TAAppDelegate.m */,
 				9B09863A15D89F27006F8B63 /* Tourism_App.xcdatamodeld */,
@@ -202,6 +203,13 @@
 				9B09864D15D89F28006F8B63 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9B35806E15E1C19E007309C0 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Profile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -474,6 +482,7 @@
 				9B09865715D89F28006F8B63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9B09865815D89F28006F8B63 /* Build configuration list for PBXNativeTarget "Tourism AppTests" */ = {
 			isa = XCConfigurationList;
@@ -482,6 +491,7 @@
 				9B09865A15D89F28006F8B63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
