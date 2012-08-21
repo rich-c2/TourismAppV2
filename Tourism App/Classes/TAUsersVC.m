@@ -83,9 +83,11 @@
 		// Show loading animation
 		[self showLoading];
 		
-		if (self.usersMode == UsersModeFollowing) [self initFollowingAPI];
+		if (self.usersMode == UsersModeFollowing) 
+			[self initFollowingAPI];
 		
-		//else if (self.usersMode == UsersModeFollowers) [self initFollowersAPI];
+		else if (self.usersMode == UsersModeFollowers) 
+			[self initFollowersAPI];
 		
 		//else if (self.usersMode == UsersModeRecommendTo) [self initFollowersAPI];
 		
@@ -186,12 +188,11 @@
 	// We are not loading
 	loading = NO;
 	
-	// We've finished loading the artists
-	usersLoaded = YES;
+	NSInteger statusCode = [theJSONFetcher statusCode];
 	
-	NSLog(@"PRINTING FOLLOWING:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING FOLLOWING:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
-    if ([theJSONFetcher.data length] > 0) {
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
         
         // Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -209,7 +210,80 @@
 		
 		self.users = newFollowers;
 		
-		NSLog(@"followers:%@", self.users);
+		// clean up
+		[jsonString release];
+		
+		// We've finished loading the artists
+		usersLoaded = YES;
+    }
+	
+	// Reload table
+	[self.usersTable reloadData];
+	
+	[self hideLoading];
+    
+    [usersFetcher release];
+    usersFetcher = nil;
+}
+
+
+- (void)initFollowersAPI {
+	
+	NSString *postString = [NSString stringWithFormat:@"username=%@&pg=%i&sz=%i", self.selectedUsername, page, batchSize];
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Followers"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	usersFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self
+													action:@selector(receivedFollowersResponse:)];
+	[usersFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedFollowersResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == usersFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	// We are not loading
+	loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+		
+	//NSLog(@"PRINTING DATA:%@",[[NSString alloc] initWithData:theXMLFetcher.data encoding:NSASCIIStringEncoding]);
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		// Build an array from the dictionary for easy access to each entry
+		NSMutableArray *newFollowers = (NSMutableArray *)[results objectForKey:@"users"];
+		
+		// Sort alphabetically by venue title
+		NSSortDescriptor *alphaDesc = [[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
+		[newFollowers sortUsingDescriptors:[NSArray arrayWithObject:alphaDesc]];	
+		[alphaDesc release];
+		
+		self.users = newFollowers;
+		
+		// clean up
+		[jsonString release];
+		
+		// We've finished loading the artists
+		usersLoaded = YES;
     }
 	
 	// Reload table

@@ -57,6 +57,14 @@
 	return self;
 }
 
+- (void)dealloc {
+
+	self.error = nil;
+	free(state);
+	[tokeniser release];
+	[super dealloc];
+}
+
 
 #pragma mark Methods
 

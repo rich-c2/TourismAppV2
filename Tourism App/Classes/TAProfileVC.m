@@ -23,7 +23,7 @@
 @implementation TAProfileVC
 
 @synthesize username, avatarURL, photosBtn, nameLabel;
-@synthesize followUserBtn, followingBtn, followersBtn;
+@synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -46,6 +46,8 @@
 	
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+	
+	[self initTestData];
 }
 
 - (void)viewDidUnload {
@@ -54,8 +56,12 @@
 	self.username = nil;
 	self.avatarURL = nil;
 	
+	[followingUserBtn release];
+	self.followingUserBtn = nil;
+	
     [followUserBtn release];
     self.followUserBtn = nil;
+	
     [followingBtn release];
     self.followingBtn = nil;
     [followersBtn release];
@@ -87,14 +93,21 @@
 		[self loadUserDetails];
 	}
 	
+	// IF we're not already loading 
+	// "isFollowing" API then start it
+	if (!loadingIsFollowing) {
+	
+		[self detectFollowStatus];
+	}
+	
 	[super viewWillAppear:animated];
 }
 
 
-- (void)loadUserDetails {
+- (void)initTestData {
 
-	// Make API call for User details
-	[self initProfileAPI];
+	// For now, set the username to be whoever is logged-in
+	self.username = [self appDelegate].loggedInUsername;
 }
 
 
@@ -124,6 +137,183 @@
 }
 
 
+- (IBAction)followUserButtonTapped:(id)sender {
+
+	// Initiate Follow API
+	[self initFollowAPI];
+}
+
+
+- (IBAction)followingUserButtonTapped:(id)sender {
+
+	// Initiate Unfollow API
+	[self initUnfollowAPI];
+}
+
+
+#pragma Follow/Unfollow methods
+
+- (void)loadUserDetails {
+	
+	loading = YES;
+	
+	// Make API call for User details
+	[self initProfileAPI];
+}
+
+
+- (void)initFollowAPI {
+	
+	NSString *postString = [NSString stringWithFormat:@"following=%@&follower=%@&token=%@", self.username, [self appDelegate].loggedInUsername, [self appDelegate].sessionToken];
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Unfollow"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	followFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													 receiver:self
+													   action:@selector(receivedFollowResponse:)];
+	[followFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedFollowResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	//NSLog(@"DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == followFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	//loading = NO;
+	//feedLoaded = YES;
+	
+	if ([theJSONFetcher.data length] > 0) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) { 
+			
+			/*
+			 User *loggedInUser = [User userWithUsername:[self appDelegate].loggedInUsername inManagedObjectContext:self.managedObjectContext];
+			 
+			 // Add/Remove to/from logged-in User's following set/array
+			 if (followingUser) {
+			 
+			 [loggedInUser removeFollowingObject:self.selectedUser];			
+			 self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] - 1];
+			 }
+			 else {
+			 
+			 [loggedInUser addFollowingObject:self.selectedUser];
+			 self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] + 1];
+			 }
+			 
+			 // Update the followers and following labels
+			 [self updateFollowCounts];
+			 
+			 // Toggle the 'follow status' of the user we're viewing
+			 [self toggleFollowStatus];*/
+		}
+		
+		//NSLog(@"jsonString:%@", jsonString);
+		
+		//[jsonString release];
+	}
+	
+	[followFetcher release];
+	followFetcher = nil;
+}
+
+
+- (void)initUnfollowAPI {
+
+	NSString *postString = [NSString stringWithFormat:@"following=%@&follower=%@&token=%@", self.username, [self appDelegate].loggedInUsername, [self appDelegate].sessionToken];
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Unfollow"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	unfollowFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													receiver:self
+													  action:@selector(receivedUnfollowResponse:)];
+	[unfollowFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedUnfollowResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	//NSLog(@"DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == unfollowFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	//loading = NO;
+	//feedLoaded = YES;
+	
+	if ([theJSONFetcher.data length] > 0) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) { 
+			
+			/*
+			User *loggedInUser = [User userWithUsername:[self appDelegate].loggedInUsername inManagedObjectContext:self.managedObjectContext];
+			
+			// Add/Remove to/from logged-in User's following set/array
+			if (followingUser) {
+				
+				[loggedInUser removeFollowingObject:self.selectedUser];			
+				self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] - 1];
+			}
+			else {
+				
+				[loggedInUser addFollowingObject:self.selectedUser];
+				self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] + 1];
+			}
+			
+			// Update the followers and following labels
+			[self updateFollowCounts];
+			
+			// Toggle the 'follow status' of the user we're viewing
+			[self toggleFollowStatus];*/
+		}
+		
+		//NSLog(@"jsonString:%@", jsonString);
+		
+		//[jsonString release];
+		
+	}
+	
+	[unfollowFetcher release];
+	unfollowFetcher = nil;
+}
+
+
+#pragma Profile methods
 
 - (void)initProfileAPI {
 
@@ -150,7 +340,7 @@
     
     JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
 	
-	NSLog(@"PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
 	NSAssert(aFetcher == profileFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
@@ -164,6 +354,8 @@
 		
 		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
+		
+		[jsonString release];
 		
 		// Build an array from the dictionary for easy access to each entry
 		NSDictionary *newUserData = [results objectForKey:@"user"];
@@ -195,6 +387,8 @@
 }
 
 
+# pragma isFollowing methods
+
 - (void)detectFollowStatus {
 	
 	// Detect if the user who's profile we're viewing is within the logged-in user's
@@ -207,6 +401,79 @@
 	
 	NSString *buttonTitle = ((followingUser) ? @"Unfollow" : @"Follow");
 	[self.followUserBtn setTitle:buttonTitle forState:UIControlStateNormal];*/
+	
+	loadingIsFollowing = YES;
+	
+	[self initIsFollowingAPI];
+}
+
+
+- (void)initIsFollowingAPI {
+	
+	NSString *postString = [NSString stringWithFormat:@"username=%@&following=", [self appDelegate].loggedInUsername, self.username];
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Profile"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	isFollowingFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													receiver:self
+													  action:@selector(receivedIsFollowingResponse:)];
+	[isFollowingFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedIsFollowingResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	//NSLog(@"PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == isFollowingFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	loading = NO;
+	profileLoaded = YES;
+	
+	if ([theJSONFetcher.data length] > 0) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		[jsonString release];
+		
+		// Build an array from the dictionary for easy access to each entry
+		NSString *result = [results objectForKey:@"following"];
+	
+		// Enable
+		[self updateFollowingButton:result];
+	}
+	
+	// Hide loading view
+	[self hideLoading];
+	
+	[isFollowingFetcher release];
+	isFollowingFetcher = nil;
+}
+
+
+- (void)updateFollowingButton:(NSString *)isFollowing {
+
+	// Enable the correct button
+	// If this use is being followed by the logged-in user
+	// then show the followingUser button. And vice-versa.
+	if ([isFollowing isEqualToString:@"true"])
+		[self.followingUserBtn setHidden:NO];
+	else
+		[self.followUserBtn setHidden:NO];
 }
 
 
@@ -224,6 +491,7 @@
 
 - (void)dealloc {
 	
+	[followingUserBtn release];
 	[avatarURL release];
 	[nameLabel release];
 	[photosBtn release];

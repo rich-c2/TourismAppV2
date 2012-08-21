@@ -42,8 +42,7 @@
 {
 	[super close];
 	
-	[result release];
-	result = nil;
+	NSLog(@"RETAIN COUNT NOW NOW:%i", [result retainCount]);
 }
 
 //
@@ -57,7 +56,13 @@
 	// Parse the JSON
 	//
 	SBJsonParser *json = [SBJsonParser new]; 
-	result = [[json objectWithData:data] retain];
+	
+	NSLog(@"RETAIN COUNT:%i", [result retainCount]);
+	
+	result = [json objectWithData:data];
+	
+	[json release];	
+	
 
 #if TARGET_OS_IPHONE		
 	if (result == nil && showAlerts)
@@ -73,6 +78,11 @@
 		[alert release];
 	}
 #endif
+	
+	NSLog(@"RETAIN COUNT NOW:%i", [result retainCount]);
+	
+	[result release];
+	result = nil;
 	
 	[self close];
 }

@@ -57,6 +57,9 @@
 		9B3580CF15E1F8F3007309C0 /* NSObject+SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3580CE15E1F8F3007309C0 /* NSObject+SBJson.m */; };
 		9B3580DC15E21A01007309C0 /* TAUsersVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3580DA15E21A01007309C0 /* TAUsersVC.m */; };
 		9B3580DD15E21A01007309C0 /* TAUsersVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B3580DB15E21A01007309C0 /* TAUsersVC.xib */; };
+		9BEF9C4415E3408A000AEE5E /* TAImageGridVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEF9C4215E3408A000AEE5E /* TAImageGridVC.m */; };
+		9BEF9C4515E3408A000AEE5E /* TAImageGridVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */; };
+		9BEF9C4D15E371A9000AEE5E /* GridImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEF9C4C15E371A9000AEE5E /* GridImage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +148,11 @@
 		9B3580D915E21A01007309C0 /* TAUsersVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAUsersVC.h; path = Classes/TAUsersVC.h; sourceTree = "<group>"; };
 		9B3580DA15E21A01007309C0 /* TAUsersVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAUsersVC.m; path = Classes/TAUsersVC.m; sourceTree = "<group>"; };
 		9B3580DB15E21A01007309C0 /* TAUsersVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAUsersVC.xib; path = Classes/TAUsersVC.xib; sourceTree = "<group>"; };
+		9BEF9C4115E3408A000AEE5E /* TAImageGridVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAImageGridVC.h; path = Classes/TAImageGridVC.h; sourceTree = "<group>"; };
+		9BEF9C4215E3408A000AEE5E /* TAImageGridVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAImageGridVC.m; path = Classes/TAImageGridVC.m; sourceTree = "<group>"; };
+		9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAImageGridVC.xib; path = Classes/TAImageGridVC.xib; sourceTree = "<group>"; };
+		9BEF9C4B15E371A9000AEE5E /* GridImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridImage.h; sourceTree = "<group>"; };
+		9BEF9C4C15E371A9000AEE5E /* GridImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridImage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,18 +241,18 @@
 		9B09862E15D89F27006F8B63 /* Tourism App */ = {
 			isa = PBXGroup;
 			children = (
-				9B35809315E1F6E9007309C0 /* JSON */,
-				9B35808A15E1F65D007309C0 /* DataHelper.h */,
-				9B35808B15E1F65D007309C0 /* DataHelper.m */,
-				9B35808C15E1F65D007309C0 /* StringHelper.h */,
-				9B35808D15E1F65D007309C0 /* StringHelper.m */,
+				9BEF9C5015E3721C000AEE5E /* Misc. */,
+				9BEF9C4F15E371E2000AEE5E /* View */,
+				9BEF9C4E15E371BE000AEE5E /* AppDelegate */,
 				9B35808415E1DA61007309C0 /* Fetchers */,
+				9B35809315E1F6E9007309C0 /* JSON */,
 				9B35806E15E1C19E007309C0 /* Profile */,
 				9B35808515E1DB4F007309C0 /* SVProgressHUD.bundle */,
 				9B35808615E1DB4F007309C0 /* SVProgressHUD.h */,
 				9B35808715E1DB4F007309C0 /* SVProgressHUD.m */,
-				9B09863715D89F27006F8B63 /* TAAppDelegate.h */,
-				9B09863815D89F27006F8B63 /* TAAppDelegate.m */,
+				9BEF9C4115E3408A000AEE5E /* TAImageGridVC.h */,
+				9BEF9C4215E3408A000AEE5E /* TAImageGridVC.m */,
+				9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */,
 				9B09863A15D89F27006F8B63 /* Tourism_App.xcdatamodeld */,
 				9B09862F15D89F27006F8B63 /* Supporting Files */,
 			);
@@ -339,6 +347,35 @@
 			name = JSON;
 			sourceTree = "<group>";
 		};
+		9BEF9C4E15E371BE000AEE5E /* AppDelegate */ = {
+			isa = PBXGroup;
+			children = (
+				9B09863715D89F27006F8B63 /* TAAppDelegate.h */,
+				9B09863815D89F27006F8B63 /* TAAppDelegate.m */,
+			);
+			name = AppDelegate;
+			sourceTree = "<group>";
+		};
+		9BEF9C4F15E371E2000AEE5E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				9BEF9C4B15E371A9000AEE5E /* GridImage.h */,
+				9BEF9C4C15E371A9000AEE5E /* GridImage.m */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		9BEF9C5015E3721C000AEE5E /* Misc. */ = {
+			isa = PBXGroup;
+			children = (
+				9B35808A15E1F65D007309C0 /* DataHelper.h */,
+				9B35808B15E1F65D007309C0 /* DataHelper.m */,
+				9B35808C15E1F65D007309C0 /* StringHelper.h */,
+				9B35808D15E1F65D007309C0 /* StringHelper.m */,
+			);
+			name = Misc.;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -414,6 +451,7 @@
 				9B35807415E1C2E3007309C0 /* TAProfileVC.xib in Resources */,
 				9B35808815E1DB4F007309C0 /* SVProgressHUD.bundle in Resources */,
 				9B3580DD15E21A01007309C0 /* TAUsersVC.xib in Resources */,
+				9BEF9C4515E3408A000AEE5E /* TAImageGridVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -471,6 +509,8 @@
 				9B3580CC15E1F8DE007309C0 /* SBJsonWriter.m in Sources */,
 				9B3580CF15E1F8F3007309C0 /* NSObject+SBJson.m in Sources */,
 				9B3580DC15E21A01007309C0 /* TAUsersVC.m in Sources */,
+				9BEF9C4415E3408A000AEE5E /* TAImageGridVC.m in Sources */,
+				9BEF9C4D15E371A9000AEE5E /* GridImage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
