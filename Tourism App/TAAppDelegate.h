@@ -15,12 +15,14 @@ extern NSString* const FRONT_END_ADDRESS;
 extern NSString* const TEST_API_ADDRESS;
 
 @class TAProfileVC;
+@class TANotificationsVC;
 
 @interface TAAppDelegate : UIResponder <UIApplicationDelegate> {
 
 	UITabBarController *tabBarController;
 	
 	TAProfileVC *profileVC;
+	TANotificationsVC *notificationsVC;
 	
 	NSString *sessionToken;
 	NSString *loggedInUsername;
@@ -31,6 +33,7 @@ extern NSString* const TEST_API_ADDRESS;
 @property (nonatomic, retain) UITabBarController *tabBarController;
 
 @property (nonatomic, retain) TAProfileVC *profileVC; 
+@property (nonatomic, retain) TANotificationsVC *notificationsVC;
 
 @property (nonatomic, retain) NSString *sessionToken;
 @property (nonatomic, retain) NSString *loggedInUsername;

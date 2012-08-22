@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "GridImage.h"
 
 @class JSONFetcher;
 
-@interface TAImageGridVC : UIViewController {
+@interface TAImageGridVC : UIViewController <GridImageDelegate> {
 	
 	NSInteger fetchSize;
 	NSInteger imagesPageIndex;
@@ -20,6 +21,9 @@
 	IBOutlet UIScrollView *gridScrollView;
 	
 	JSONFetcher *imagesFetcher;
+	
+	BOOL loading;
+	BOOL imagesLoaded;
 	
 	NSString *username;
 	NSMutableArray *images;

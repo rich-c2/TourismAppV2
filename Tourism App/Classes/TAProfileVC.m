@@ -15,6 +15,9 @@
 #import "SVProgressHUD.h"
 #import "TAUsersVC.h"
 //#import "User.h"
+#import "TAImageGridVC.h"
+#import "TAGuidesListVC.h"
+#import "ImageManager.h"
 
 @interface TAProfileVC ()
 
@@ -22,7 +25,7 @@
 
 @implementation TAProfileVC
 
-@synthesize username, avatarURL, photosBtn, nameLabel;
+@synthesize username, avatarURL, usernameLabel, photosBtn, nameLabel, avatarView;
 @synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -47,14 +50,15 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 	
-	[self initTestData];
+	// Update username label
+	[self.usernameLabel setText:self.username];
 }
 
 - (void)viewDidUnload {
 	
+	self.avatarURL = nil;
 	self.nameLabel = nil;
 	self.username = nil;
-	self.avatarURL = nil;
 	
 	[followingUserBtn release];
 	self.followingUserBtn = nil;
@@ -69,7 +73,11 @@
 	[photosBtn release];
 	self.photosBtn = nil;
 	[nameLabel release];
-	nameLabel = nil;
+	self.nameLabel = nil;
+	[usernameLabel release];
+	self.usernameLabel = nil;
+	[avatarView release];
+	self.avatarView = nil;
     [super viewDidUnload];
 	
     // Release any retained subviews of the main view.
@@ -229,7 +237,7 @@
 		
 		//NSLog(@"jsonString:%@", jsonString);
 		
-		//[jsonString release];
+		[jsonString release];
 	}
 	
 	[followFetcher release];
@@ -304,7 +312,7 @@
 		
 		//NSLog(@"jsonString:%@", jsonString);
 		
-		//[jsonString release];
+		[jsonString release];
 		
 	}
 	
@@ -317,7 +325,7 @@
 
 - (void)initProfileAPI {
 
-	NSString *postString = [NSString stringWithFormat:@"username=%@", @"rich"];
+	NSString *postString = [NSString stringWithFormat:@"username=%@", self.username];
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	
 	// Create the URL that will be used to authenticate this user
@@ -345,9 +353,12 @@
 	NSAssert(aFetcher == profileFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
 	loading = NO;
-	profileLoaded = YES;
 	
-	if ([theJSONFetcher.data length] > 0) {
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		profileLoaded = YES;
 		
 		// Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -365,6 +376,9 @@
 		
 		// Update name
 		NSString *newFullName = [NSString stringWithFormat:@"%@ %@", [newUserData objectForKey:@"firstName"], [newUserData objectForKey:@"lastName"]]; 
+		[self.nameLabel setText:[newUserData objectForKey:@"username"]];
+		
+		// Update username
 		[self.nameLabel setText:newFullName];
 		
 		// Update followers and following buttons
@@ -373,6 +387,10 @@
 		
 		// Update photos button
 		[self.photosBtn setTitle:[NSString stringWithFormat:@"My photos (%@)", [newUserData objectForKey:@"media"]] forState:UIControlStateNormal];
+		
+		// Load avatar image
+		self.avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [newUserData objectForKey:@"avatar"]];
+		[self initAvatarImage:self.avatarURL];
 		 
 		// Update guides button - API tweak required
 		
@@ -477,6 +495,54 @@
 }
 
 
+- (IBAction)photosButtonTapped:(id)sender {
+
+	// Push the following VC onto the stack
+	TAImageGridVC *imageGridVC = [[TAImageGridVC alloc] initWithNibName:@"TAImageGridVC" bundle:nil];
+	[imageGridVC setUsername:self.username];
+	
+	[self.navigationController pushViewController:imageGridVC animated:YES];
+	[imageGridVC release];
+}
+
+
+- (IBAction)guidesButtonTapped:(id)sender {
+	
+	// Push the following VC onto the stack
+	TAGuidesListVC *guidesListVC = [[TAGuidesListVC alloc] initWithNibName:@"TAGuidesListVC" bundle:nil];
+	[guidesListVC setUsername:self.username];
+	
+	[self.navigationController pushViewController:guidesListVC animated:YES];
+	[guidesListVC release];
+}
+
+
+- (void)initAvatarImage:(NSString *)avatarURLString {
+	
+	if (avatarURLString && !self.avatarView.image) {
+		
+		NSLog(@"LOADING AVATAR IMAGE:%@", avatarURLString);
+		
+		[self.avatarView setBackgroundColor:[UIColor yellowColor]];
+		NSURL *url = [avatarURLString convertToURL];
+		
+		UIImage* img = [ImageManager loadImage:url progressIndicator:nil];
+		if (img) [self.avatarView setImage:img];
+    }
+}
+
+
+- (void) imageLoaded:(UIImage*)image withURL:(NSURL*)url {
+	
+	if ([[self.avatarURL convertToURL] isEqual:url]) {
+		
+		NSLog(@"AVATAR IMAGE LOADED:%@", [url description]);
+		
+		[self.avatarView setImage:image];
+	}
+}
+
+
 - (void)showLoading {
 	
 	[SVProgressHUD showInView:self.view status:nil networkIndicator:YES posY:-1 maskType:SVProgressHUDMaskTypeClear];
@@ -499,6 +565,8 @@
     [followUserBtn release];
     [followingBtn release];
     [followersBtn release];
+	[usernameLabel release];
+	[avatarView release];
     [super dealloc];
 }
 

@@ -9,6 +9,7 @@
 #import "TAAppDelegate.h"
 #import "StringHelper.h"
 #import "TAProfileVC.h"
+#import "TANotificationsVC.h"
 
 NSString* const DEMO_PASSWORD = @"pass";
 NSString* const DEMO_USERNAME = @"fuzzyhead";
@@ -51,13 +52,20 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	// Add Share tab
 	
 	// Add News tab
-	
-	// Add Profile tab
-	profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+	notificationsVC = [[TANotificationsVC alloc] initWithNibName:@"TANotificationsVC" bundle:nil];
 	
 	UINavigationController *navcon = [[UINavigationController alloc] init];
 	[navcon.navigationBar setTintColor:[UIColor redColor]];
-	[navcon pushViewController:profileVC animated:NO];
+	[navcon pushViewController:notificationsVC animated:NO];
+	[notificationsVC release];
+	
+	// Add Profile tab
+	profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+	[profileVC setUsername:@"rich"];
+	
+	UINavigationController *navcon2 = [[UINavigationController alloc] init];
+	[navcon2.navigationBar setTintColor:[UIColor redColor]];
+	[navcon2 pushViewController:profileVC animated:NO];
 	[profileVC release];
 	
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
@@ -66,14 +74,14 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	// Create a tabbar controller and an array to contain the view controllers
 	tabBarController = [[UITabBarController alloc] init];
 	NSMutableArray *localViewControllersArray = [[NSMutableArray alloc] initWithCapacity:5];
+	[localViewControllersArray addObject:navcon2];
 	[localViewControllersArray addObject:navcon];
-	/*[localViewControllersArray addObject:navcon5];
-	[localViewControllersArray addObject:navcon3];
+	/*[localViewControllersArray addObject:navcon3];
 	[localViewControllersArray addObject:navcon4];
 	[localViewControllersArray addObject:navcon2];*/
 	[navcon release];
-	/*[navcon2 release];
-	[navcon5 release];
+	[navcon2 release];
+	/*[navcon5 release];
 	[navcon3 release];
 	[navcon4 release];*/
 	

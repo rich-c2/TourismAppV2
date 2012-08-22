@@ -13,6 +13,7 @@
 #import "SBJson.h"
 #import "TAProfileVC.h"
 #import "TAAppDelegate.h"
+#import "AsyncCell.h"
 
 @interface TAUsersVC ()
 
@@ -114,12 +115,16 @@
 }
 
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+- (void)configureCell:(AsyncCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
     // Retrieve the Dictionary at the given index that's in self.users
 	NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
 	
-	[cell.textLabel setText:[user objectForKey:@"username"]];
+	NSString *username = [user objectForKey:@"username"];
+	NSString *name = [user objectForKey:@"name"];
+	NSString *avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
+	
+	[cell updateCellWithUsername:username withName:name imageURL:avatarURL];
 }
 
 
@@ -127,10 +132,11 @@
 	
     static NSString *CellIdentifier = @"Cell";
 	
-    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+	AsyncCell *cell = (AsyncCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 	
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+		
+		cell = [[[AsyncCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
     }
     
     // Retrieve Track object and set it's name to the cell

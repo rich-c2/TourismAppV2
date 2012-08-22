@@ -25,6 +25,8 @@
 	BOOL profileLoaded;
 	BOOL loadingIsFollowing;
 
+	IBOutlet UIImageView *avatarView;
+	IBOutlet UILabel *usernameLabel;
 	IBOutlet UILabel *nameLabel;
 	IBOutlet UIButton *photosBtn;
 	
@@ -38,6 +40,8 @@
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarURL;
 
+@property (nonatomic, retain) IBOutlet UIImageView *avatarView;
+@property (nonatomic, retain) IBOutlet UILabel *usernameLabel;
 @property (nonatomic, retain) IBOutlet UILabel *nameLabel;
 @property (nonatomic, retain) IBOutlet UIButton *photosBtn;
 
@@ -56,5 +60,7 @@
 
 - (IBAction)followUserButtonTapped:(id)sender;
 - (IBAction)followingUserButtonTapped:(id)sender;
+
+- (IBAction)photosButtonTapped:(id)sender;
 
 @end

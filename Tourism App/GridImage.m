@@ -26,7 +26,12 @@
 	
     if (self) {
 		
+		// Close view and tick mark view were added to this class
+		// for the purpose of enabling a GridImage to be selected/deselected
+		// FOR NOW - remove this.
+		
 		// CLOSE view
+		/*
 		UIImage *closeImage = [UIImage imageNamed:@"red-close-button-small.png"];
 		CGFloat xPos = frame.size.width - (closeImage.size.width + 6);
 		CGFloat yPos = frame.size.height - (closeImage.size.height + 6);
@@ -38,16 +43,13 @@
 		
 		
 		// Tick mark view
-		//UIImage *tick = [UIImage imageNamed:@"thumb-tick-mark.png"];
-		//CGFloat xPos = frame.size.width - (tick.size.width + 6);
-		//CGFloat yPos = frame.size.height - (tick.size.height + 6);
 		UIImageView *tickMarkView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, frame.size.height)];
 		[tickMarkView setTag:TICK_MARK_VIEW_TAG];
 		[tickMarkView setBackgroundColor:[UIColor blackColor]];
 		[tickMarkView setAlpha:.75];
-		//[tickMarkView setImage:tick];
 		[self addSubview:tickMarkView];
 		[tickMarkView release];
+		*/
         
 		UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
 		[btn setFrame:CGRectMake(0.0, 0.0, frame.size.width, frame.size.height)];

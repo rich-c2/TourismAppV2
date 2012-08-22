@@ -18,6 +18,7 @@ typedef enum  {
 } UsersMode;
 
 @class JSONFetcher;
+@class AsyncCell;
 
 @interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource> {
 
@@ -43,7 +44,7 @@ typedef enum  {
 @property (nonatomic, retain) NSString *selectedUsername;
 @property (nonatomic, retain) NSArray *users;
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath;
+- (void)configureCell:(AsyncCell *)cell atIndexPath:(NSIndexPath *)indexPath;
 - (void)initFollowingAPI;
 
 @end
