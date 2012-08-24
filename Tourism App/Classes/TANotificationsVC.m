@@ -148,7 +148,7 @@
 	NSInteger page = 0;
 	NSInteger size = 10;
 	
-	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&category=%@&pg=%i&sz=%i", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], type, page, size];
+	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&category=%@", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], type];
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	
 	// Create the URL that will be used to authenticate this user

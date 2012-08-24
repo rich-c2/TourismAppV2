@@ -10,6 +10,10 @@
 #import "StringHelper.h"
 #import "TAProfileVC.h"
 #import "TANotificationsVC.h"
+#import "TANotificationsManager.h"
+
+#import "JSONFetcher.h"
+#import "SBJson.h"
 
 NSString* const DEMO_PASSWORD = @"pass";
 NSString* const DEMO_USERNAME = @"fuzzyhead";
@@ -23,11 +27,12 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
-@synthesize profileVC, tabBarController;
-@synthesize sessionToken, loggedInUsername;
+@synthesize profileVC, notificationsVC, tabBarController;
+@synthesize sessionToken, loggedInUsername, testUsername;
 
 - (void)dealloc {
 	
+	[notificationsVC release];
 	[sessionToken release];
 	[loggedInUsername release];
 	[tabBarController release];
@@ -228,7 +233,56 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 
 - (void)initApp {
 
-	self.loggedInUsername = @"rich";
+	// test data. Delete this once login process 
+	// has been implemented
+	self.testUsername = @"stu";
+	
+	// TEST LOGIN
+	[self login];
+}
+
+
+- (void)initNotificationsManager {
+
+	// Initiate the notifications manager which polls the API for notifications
+	TANotificationsManager *notificationsManager = [TANotificationsManager sharedManager];
+	
+	/*
+     Register to receive change notifications for the "recommends" property of
+     the 'notificationsManager' object and specify that both the old and new values of "recommends"
+     should be provided in the observe… method.
+     */
+    [notificationsManager addObserver:self
+						   forKeyPath:@"recommends"
+							  options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+							  context:NULL];
+	
+	[notificationsManager addObserver:self
+						   forKeyPath:@"meItems"
+							  options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+							  context:NULL];
+}
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object change:(NSDictionary *)change
+                       context:(void *)context {
+	
+	NSString *message;
+	NSInteger recommendations = 0;
+	NSInteger meItems = 0;
+	
+    if ([keyPath isEqual:@"recommends"])
+		recommendations = [[change objectForKey:NSKeyValueChangeNewKey] intValue];
+	
+	else if ([keyPath isEqual:@"meItems"])
+		meItems = [[change objectForKey:NSKeyValueChangeNewKey] intValue];
+	
+	message = [NSString stringWithFormat:@"Received %i new recommendations and %i ME items", recommendations, meItems];
+	
+    UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"HEY" message:message delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil, nil];
+	[av show];
+	[av release];
 }
 
 // The sessionToken property can be set here
@@ -268,6 +322,99 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
 	return url;
 } 
+
+
+#pragma LOGIN METHODS 
+
+- (void)login {
+	
+	//[self showLoading];
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&password=%@", self.testUsername, @"pass"];
+	
+	NSLog(@"newJSON:%@", jsonString);
+	
+	// Convert string to data for transmission
+    NSData *jsonData = [jsonString dataUsingEncoding:NSASCIIStringEncoding];
+	
+	NSURL *url = [self createRequestURLWithMethod:@"Login" testMode:NO];
+    
+    // Initialiase the URL Request
+	NSMutableURLRequest *request = [self createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+    loginFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+											 receiver:self
+											   action:@selector(receivedLoginResponse:)];
+    [loginFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedLoginResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+	NSAssert(aFetcher == loginFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL loginSuccess = NO;
+	
+	if ([theJSONFetcher.data length] > 0) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		for (int i = 0; i < [[results allKeys] count]; i++) {
+			
+			NSString *key = [[results allKeys] objectAtIndex:i];
+			NSString *value = [results objectForKey:key];
+			
+			if ([key isEqualToString:@"result"]) loginSuccess = (([value isEqualToString:@"ok"]) ? YES : NO);
+			
+			// Pass the token value to the AppDelegate to be stored as 
+			// the session token for all API calls
+			else if ([key isEqualToString:@"token"]) [self setToken:[results objectForKey:key]];
+		}
+		
+		[jsonString release];
+	}
+	
+	NSString *message;
+	
+	// Login credentials were given the tick of approval by the API
+	// tell the delegate to animate this form out
+	if (loginSuccess) {
+		
+		message = @"Your login attempt was successful.";
+		
+		// Store logged-in username
+		[self setLoggedInUsername:self.testUsername];
+		
+		// Init notifications manager 
+		// This is a test setup for now. 
+		[self initNotificationsManager];
+	}
+	
+	else message = @"There was an error logging you in.";
+	
+	
+	UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Login result"
+														message:message
+													   delegate:nil
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+	[av show];
+	[av release];
+
+	[loginFetcher release];
+	loginFetcher = nil;
+    
+}
+
+
 
 
 @end
