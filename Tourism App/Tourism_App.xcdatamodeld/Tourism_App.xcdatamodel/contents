@@ -25,6 +25,14 @@
         <relationship name="photos" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" inverseName="inGuides" inverseEntity="Photo" syncable="YES"/>
         <relationship name="tag" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="forGuides" inverseEntity="Tag" syncable="YES"/>
     </entity>
+    <entity name="Notification" representedClassName="Notification" syncable="YES">
+        <attribute name="code" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="read" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="subtitle" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="thumbURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+    </entity>
     <entity name="Photo" syncable="YES">
         <attribute name="caption" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
@@ -70,12 +78,13 @@
         <relationship name="photosTakenHere" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="venue" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>
-        <element name="User" positionX="160" positionY="192" width="128" height="255"/>
         <element name="City" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="Tag" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="Venue" positionX="160" positionY="192" width="128" height="135"/>
         <element name="Comment" positionX="160" positionY="192" width="128" height="120"/>
-        <element name="Photo" positionX="160" positionY="192" width="128" height="225"/>
         <element name="Guide" positionX="160" positionY="192" width="128" height="195"/>
+        <element name="Photo" positionX="160" positionY="192" width="128" height="225"/>
+        <element name="Tag" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="User" positionX="160" positionY="192" width="128" height="255"/>
+        <element name="Venue" positionX="160" positionY="192" width="128" height="135"/>
+        <element name="Notification" positionX="160" positionY="192" width="128" height="135"/>
     </elements>
 </model>

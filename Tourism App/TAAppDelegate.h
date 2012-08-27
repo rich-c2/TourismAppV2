@@ -23,7 +23,6 @@ extern NSString* const TEST_API_ADDRESS;
 	
 	// TEST Fetcher & login username
 	JSONFetcher *loginFetcher;
-	NSString *testUsername;
 
 	UITabBarController *tabBarController;
 	
@@ -33,9 +32,6 @@ extern NSString* const TEST_API_ADDRESS;
 	NSString *sessionToken;
 	NSString *loggedInUsername;
 }
-
-// TEST PROPERTY
-@property (nonatomic, retain) NSString *testUsername;
 
 @property (strong, nonatomic) UIWindow *window;
 

@@ -16,7 +16,7 @@
 #import "SBJson.h"
 
 NSString* const DEMO_PASSWORD = @"pass";
-NSString* const DEMO_USERNAME = @"fuzzyhead";
+NSString* const DEMO_USERNAME = @"stu";
 NSString* const API_ADDRESS = @"http://want.supergloo.net.au/api/";
 NSString* const FRONT_END_ADDRESS = @"http://want.supergloo.net.au"; 
 NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
@@ -28,7 +28,7 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 @synthesize profileVC, notificationsVC, tabBarController;
-@synthesize sessionToken, loggedInUsername, testUsername;
+@synthesize sessionToken, loggedInUsername;
 
 - (void)dealloc {
 	
@@ -232,10 +232,6 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 #pragma MY-METHODS
 
 - (void)initApp {
-
-	// test data. Delete this once login process 
-	// has been implemented
-	self.testUsername = @"stu";
 	
 	// TEST LOGIN
 	[self login];
@@ -329,8 +325,9 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 - (void)login {
 	
 	//[self showLoading];
+	// D0!0d3s
 	
-	NSString *jsonString = [NSString stringWithFormat:@"username=%@&password=%@", self.testUsername, @"pass"];
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&password=%@", DEMO_USERNAME, DEMO_PASSWORD];
 	
 	NSLog(@"newJSON:%@", jsonString);
 	
@@ -391,7 +388,7 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 		message = @"Your login attempt was successful.";
 		
 		// Store logged-in username
-		[self setLoggedInUsername:self.testUsername];
+		[self setLoggedInUsername:DEMO_USERNAME];
 		
 		// Init notifications manager 
 		// This is a test setup for now. 

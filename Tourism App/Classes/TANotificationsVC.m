@@ -12,6 +12,10 @@
 #import "SBJson.h"
 #import "JSONFetcher.h"
 #import "SVProgressHUD.h"
+#import "TANotificationsManager.h"
+#import "TAProfileVC.h"
+#import "TAImageDetailsVC.h"
+#import "AsyncCell.h"
 
 @interface TANotificationsVC ()
 
@@ -19,7 +23,8 @@
 
 @implementation TANotificationsVC
 
-@synthesize reccomendations, recommendationsTable;
+@synthesize reccomendations, meItems, following, recommendationsTable, tabsControl;
+@synthesize notifications;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -30,21 +35,39 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+	
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+	
+	// Set tap action for segmented control buttons
+	[self.tabsControl addTarget:self
+						 action:@selector(initGetNotificationsAPI)
+			   forControlEvents:UIControlEventValueChanged];
+	
+	self.notifications = [NSMutableArray array];
+
+	// Update unread counts on each of the three notifications tabs
+	TANotificationsManager *manager = [TANotificationsManager sharedManager];
+	[self.tabsControl setTitle:[NSString stringWithFormat:@"Rec. (%i)", manager.recommends.intValue] forSegmentAtIndex:0];
+	[self.tabsControl setTitle:[NSString stringWithFormat:@"ME (%i)", manager.meItems.intValue] forSegmentAtIndex:1];
 }
 
 - (void)viewDidUnload {
 	
 	[recommendationsTable release];
 	self.recommendationsTable = nil;
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 	
+	[tabsControl release];
+	self.tabsControl = nil;
+	
+	self.notifications = nil;
+	self.meItems = nil; 
+	self.following = nil;
 	self.reccomendations = nil;
+	self.meItems = nil;
+	self.following = nil;
+	
+	[super viewDidUnload];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -54,9 +77,12 @@
 
 - (void)dealloc {
 
+	[notifications release];
+	[meItems release];
+	[following release];
 	[reccomendations release];
-	
 	[recommendationsTable release];
+	[tabsControl release];
 	[super dealloc];
 }
 
@@ -69,7 +95,7 @@
 		
 		[self showLoading];
 		
-		[self initRecommendationsAPI];
+		[self initGetNotificationsAPI];
 	}
 }
 
@@ -90,20 +116,20 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	
-    return [self.reccomendations count];
+    return [self.notifications count];
 }
 
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+- (void)configureCell:(AsyncCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
     // Retrieve the Dictionary at the given index that's in self.users
-	NSDictionary *rec = [self.reccomendations objectAtIndex:[indexPath row]];
+	NSDictionary *notification = [self.notifications objectAtIndex:[indexPath row]];
 	
-	NSString *title = [rec objectForKey:@"title"];
-	NSString *subtitle = [rec objectForKey:@"subtitle"];
-	
-	[cell.textLabel setText:title];
-	[cell.detailTextLabel setText:subtitle];
+	NSString *title = [notification objectForKey:@"title"];
+	NSString *subtitle = [notification objectForKey:@"subtitle"];
+	NSString *avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [notification objectForKey:@"thumb"]];
+	 
+	[cell updateCellWithUsername:title withName:subtitle imageURL:avatarURL];
 }
 
 
@@ -111,11 +137,11 @@
 	
     static NSString *CellIdentifier = @"Cell";
 	
-	UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+	AsyncCell *cell = (AsyncCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 	
     if (cell == nil) {
 		
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+		cell = [[[AsyncCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
     }
     
     // Retrieve Track object and set it's name to the cell
@@ -130,25 +156,49 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
 	// Retrieve the Dictionary at the given index that's in self.users
-	/*NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
-	 
-	 TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-	 [profileVC setUsername:[user objectForKey:@"username"]];
-	 //[profileVC setManagedObjectContext:self.managedObjectContext];
-	 
-	 [self.navigationController pushViewController:profileVC animated:YES];
-	 [profileVC release];*/
+	NSDictionary *notification = [self.notifications objectAtIndex:[indexPath row]];
+	
+	// Find the type of notification we're dealing with
+	NSString *type = [notification objectForKey:@"type"];
+	
+	
+	if ([type isEqualToString:@"media"]) {
+	
+		// Push the Image Details VC onto the stack
+		TAImageDetailsVC *imageDetailsVC = [[TAImageDetailsVC alloc] initWithNibName:@"TAImageDetailsVC" bundle:nil];
+		[imageDetailsVC setImageCode:[notification objectForKey:@"code"]];
+		
+		[self.navigationController pushViewController:imageDetailsVC animated:YES];
+		[imageDetailsVC release];
+	}
+	
+	else if ([type isEqualToString:@"user"]) {
+	
+		// Push the User Profile VC onto the stack
+		TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+		[profileVC setUsername:[notification objectForKey:@"code"]];
+		[self.navigationController pushViewController:profileVC animated:YES];
+		[profileVC release];
+	}
 }
 
 
+/* This function calls the "getnotifications" API 
+   The API will return how many new/unreceived notifications
+   have been registered in the CMS for this user. It takes one parameter: a category
+   string which dictates whether the API will fetch ME, recommendations or following
+   notifications.
+*/	
 - (void)initRecommendationsAPI {
 	
-	NSString *type = @"recommendations";
+	NSString *type = @"me";
 	
-	NSInteger page = 0;
-	NSInteger size = 10;
+	NSInteger page = 1;
+	NSInteger size = 5;
+	//&pg=%i&sz=%i
 	
 	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&category=%@", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], type];
+	
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	
 	// Create the URL that will be used to authenticate this user
@@ -162,6 +212,58 @@
 	recommendationsFetcher = [[JSONFetcher alloc] initWithURLRequest:request
 												   receiver:self action:@selector(receivedRecommendationsResponse:)];
 	[recommendationsFetcher start];
+}
+
+
+
+/*	This function calls the "getnotifications" API 
+	The API will return how many new/unreceived notifications
+	have been registered in the CMS for this user. It takes one parameter: a category
+	string which dictates whether the API will fetch ME, recommendations or following
+	notifications.
+*/	
+- (void)initGetNotificationsAPI {
+	
+	NSString *category = [self getSelectedCategory];
+		
+	//NSInteger page = 1;
+	//NSInteger size = 5;
+	//&pg=%i&sz=%i
+	
+	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&category=%@", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], category];
+	
+	NSLog(@"postString:%@", postString);
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"getnotifications"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	if (self.tabsControl.selectedSegmentIndex == NotificationsCategoryRecommendations) {
+		
+		recommendationsFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+																receiver:self action:@selector(receivedRecommendationsResponse:)];
+		[recommendationsFetcher start];
+	}
+	
+	else if (self.tabsControl.selectedSegmentIndex == NotificationsCategoryMe) {
+		
+		meFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+																receiver:self action:@selector(receivedMeResponse:)];
+		[meFetcher start];
+	}
+	
+	else if (self.tabsControl.selectedSegmentIndex == NotificationsCategoryFollowing) {
+		
+		followingFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+																receiver:self action:@selector(receivedFollowingResponse:)];
+		[followingFetcher start];
+	}
 }
 
 
@@ -190,12 +292,113 @@
 		self.reccomendations = [results objectForKey:@"notifications"];
 	}
 	
-	[self.recommendationsTable reloadData];
+	// If the ME tab is currently selected then update the UI
+	if (self.tabsControl.selectedSegmentIndex == NotificationsCategoryRecommendations) {
+		
+		// Get the main array (self.notifications) to point
+		// to the reccomendations array
+		self.notifications = self.reccomendations;
+		
+		// Update table
+		[self.recommendationsTable reloadData];
+	}
 	
 	[self hideLoading];
 	
 	[recommendationsFetcher release];
 	recommendationsFetcher = nil;
+}
+
+
+- (void)receivedMeResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == meFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSLog(@"PRINTING RECOMMENDATIONS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	
+	loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		[jsonString release];
+		
+		// Build an array from the dictionary for easy access to each entry
+		self.meItems = [results objectForKey:@"notifications"];
+	}
+	
+	
+	// Stop showing the loading animation
+	[self hideLoading];
+	
+	// If the ME tab is currently selected then update the UI
+	if (self.tabsControl.selectedSegmentIndex == NotificationsCategoryMe) {
+	
+		// Get the main array (self.notifications) to point
+		// to the meItems array
+		self.notifications = self.meItems;
+		
+		// Update table
+		[self.recommendationsTable reloadData];
+	}
+	
+	[meFetcher release];
+	meFetcher = nil;
+}
+
+
+- (void)receivedFollowingResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == followingFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSLog(@"PRINTING FOLLOWING:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	
+	loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		[jsonString release];
+		
+		// Build an array from the dictionary for easy access to each entry
+		self.following = [results objectForKey:@"notifications"];
+	}
+	
+	
+	// Stop showing the loading animation
+	[self hideLoading];
+	
+	// If the ME tab is currently selected then update the UI
+	if (self.tabsControl.selectedSegmentIndex == NotificationsCategoryFollowing) {
+		
+		// Get the main array (self.notifications) to point
+		// to the meItems array
+		self.notifications = self.following;
+		
+		// Update table
+		[self.recommendationsTable reloadData];
+	}
+	
+	[followingFetcher release];
+	followingFetcher = nil;
 }
 
 
@@ -209,5 +412,39 @@
 	
 	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
 }
+
+
+/*
+	This function returns a string representing what notification
+	category is currently selected. At the minute it bases this on
+	what tab is selected in the UISegmentControl.
+*/
+- (NSString *)getSelectedCategory {
+	
+	NSString *category;
+	
+	switch (self.tabsControl.selectedSegmentIndex) {
+			
+		case NotificationsCategoryRecommendations:
+			category = @"recommendations";
+			break;
+			
+		case NotificationsCategoryMe:
+			category = @"me";
+			break;
+			
+		case NotificationsCategoryFollowing:
+			category = @"following";
+			break;
+			
+		default:
+			category = @"recommendations";
+			break;
+	}
+	
+	return category;
+}
+
+
 
 @end

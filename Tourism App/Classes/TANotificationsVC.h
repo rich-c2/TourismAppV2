@@ -10,18 +10,38 @@
 
 @class JSONFetcher;
 
+typedef enum  {
+	NotificationsCategoryRecommendations = 0,
+	NotificationsCategoryMe = 1, 
+	NotificationsCategoryFollowing = 2
+} NotificationsCategory;
+
 @interface TANotificationsVC : UIViewController {
 
 	JSONFetcher *recommendationsFetcher;
+	JSONFetcher *followingFetcher;
+	JSONFetcher *meFetcher;
 	
 	BOOL loading;
 	BOOL recommendationsLoaded;
 	
+	NSMutableArray *notifications;
 	NSMutableArray *reccomendations;
+	NSMutableArray *meItems;
+	NSMutableArray *following;
+	
+	IBOutlet UISegmentedControl *tabsControl;
 	IBOutlet UITableView *recommendationsTable;
 }
 
+@property (nonatomic, retain) NSMutableArray *notifications;
 @property (nonatomic, retain) NSMutableArray *reccomendations;
+@property (nonatomic, retain) NSMutableArray *meItems;
+@property (nonatomic, retain) NSMutableArray *following;
+
+@property (nonatomic, retain) IBOutlet UISegmentedControl *tabsControl;
 @property (nonatomic, retain) IBOutlet UITableView *recommendationsTable;
+
+- (NSString *)getSelectedCategory;
 
 @end

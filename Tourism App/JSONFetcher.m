@@ -40,9 +40,7 @@
 //
 - (void)close
 {
-	[super close];
-	
-	NSLog(@"RETAIN COUNT NOW NOW:%i", [result retainCount]);
+	[super close];	
 }
 
 //
@@ -56,8 +54,6 @@
 	// Parse the JSON
 	//
 	SBJsonParser *json = [SBJsonParser new]; 
-	
-	NSLog(@"RETAIN COUNT:%i", [result retainCount]);
 	
 	result = [json objectWithData:data];
 	
@@ -78,8 +74,6 @@
 		[alert release];
 	}
 #endif
-	
-	NSLog(@"RETAIN COUNT NOW:%i", [result retainCount]);
 	
 	[result release];
 	result = nil;

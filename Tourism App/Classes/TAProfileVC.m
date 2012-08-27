@@ -48,10 +48,17 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
 	
 	// Update username label
 	[self.usernameLabel setText:self.username];
+	
+	// IF the loggedIn User is look at his/her own profile
+	// then disable the follow/unfollow buttons
+	if ([self.username isEqualToString:[self appDelegate].loggedInUsername]) {
+		
+		[self.followUserBtn setHidden:YES];
+		[self.followingUserBtn setHidden:YES];
+	}
 }
 
 - (void)viewDidUnload {
@@ -177,7 +184,7 @@
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	
 	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"Unfollow"];	
+	NSString *methodName = [NSString stringWithString:@"Follow"];	
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
 	
 	// Initialiase the URL Request
