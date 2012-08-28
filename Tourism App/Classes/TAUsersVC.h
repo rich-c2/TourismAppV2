@@ -24,6 +24,8 @@ typedef enum  {
 
 	UsersMode usersMode;
 	
+	NSString *navigationTitle;
+	
 	NSManagedObjectContext *managedObjectContext;
 	UITableView *usersTable;
 	NSString *selectedUsername;
@@ -38,6 +40,8 @@ typedef enum  {
 }
 
 @property UsersMode usersMode;
+
+@property (nonatomic, retain) NSString *navigationTitle;
 
 @property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, retain) IBOutlet UITableView *usersTable;

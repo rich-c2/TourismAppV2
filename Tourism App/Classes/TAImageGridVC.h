@@ -11,7 +11,14 @@
 
 @class JSONFetcher;
 
+typedef enum  {
+	ImagesModeMyPhotos = 0,
+	ImagesModeLikedPhotos = 1
+} ImagesMode;
+
 @interface TAImageGridVC : UIViewController <GridImageDelegate> {
+	
+	ImagesMode imagesMode;
 	
 	NSInteger fetchSize;
 	NSInteger imagesPageIndex;
@@ -28,6 +35,8 @@
 	NSString *username;
 	NSMutableArray *images;
 }
+
+@property ImagesMode imagesMode;
 
 @property (nonatomic, retain) IBOutlet UIButton *loadMoreButton;
 @property (nonatomic, retain) IBOutlet UIView *imagesView;

@@ -12,6 +12,10 @@
 #import "SBJson.h"
 #import "JSONFetcher.h"
 #import "SVProgressHUD.h"
+#import "TAGuideDetailsVC.h"
+#import "Guide.h"
+#import "City.h"
+#import "Tag.h"
 
 @interface TAGuidesListVC ()
 
@@ -20,6 +24,7 @@
 @implementation TAGuidesListVC
 
 @synthesize guidesMode, guidesTable, guides, username;
+@synthesize selectedTag, selectedCity;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,6 +47,8 @@
 	
 	self.username = nil;
 	self.guides = nil;
+	self.selectedTag = nil; 
+	self.selectedCity = nil;
 	
     [guidesTable release];
     guidesTable = nil;
@@ -64,7 +71,7 @@
 		
 		[self showLoading];
 	
-		if (self.guidesMode == GuidesModeFollowing) [self initFollowingGuidesAPI];
+		if (self.guidesMode == GuidesModeFollowing) [self initFollowedGuidesAPI];
 		
 		else [self initMyGuidesAPI];
 	}
@@ -93,11 +100,25 @@
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
-    // Retrieve the Dictionary at the given index that's in self.users
-	NSDictionary *guide = [self.guides objectAtIndex:[indexPath row]];
+	NSString *guideTitle;
+	NSString *subtitle;
 	
-	NSString *guideTitle = [guide objectForKey:@"title"];
-	NSString *subtitle = [NSString stringWithFormat:@"City:%@/Tag:%@", [guide objectForKey:@"city"], [guide objectForKey:@"tag"]];
+	if (self.guidesMode == GuidesModeAddTo) {
+		
+		Guide *guide = [self.guides objectAtIndex:[indexPath row]];
+		
+		guideTitle = [guide title];
+		subtitle = [NSString stringWithFormat:@"City:%@/Tag:%@", [guide.city title], [guide.tag title]];
+	}
+	
+	else {
+		
+		// Retrieve the Dictionary at the given index that's in self.users
+		NSDictionary *guide = [self.guides objectAtIndex:[indexPath row]];
+		
+		guideTitle = [guide objectForKey:@"title"];
+		subtitle = [NSString stringWithFormat:@"City:%@/Tag:%@", [guide objectForKey:@"city"], [guide objectForKey:@"tag"]];
+	}
 	
 	[cell.textLabel setText:guideTitle];
 	[cell.detailTextLabel setText:subtitle];
@@ -127,14 +148,16 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
 	// Retrieve the Dictionary at the given index that's in self.users
-	/*NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
+	NSDictionary *guide = [self.guides objectAtIndex:[indexPath row]];
 	
-	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-	[profileVC setUsername:[user objectForKey:@"username"]];
-	//[profileVC setManagedObjectContext:self.managedObjectContext];
+	TAGuideDetailsVC *guideDetailsVC = [[TAGuideDetailsVC alloc] initWithNibName:@"TAGuideDetailsVC" bundle:nil];
+	[guideDetailsVC setGuideID:[guide objectForKey:@"guideID"]];
 	
-	[self.navigationController pushViewController:profileVC animated:YES];
-	[profileVC release];*/
+	// Is this a guide that the logged-in user created or someone else's?
+	[guideDetailsVC setGuideMode:GuideModeCreated];
+	
+	[self.navigationController pushViewController:guideDetailsVC animated:YES];
+	[guideDetailsVC release];
 }
 
 
@@ -176,18 +199,39 @@
 		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
 		
-		[jsonString release];
 		
-		// Build an array from the dictionary for easy access to each entry
-		self.guides = [results objectForKey:@"guides"];
+		// For 'Add To' mode we need to
+		// serialize the Guides data so that
+		// we can filter out the Guides that don't
+		// match the city/tag combo we're looking for
+		if (self.guidesMode == GuidesModeAddTo) {
+
+			NSArray *tempGuides = [[self appDelegate] serializeGuideData:self.guides];
+			
+			self.guides = (NSMutableArray *)[tempGuides filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"city.title = %@ AND tag.title = %@", self.selectedCity, self.selectedTag]];
+		}
+		
+		else {
+			
+			// Build an array from the dictionary for easy access to each entry
+			self.guides = [results objectForKey:@"guides"];
+		}
+		
+		[jsonString release];
 	}
+	
+	[self finishedMyGuidesRequest];
+	
+	[guidesFetcher release];
+	guidesFetcher = nil;
+}
+
+
+- (void)finishedMyGuidesRequest {
 	
 	[self.guidesTable reloadData];
 	
 	[self hideLoading];
-	
-	[guidesFetcher release];
-	guidesFetcher = nil;
 }
 
 
@@ -259,9 +303,12 @@
 
 - (void)dealloc {
 	
+	[selectedTag release];
+	[selectedCity release];
 	[username release];
 	[guides release];
     [guidesTable release];
     [super dealloc];
 }
+
 @end

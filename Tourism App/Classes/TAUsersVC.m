@@ -21,7 +21,7 @@
 
 @implementation TAUsersVC
 
-@synthesize usersMode;
+@synthesize usersMode, navigationTitle;
 @synthesize usersTable, selectedUsername, users, managedObjectContext;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -37,6 +37,8 @@
 	
     [super viewDidLoad];
     
+	// Set the title of this view controller
+	self.title = self.navigationTitle;
 }
 
 
@@ -51,6 +53,7 @@
 	
     [super viewDidUnload];
     
+	self.navigationTitle = nil;
 	self.usersTable	= nil;
 	self.selectedUsername = nil;
 	self.users = nil;
@@ -60,6 +63,7 @@
 
 - (void)dealloc {
 	
+	[navigationTitle release];
 	[usersTable release];
 	[selectedUsername release];
 	[users release];

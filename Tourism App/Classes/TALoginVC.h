@@ -1,0 +1,34 @@
+//
+//  TALoginVC.h
+//  Tourism App
+//
+//  Created by Richard Lee on 28/08/12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@protocol LoginDelegate
+
+- (void)loginSuccessful:(NSDictionary *)userData;
+
+@end
+
+@class JSONFetcher;
+
+@interface TALoginVC : UIViewController {
+	
+	id <LoginDelegate> delegate;
+
+	JSONFetcher *loginFetcher;
+	
+	IBOutlet UITextField *passwordField;
+	IBOutlet UITextField *usernameField;
+}
+
+@property (nonatomic, retain) id <LoginDelegate> delegate;
+
+@property (nonatomic, retain) IBOutlet UITextField *passwordField;
+@property (nonatomic, retain) IBOutlet UITextField *usernameField;
+
+@end

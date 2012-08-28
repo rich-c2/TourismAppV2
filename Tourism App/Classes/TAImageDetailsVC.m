@@ -14,6 +14,7 @@
 #import "StringHelper.h"
 #import "ImageManager.h"
 #import "TASimpleListVC.h"
+#import "TAGuidesListVC.h"
 
 @interface TAImageDetailsVC ()
 
@@ -339,8 +340,17 @@
 
 
 - (void)addPhotoToGuide:(id)sender {
-
 	
+	NSDictionary *userDict = [self.imageData objectForKey:@"user"];
+
+	TAGuidesListVC *guidesVC = [[TAGuidesListVC alloc] initWithNibName:@"TAGuidesListVC" bundle:nil];
+	[guidesVC setUsername:[userDict objectForKey:@"username"]];
+	[guidesVC setGuidesMode:GuidesModeAddTo];
+	[guidesVC setSelectedTag:[self.imageData objectForKey:@"tag"]];
+	[guidesVC setSelectedCity:[self.imageData objectForKey:@"city"]];
+	
+	[self.navigationController pushViewController:guidesVC animated:YES];
+	[guidesVC release];
 }
 
 

@@ -26,11 +26,12 @@
 @synthesize reccomendations, meItems, following, recommendationsTable, tabsControl;
 @synthesize notifications;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        
+		self.title = @"Notifications";
     }
     return self;
 }

@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TALoginVC.h"
 
 @class JSONFetcher;
 
-@interface TAProfileVC : UIViewController {
+@interface TAProfileVC : UIViewController <LoginDelegate> {
 
 	// Data
 	JSONFetcher *profileFetcher;
@@ -24,6 +25,8 @@
 	BOOL loading;
 	BOOL profileLoaded;
 	BOOL loadingIsFollowing;
+	BOOL isFollowingLoaded;
+	BOOL viewingCurrentUser;
 
 	IBOutlet UIImageView *avatarView;
 	IBOutlet UILabel *usernameLabel;

@@ -12,7 +12,8 @@
 
 typedef enum  {
 	GuidesModeMyGuides = 0,
-	GuidesModeFollowing = 1
+	GuidesModeFollowing = 1,
+	GuidesModeAddTo = 2
 } GuidesMode;
 
 @interface TAGuidesListVC : UIViewController {
@@ -24,6 +25,9 @@ typedef enum  {
 
 	JSONFetcher *guidesFetcher;
 	
+	NSString *selectedCity;
+	NSString *selectedTag;
+	
 	NSString *username;
 	NSMutableArray *guides;
 	
@@ -34,6 +38,9 @@ typedef enum  {
 
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSMutableArray *guides;
+
+@property (nonatomic, retain) NSString *selectedCity;
+@property (nonatomic, retain) NSString *selectedTag;
 
 @property (nonatomic, retain) IBOutlet UITableView *guidesTable;
 

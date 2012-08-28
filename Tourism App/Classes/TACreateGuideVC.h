@@ -13,7 +13,15 @@
 @interface TACreateGuideVC : UIViewController {
 
 	JSONFetcher *fetcher;
+	
+	NSString *imageCode;
+	
+	IBOutlet UITextField *guideIDField;
 }
+
+@property (nonatomic, retain) NSString *imageCode;
+
+@property (nonatomic, retain) IBOutlet UITextField *guideIDField;
 
 - (IBAction)addToGuideButtonTapped:(id)sender;
 

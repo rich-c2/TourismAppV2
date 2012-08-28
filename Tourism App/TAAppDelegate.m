@@ -3,7 +3,7 @@
 //  Tourism App
 //
 //  Created by Richard Lee on 13/08/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 C2 Media Pty Ltd. All rights reserved.
 //
 
 #import "TAAppDelegate.h"
@@ -11,12 +11,15 @@
 #import "TAProfileVC.h"
 #import "TANotificationsVC.h"
 #import "TANotificationsManager.h"
-
+#import "TAFeedVC.h"
+#import "TAExploreVC.h"
+#import "TAShareVC.h"
 #import "JSONFetcher.h"
 #import "SBJson.h"
+#import "Guide.h"
 
-NSString* const DEMO_PASSWORD = @"pass";
-NSString* const DEMO_USERNAME = @"stu";
+NSString* const DEMO_PASSWORD = @"password";
+NSString* const DEMO_USERNAME = @"rich";
 NSString* const API_ADDRESS = @"http://want.supergloo.net.au/api/";
 NSString* const FRONT_END_ADDRESS = @"http://want.supergloo.net.au"; 
 NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
@@ -28,19 +31,26 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 @synthesize profileVC, notificationsVC, tabBarController;
-@synthesize sessionToken, loggedInUsername;
+@synthesize sessionToken, loggedInUsername, loginVC;
+@synthesize feedVC, exploreVC, shareVC;
+
 
 - (void)dealloc {
 	
+	[feedVC release]; 
+	[exploreVC release]; 
+	[shareVC release];
 	[notificationsVC release];
+	[profileVC release];
+	[tabBarController release];
+	
 	[sessionToken release];
 	[loggedInUsername release];
-	[tabBarController release];
-	[profileVC release];
 	[_window release];
 	[__managedObjectContext release];
 	[__managedObjectModel release];
 	[__persistentStoreCoordinator release];
+	
     [super dealloc];
 }
 
@@ -50,45 +60,71 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	// FOR NOW, the log-in data iset in here
 	[self initApp];
 	
-	// Add Feed tab
+	// Add Feed tab ////////////////////////////////////////////////////////////////////////
 	
-	// Add Explore tab
-	
-	// Add Share tab
-	
-	// Add News tab
-	notificationsVC = [[TANotificationsVC alloc] initWithNibName:@"TANotificationsVC" bundle:nil];
+	feedVC = [[TAFeedVC alloc] initWithNibName:@"TAFeedVC" bundle:nil];
 	
 	UINavigationController *navcon = [[UINavigationController alloc] init];
 	[navcon.navigationBar setTintColor:[UIColor redColor]];
-	[navcon pushViewController:notificationsVC animated:NO];
-	[notificationsVC release];
+	[navcon pushViewController:feedVC animated:NO];
+	[feedVC release];
 	
-	// Add Profile tab
-	profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-	[profileVC setUsername:@"rich"];
+	// Add Explore tab ////////////////////////////////////////////////////////////////////////
+	
+	exploreVC = [[TAExploreVC alloc] initWithNibName:@"TAExploreVC" bundle:nil];
 	
 	UINavigationController *navcon2 = [[UINavigationController alloc] init];
 	[navcon2.navigationBar setTintColor:[UIColor redColor]];
-	[navcon2 pushViewController:profileVC animated:NO];
+	[navcon2 pushViewController:exploreVC animated:NO];
+	[exploreVC release];
+	
+	// Add Share tab ////////////////////////////////////////////////////////////////////////
+	
+	shareVC = [[TAShareVC alloc] initWithNibName:@"TAShareVC" bundle:nil];
+	
+	UINavigationController *navcon3 = [[UINavigationController alloc] init];
+	[navcon3.navigationBar setTintColor:[UIColor redColor]];
+	[navcon3 pushViewController:shareVC animated:NO];
+	[shareVC release];
+	
+	
+	// Add News tab ////////////////////////////////////////////////////////////////////////
+	
+	notificationsVC = [[TANotificationsVC alloc] initWithNibName:@"TANotificationsVC" bundle:nil];
+	
+	UINavigationController *navcon4 = [[UINavigationController alloc] init];
+	[navcon4.navigationBar setTintColor:[UIColor redColor]];
+	[navcon4 pushViewController:notificationsVC animated:NO];
+	[notificationsVC release];
+	
+	
+	// Add Profile tab ////////////////////////////////////////////////////////////////////////
+	
+	profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+	[profileVC setUsername:DEMO_USERNAME];
+	
+	UINavigationController *navcon5 = [[UINavigationController alloc] init];
+	[navcon5.navigationBar setTintColor:[UIColor redColor]];
+	[navcon5 pushViewController:profileVC animated:NO];
 	[profileVC release];
 	
-    self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-    self.window.backgroundColor = [UIColor whiteColor];
+	//////////////////////////////////////////////////////////////////////////////////////////
+	
+    //self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+    //self.window.backgroundColor = [UIColor whiteColor];
 	
 	// Create a tabbar controller and an array to contain the view controllers
 	tabBarController = [[UITabBarController alloc] init];
 	NSMutableArray *localViewControllersArray = [[NSMutableArray alloc] initWithCapacity:5];
-	[localViewControllersArray addObject:navcon2];
 	[localViewControllersArray addObject:navcon];
-	/*[localViewControllersArray addObject:navcon3];
+	[localViewControllersArray addObject:navcon2];
+	[localViewControllersArray addObject:navcon3];
 	[localViewControllersArray addObject:navcon4];
-	[localViewControllersArray addObject:navcon2];*/
+	[localViewControllersArray addObject:navcon5];
+
 	[navcon release];
 	[navcon2 release];
-	/*[navcon5 release];
-	[navcon3 release];
-	[navcon4 release];*/
+
 	
 	// set the tab bar controller view controller array to the localViewControllersArray
 	tabBarController.viewControllers = localViewControllersArray;
@@ -100,8 +136,8 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	// Add the view controller's view to the window and display.
     //[self.window addSubview:[tabBarController view]];
 	[self.window insertSubview:[self.tabBarController view] atIndex:0];
-	
     [self.window makeKeyAndVisible];
+	
     return YES;
 }
 
@@ -234,7 +270,7 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 - (void)initApp {
 	
 	// TEST LOGIN
-	[self login];
+	//[self login];
 }
 
 
@@ -409,6 +445,27 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	[loginFetcher release];
 	loginFetcher = nil;
     
+}
+
+
+- (NSArray *)serializeGuideData:(NSArray *)newGuides {
+	
+	NSMutableArray *returnArray = [NSMutableArray array];
+	
+	for (int i = 0; i < [newGuides count]; i++) {
+		
+		NSDictionary *guideDictionary = [newGuides objectAtIndex:i];
+		
+		// Add to Core Data DB
+		Guide *guide = [Guide guideWithGuideData:guideDictionary inManagedObjectContext:self.managedObjectContext];
+		
+		// Add to return array
+		[returnArray addObject:guide];
+	}
+	
+	NSArray *guides = [returnArray copy];
+	
+	return [guides autorelease];
 }
 
 

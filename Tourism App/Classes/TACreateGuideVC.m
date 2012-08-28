@@ -19,6 +19,8 @@
 
 @implementation TACreateGuideVC
 
+@synthesize imageCode, guideIDField;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -36,28 +38,41 @@
 }
 
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+	
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+- (void)viewDidUnload {
+	
+	[guideIDField release];
+	self.guideIDField = nil;
+	
+	self.imageCode = nil;
+	
+	[super viewDidUnload];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+
+- (void)dealloc {
+
+	[imageCode release];
+	[guideIDField release];
+	[super dealloc];
 }
 
 
 - (IBAction)addToGuideButtonTapped:(id)sender {
 
-	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&mediaID=%@&guideID=%@", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], self.imageCode, self.guideIDField.text];
+	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&imageID=%@&guideID=%@", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], self.imageCode, self.guideIDField.text];
+	
+	NSLog(@"create string:%@", postString);
 	
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	

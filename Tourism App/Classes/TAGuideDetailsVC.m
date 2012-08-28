@@ -1,18 +1,18 @@
 //
-//  TAImageGridVC.m
+//  TAGuideDetailsVC.m
 //  Tourism App
 //
-//  Created by Richard Lee on 21/08/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by Richard Lee on 28/08/12.
+//  Copyright (c) 2012 C2 Media Pty Ltd. All rights reserved.
 //
 
-#import "TAImageGridVC.h"
-#import "JSONFetcher.h"
-#import "StringHelper.h"
-#import "SVProgressHUD.h"
-#import "SBJson.h"
+#import "TAGuideDetailsVC.h"
 #import "TAAppDelegate.h"
+#import "JSONFetcher.h"
+#import "SBJson.h"
+#import "SVProgressHUD.h"
 #import "GridImage.h"
+#import "TAProfileVC.h"
 #import "TAImageDetailsVC.h"
 
 #define IMAGE_VIEW_TAG 7000
@@ -21,18 +21,19 @@
 #define IMAGE_PADDING 4.0
 
 
-@interface TAImageGridVC ()
+@interface TAGuideDetailsVC ()
 
 @end
 
-@implementation TAImageGridVC
+@implementation TAGuideDetailsVC
 
-@synthesize imagesView, gridScrollView, loadMoreButton;
-@synthesize images, username, imagesMode;
+@synthesize guideMode, images, guideID, gridScrollView, guideData;
+@synthesize guideThumb, titleLabel, authorBtn, imagesView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
         // Custom initialization
     }
@@ -43,11 +44,15 @@
 	
     [super viewDidLoad];
 	
-	// The fetch size for each API call
-    fetchSize = 12;
-	
-	// Init array
-	self.images = [NSMutableArray array];
+	// FOR NOW: Add an "save" button to the top-right of the nav bar
+	// if this is a guide NOT created by the logged-in user
+	if (self.guideMode == GuideModeViewing) {
+		
+		UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"follow" style:UIBarButtonItemStyleDone target:self action:@selector(followGuide:)];
+		buttonItem.target = self;
+		self.navigationItem.rightBarButtonItem = buttonItem;
+		[buttonItem release];
+	}
 }
 
 
@@ -59,16 +64,24 @@
 
 - (void)viewDidUnload {
 	
+	self.guideID = nil;
 	self.images = nil;
-	self.username = nil;
+	self.guideData = nil;
 	
-    [gridScrollView release];
-    gridScrollView = nil;
     [imagesView release];
-    imagesView = nil;
-    [loadMoreButton release];
-    loadMoreButton = nil;
+    self.imagesView = nil;
+    [authorBtn release];
+    self.authorBtn = nil;
+    [titleLabel release];
+    self.titleLabel = nil;
+    [guideThumb release];
+    self.guideThumb = nil;
 	
+	[gridScrollView release];
+	self.gridScrollView = nil;
+	
+	[authorBtn release];
+	authorBtn = nil;
     [super viewDidUnload];
 }
 
@@ -79,23 +92,30 @@
 
 - (void)dealloc {
 	
-	[username release];
+	[guideData release];
+	[guideID release];
 	[images release];
-    [gridScrollView release];
     [imagesView release];
-    [loadMoreButton release];
+    [authorBtn release];
+    [titleLabel release];
+    [guideThumb release];
+	[gridScrollView release];
+	[authorBtn release];
     [super dealloc];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
 
-	[super viewWillAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
 	
-	if (!loading && !imagesLoaded) {
+    [super viewDidAppear:animated];
 	
-		if (self.imagesMode == ImagesModeMyPhotos) [self initUploadsAPI];
+	if (!guideLoaded && !loading) {
+			
+		// Show loading animation
+		[self showLoading];
 		
-		else if (self.imagesMode == ImagesModeLikedPhotos) [self initLovedAPI];
+		// Fetch the guide data
+		[self getGuide];
 	}
 }
 
@@ -129,7 +149,7 @@
 	// Push the Image Details VC onto the stack
 	TAImageDetailsVC *imageDetailsVC = [[TAImageDetailsVC alloc] initWithNibName:@"TAImageDetailsVC" bundle:nil];
 	[imageDetailsVC setImageCode:[image objectForKey:@"code"]];
-	 
+	
 	[self.navigationController pushViewController:imageDetailsVC animated:YES];
 	[imageDetailsVC release];
 }
@@ -137,26 +157,11 @@
 
 #pragma MY-METHODS
 
-- (IBAction)loadMoreButtonClicked:(id)sender {
-	
-	[self.loadMoreButton setEnabled:NO];
-	
-	/*
-	if (self.collectionMode == CollectionModeLikedAndUser) [self callUserImagesAndLovedImagesAPI];
-	else if (self.collectionMode == CollectionModeLiked) [self fetchLovedImages];	
-	else [self fetchUserImages];
-	*/
-	
-	// Make a new call to the Uploads API
-	if (self.imagesMode == ImagesModeMyPhotos) [self initUploadsAPI];
-}
-
-
 - (void)updateImageGrid {
 	
 	CGFloat gridWidth = self.imagesView.frame.size.width;
 	CGFloat maxXPos = gridWidth - GRID_IMAGE_WIDTH;
-
+	
 	CGFloat startXPos = 0.0;
 	CGFloat xPos = startXPos;
 	CGFloat yPos = 0.0;
@@ -174,7 +179,7 @@
 		
 		NSInteger rowCount = subviewsCount/4;
 		NSInteger leftOver = subviewsCount%4;
-
+		
 		// Calculate starting xPos & yPos
 		xPos = (leftOver * (GRID_IMAGE_WIDTH + IMAGE_PADDING));
 		yPos = (rowCount * (GRID_IMAGE_HEIGHT + IMAGE_PADDING));
@@ -216,7 +221,7 @@
 
 
 - (void)updateGridLayout {
-
+	
 	// Updated number of how many rows there are
 	NSInteger rowCount = [[self.imagesView subviews] count]/4;
 	NSInteger leftOver = [[self.imagesView subviews] count]%4;
@@ -224,167 +229,151 @@
 	
 	// Update the scroll view's content height
 	CGRect imagesViewFrame = self.imagesView.frame;
-	CGRect loadMoreFrame = self.loadMoreButton.frame;
 	CGFloat gridRowsHeight = (rowCount * (GRID_IMAGE_HEIGHT + IMAGE_PADDING));
-	CGFloat sViewContentHeight = imagesViewFrame.origin.y + gridRowsHeight  + loadMoreFrame.size.height + IMAGE_PADDING;
+	CGFloat sViewContentHeight = imagesViewFrame.origin.y + gridRowsHeight + IMAGE_PADDING;
 	
 	// Set image view frame height
 	imagesViewFrame.size.height = gridRowsHeight;
 	[self.imagesView setFrame:imagesViewFrame];
-	
-	// POSITION LOAD MORE BUTTON
-	CGFloat buttonYPos = imagesViewFrame.origin.y + gridRowsHeight;
-	loadMoreFrame.origin.y = buttonYPos; 
-	[self.loadMoreButton setFrame:loadMoreFrame];
 	
 	// Adjust content height of the scroll view
 	[self.gridScrollView setContentSize:CGSizeMake(self.gridScrollView.frame.size.width, sViewContentHeight)];
 }
 
 
-- (void)initUploadsAPI {
+- (void)getGuide {
 	
-	NSString *postString = [NSString stringWithFormat:@"username=%@&pg=%i&sz=%i", self.username, imagesPageIndex, fetchSize];
-	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
-	
-	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"Uploads"];
-	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
-	
-	// Initialiase the URL Request
-	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
-	
-	// JSONFetcher
-	imagesFetcher = [[JSONFetcher alloc] initWithURLRequest:request
-												   receiver:self action:@selector(receivedUploadsResponse:)];
-	[imagesFetcher start];
-} 
-
-
-// Example fetcher response handling
-- (void)receivedUploadsResponse:(HTTPFetcher *)aFetcher {
-    
-    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
-	
-	//NSLog(@"UPLOADS DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
-    
-	NSAssert(aFetcher == imagesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
-	
-	loading = NO;
-	
-	NSInteger statusCode = [theJSONFetcher statusCode];
-	
-	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
-		
-		imagesLoaded = YES;
-		
-		// Store incoming data into a string
-		// Create a dictionary from the JSON string
-		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
-		NSDictionary *results = [jsonString JSONValue];
-		[jsonString release];
-		
-		NSArray *imagesArray = [results objectForKey:@"media"];
-		[self.images addObjectsFromArray:imagesArray];
-		
-		NSLog(@"IMAGES:%@", self.images);
-		
-		[self userUploadsRequestFinished];
-	}
-	
-	// hide loading
-	[self hideLoading];
-	
-	[imagesFetcher release];
-	imagesFetcher = nil;
-}
-
-
-- (void)userUploadsRequestFinished {
-	
-	// update the page index for 
-	// the next batch
-	imagesPageIndex++;
-	
-	// Re-enable the "load more" button
-	[self.loadMoreButton setEnabled:YES];
-	
-	// Update the image grid
-	[self updateImageGrid];
-}
-
-
-- (void)initLovedAPI {
-	
-	loading = YES;
-	
-	NSString *jsonString = [NSString stringWithFormat:@"username=%@&pg=%i&sz=%i", [self appDelegate].loggedInUsername, imagesPageIndex, fetchSize];
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&guideID=%@&token=%@", 
+							[self appDelegate].loggedInUsername, [self guideID], [[self appDelegate] sessionToken]];
 	
 	// Convert string to data for transmission
 	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
 	
 	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"Loved"];
+	NSString *methodName = [NSString stringWithString:@"Guide"];
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
 	
-	// Initialiase the URL Request
+	// Create URL request with URL and the JSON data
 	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
 	
 	// JSONFetcher
-	imagesFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+	guideFetcher = [[JSONFetcher alloc] initWithURLRequest:request
 												  receiver:self
-													action:@selector(receivedLovedResponse:)];
-	[imagesFetcher start];
+													action:@selector(receivedGetGuideResponse:)];
+	[guideFetcher start];
 }
 
 
 // Example fetcher response handling
-- (void)receivedLovedResponse:(HTTPFetcher *)aFetcher {
+- (void)receivedGetGuideResponse:(HTTPFetcher *)aFetcher {
     
     JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
     
-    NSAssert(aFetcher == imagesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+    NSAssert(aFetcher == guideFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	//NSLog(@"PRINTING DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
-	
-	loading = NO;
-	
-	NSInteger statusCode = [theJSONFetcher statusCode];
+	// NSLog(@"PRINTING GET GUIDE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
-    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
-
-		imagesLoaded = YES;
-		
-		// Store incoming data into a string
-		// Create a dictionary from the JSON string
+    if ([theJSONFetcher.data length] > 0) {
+        
+        // Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) {
+			
+			self.guideData = [results objectForKey:@"guide"];
+			
+			// Build an array from the dictionary for easy access to each entry
+			NSMutableArray *imagesArray = [[self.guideData  objectForKey:@"images"] mutableCopy];
+			self.images = imagesArray;
+			[imagesArray release];
+			
+			NSLog(@"self.images:%@", self.images);
+		}
+		
 		[jsonString release];
-		
-		NSArray *imagesArray = [results objectForKey:@"media"];
-		[self.images addObjectsFromArray:imagesArray];
-		
-		// Request is done. Now update the UI and 
-		// the relevant iVars
-		[self lovedImagesRequestFinished];
     }
+	
+	// Update UI elements
+	[self updateUIElements];
+	
+	// Create the grid of images using the results
+	[self updateImageGrid];
+	
+	// hide loading
+	[self hideLoading];
     
-    [imagesFetcher release];
-    imagesFetcher = nil;
+    [guideFetcher release];
+    guideFetcher = nil;
 }
 
 
-- (void)lovedImagesRequestFinished {
+- (void)followGuide {
 	
-	// update the page index for 
-	// the next batch
-	imagesPageIndex++;
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&guideID=%@&token=%@", [self appDelegate].loggedInUsername, [self guideID], [[self appDelegate] sessionToken]];
 	
-	// Re-enable the "load more" button
-	[self.loadMoreButton setEnabled:YES];
+	// Convert string to data for transmission
+	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
 	
-	// Update the image grid
-	[self updateImageGrid];
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"FollowGuide"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Create URL request with URL and the JSON data
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+	guideFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self
+													action:@selector(receivedFollowGuideResponse:)];
+	[guideFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedFollowGuideResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == guideFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	//NSLog(@"PRINTING GET GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) {
+			
+			UIAlertView *response = [[UIAlertView alloc] initWithTitle:@"Hooray!" message:@"You have successfully saved this guide" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil, nil];
+			[response show];
+			[response release];
+		}
+		
+		[jsonString release];
+    }
+    
+    [guideFetcher release];
+    guideFetcher = nil;
+}
+
+
+- (void)updateUIElements {
+
+	// Guide title
+	[self.titleLabel setText:[self.guideData objectForKey:@"title"]];
+	
+	// Author label
+	NSDictionary *userDict = [self.guideData objectForKey:@"author"];
+	[self.authorBtn setTitle:[NSString stringWithFormat:@"by %@", [userDict objectForKey:@"username"]] forState:UIControlStateNormal];
 }
 
 
@@ -398,6 +387,19 @@
 	
 	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
 }
+
+
+- (IBAction)authorButtonTapped:(id)sender {
+		
+	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+	
+	NSDictionary *userDict = [self.guideData objectForKey:@"author"];
+	[profileVC setUsername:[userDict objectForKey:@"username"]];
+	
+	[self.navigationController pushViewController:profileVC animated:YES];
+	[profileVC release];
+}
+
 
 
 @end

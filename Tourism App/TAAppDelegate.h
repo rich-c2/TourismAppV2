@@ -3,7 +3,7 @@
 //  Tourism App
 //
 //  Created by Richard Lee on 13/08/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 C2 Media Pty Ltd. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -16,16 +16,24 @@ extern NSString* const TEST_API_ADDRESS;
 
 @class TAProfileVC;
 @class TANotificationsVC;
-
+@class TALoginVC;
 @class JSONFetcher;
+@class TAFeedVC;
+@class TAShareVC;
+@class TAExploreVC;
 
 @interface TAAppDelegate : UIResponder <UIApplicationDelegate> {
 	
 	// TEST Fetcher & login username
 	JSONFetcher *loginFetcher;
+	
+	IBOutlet TALoginVC *loginVC;
 
 	UITabBarController *tabBarController;
 	
+	TAFeedVC *feedVC;
+	TAExploreVC *exploreVC;
+	TAShareVC *shareVC;
 	TAProfileVC *profileVC;
 	TANotificationsVC *notificationsVC;
 	
@@ -33,10 +41,16 @@ extern NSString* const TEST_API_ADDRESS;
 	NSString *loggedInUsername;
 }
 
-@property (strong, nonatomic) UIWindow *window;
+//@property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) IBOutlet UIWindow *window;
+
+@property (nonatomic, retain) IBOutlet TALoginVC *loginVC;
 
 @property (nonatomic, retain) UITabBarController *tabBarController;
 
+@property (nonatomic, retain) TAFeedVC *feedVC;
+@property (nonatomic, retain) TAExploreVC *exploreVC;
+@property (nonatomic, retain) TAShareVC *shareVC;
 @property (nonatomic, retain) TAProfileVC *profileVC; 
 @property (nonatomic, retain) TANotificationsVC *notificationsVC;
 
@@ -54,5 +68,7 @@ extern NSString* const TEST_API_ADDRESS;
 
 - (NSMutableURLRequest *)createPostRequestWithURL:(NSURL *)url postData:(NSData *)postData;
 - (NSURL *)createRequestURLWithMethod:(NSString *)methodName testMode:(BOOL)test;
+
+- (NSArray *)serializeGuideData:(NSArray *)newGuides;
 
 @end

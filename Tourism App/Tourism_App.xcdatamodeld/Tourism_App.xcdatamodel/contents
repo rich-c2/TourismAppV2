@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1171" systemVersion="11D50" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="City" syncable="YES">
+    <entity name="City" representedClassName="City" syncable="YES">
         <attribute name="cityID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="locationForGuide" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="city" inverseEntity="Guide" syncable="YES"/>
@@ -13,7 +13,7 @@
         <relationship name="author" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="comments" inverseEntity="User" syncable="YES"/>
         <relationship name="onPhoto" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" inverseName="comments" inverseEntity="Photo" syncable="YES"/>
     </entity>
-    <entity name="Guide" syncable="YES">
+    <entity name="Guide" representedClassName="Guide" syncable="YES">
         <attribute name="frontEndURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="guideID" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="imageIDs" optional="YES" attributeType="String" syncable="YES"/>
@@ -33,7 +33,7 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
     </entity>
-    <entity name="Photo" syncable="YES">
+    <entity name="Photo" representedClassName="Photo" syncable="YES">
         <attribute name="caption" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="lovesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -47,13 +47,13 @@
         <relationship name="tag" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="onPhoto" inverseEntity="Tag" syncable="YES"/>
         <relationship name="venue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="photosTakenHere" inverseEntity="Venue" syncable="YES"/>
     </entity>
-    <entity name="Tag" syncable="YES">
+    <entity name="Tag" representedClassName="Tag" syncable="YES">
         <attribute name="tagID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
         <relationship name="forGuides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="tag" inverseEntity="Guide" syncable="YES"/>
         <relationship name="onPhoto" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="tag" inverseEntity="Photo" syncable="YES"/>
     </entity>
-    <entity name="User" syncable="YES">
+    <entity name="User" representedClassName="User" syncable="YES">
         <attribute name="avatarThumbURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="avatarURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
@@ -81,10 +81,10 @@
         <element name="City" positionX="160" positionY="192" width="128" height="105"/>
         <element name="Comment" positionX="160" positionY="192" width="128" height="120"/>
         <element name="Guide" positionX="160" positionY="192" width="128" height="195"/>
+        <element name="Notification" positionX="160" positionY="192" width="128" height="135"/>
         <element name="Photo" positionX="160" positionY="192" width="128" height="225"/>
         <element name="Tag" positionX="160" positionY="192" width="128" height="105"/>
         <element name="User" positionX="160" positionY="192" width="128" height="255"/>
         <element name="Venue" positionX="160" positionY="192" width="128" height="135"/>
-        <element name="Notification" positionX="160" positionY="192" width="128" height="135"/>
     </elements>
 </model>

@@ -18,6 +18,8 @@
 #import "TAImageGridVC.h"
 #import "TAGuidesListVC.h"
 #import "ImageManager.h"
+#import "TALoginVC.h"
+#import "TAMyContentVC.h"
 
 @interface TAProfileVC ()
 
@@ -31,8 +33,10 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
-        // Custom initialization
+        
+		self.title = @"Account";
     }
     return self;
 }
@@ -51,15 +55,8 @@
 	
 	// Update username label
 	[self.usernameLabel setText:self.username];
-	
-	// IF the loggedIn User is look at his/her own profile
-	// then disable the follow/unfollow buttons
-	if ([self.username isEqualToString:[self appDelegate].loggedInUsername]) {
-		
-		[self.followUserBtn setHidden:YES];
-		[self.followingUserBtn setHidden:YES];
-	}
 }
+
 
 - (void)viewDidUnload {
 	
@@ -91,6 +88,7 @@
     // e.g. self.myOutlet = nil;
 }
 
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
@@ -110,12 +108,51 @@
 	
 	// IF we're not already loading 
 	// "isFollowing" API then start it
-	if (!loadingIsFollowing) {
+	if (!loadingIsFollowing && !isFollowingLoaded) {
+		
+		// IF the loggedIn User is look at his/her own profile
+		// then disable the follow/unfollow buttons
+		if (![self.username isEqualToString:[self appDelegate].loggedInUsername]) {
 	
-		[self detectFollowStatus];
+			[self detectFollowStatus];
+		}
+	}
+	
+	// FOR NOW: Add an "save" button to the top-right of the nav bar
+	// if this is a guide NOT created by the logged-in user
+	if (!self.navigationItem.rightBarButtonItem && [self.username isEqualToString:[self appDelegate].loggedInUsername]) {
+		
+		UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"settings" style:UIBarButtonItemStyleDone target:self action:@selector(viewSettings:)];
+		buttonItem.target = self;
+		self.navigationItem.rightBarButtonItem = buttonItem;
+		[buttonItem release];
 	}
 	
 	[super viewWillAppear:animated];
+}
+
+
+#pragma mark LoginDelegate functions
+
+- (void)loginSuccessful:(NSDictionary *)userData {
+	
+	// Animate out of view
+	[self dismissModalViewControllerAnimated:YES];
+	
+	// We're logged-in!
+	//userLoggedIn = YES;
+	
+	// TEST ////////////////////////////////////////////////////////////////////
+	
+	// IF the loggedIn User is look at his/her own profile
+	// then disable the follow/unfollow buttons
+	if ([self.username isEqualToString:[self appDelegate].loggedInUsername]) {
+		
+		[self.followUserBtn setHidden:YES];
+		[self.followingUserBtn setHidden:YES];
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////
 }
 
 
@@ -133,6 +170,7 @@
 	[followingVC setSelectedUsername:self.username];
 	[followingVC setManagedObjectContext:[[self appDelegate] managedObjectContext]];
 	[followingVC setUsersMode:UsersModeFollowing];
+	[followingVC setNavigationTitle:@"Following"];
 	
 	[self.navigationController pushViewController:followingVC animated:YES];
 	[followingVC release];
@@ -146,6 +184,7 @@
 	[followersVC setSelectedUsername:self.username];
 	[followersVC setManagedObjectContext:[[self appDelegate] managedObjectContext]];
 	[followersVC setUsersMode:UsersModeFollowers];
+	[followersVC setNavigationTitle:@"Followers"];
 	
 	[self.navigationController pushViewController:followersVC animated:YES];
 	[followersVC release];
@@ -207,10 +246,10 @@
     
 	NSAssert(aFetcher == followFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	//loading = NO;
-	//feedLoaded = YES;
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
 	
-	if ([theJSONFetcher.data length] > 0) {
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
 		
 		// Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -218,33 +257,21 @@
 		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
 		
-		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) { 
-			
-			/*
-			 User *loggedInUser = [User userWithUsername:[self appDelegate].loggedInUsername inManagedObjectContext:self.managedObjectContext];
-			 
-			 // Add/Remove to/from logged-in User's following set/array
-			 if (followingUser) {
-			 
-			 [loggedInUser removeFollowingObject:self.selectedUser];			
-			 self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] - 1];
-			 }
-			 else {
-			 
-			 [loggedInUser addFollowingObject:self.selectedUser];
-			 self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] + 1];
-			 }
-			 
-			 // Update the followers and following labels
-			 [self updateFollowCounts];
-			 
-			 // Toggle the 'follow status' of the user we're viewing
-			 [self toggleFollowStatus];*/
-		}
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
 		
-		//NSLog(@"jsonString:%@", jsonString);
+		//NSLog(@"FOLLOW jsonString:%@", jsonString);
 		
 		[jsonString release];
+	}
+	
+	// Follow API was successful
+	if (success) {
+		
+		// Hide 'Follow' user button
+		[self.followUserBtn setHidden:YES];
+	
+		// Display 'Following' user button
+		[self.followingUserBtn setHidden:NO];
 	}
 	
 	[followFetcher release];
@@ -280,12 +307,12 @@
 	
 	//NSLog(@"DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
-	NSAssert(aFetcher == unfollowFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	NSAssert(aFetcher == unfollowFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");	
 	
-	//loading = NO;
-	//feedLoaded = YES;
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
 	
-	if ([theJSONFetcher.data length] > 0) {
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
 		
 		// Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -293,36 +320,23 @@
 		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
 		
-		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) { 
-			
-			/*
-			User *loggedInUser = [User userWithUsername:[self appDelegate].loggedInUsername inManagedObjectContext:self.managedObjectContext];
-			
-			// Add/Remove to/from logged-in User's following set/array
-			if (followingUser) {
-				
-				[loggedInUser removeFollowingObject:self.selectedUser];			
-				self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] - 1];
-			}
-			else {
-				
-				[loggedInUser addFollowingObject:self.selectedUser];
-				self.selectedUser.followersCount = [NSNumber numberWithInt:[self.selectedUser.followersCount intValue] + 1];
-			}
-			
-			// Update the followers and following labels
-			[self updateFollowCounts];
-			
-			// Toggle the 'follow status' of the user we're viewing
-			[self toggleFollowStatus];*/
-		}
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
 		
-		//NSLog(@"jsonString:%@", jsonString);
+		//NSLog(@"UNFOLLOW jsonString:%@", jsonString);
 		
 		[jsonString release];
-		
 	}
 	
+	// Follow API was successful
+	if (success) {
+		
+		// Show 'Follow' user button
+		[self.followUserBtn setHidden:NO];
+		
+		// Hide 'Following' user button
+		[self.followingUserBtn setHidden:YES];
+	}
+		
 	[unfollowFetcher release];
 	unfollowFetcher = nil;
 }
@@ -416,17 +430,6 @@
 
 - (void)detectFollowStatus {
 	
-	// Detect if the user who's profile we're viewing is within the logged-in user's
-	// following array/set
-	/*User *loggedInUser = [User userWithUsername:[self appDelegate].loggedInUsername inManagedObjectContext:self.managedObjectContext];
-	followingUser = [loggedInUser.following containsObject:self.selectedUser];
-	
-	// Filter the latest images that were downloaded from the Latest API
-	NSArray *filteredFollowing = [loggedInUser.following filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"username = %@", self.username]];
-	
-	NSString *buttonTitle = ((followingUser) ? @"Unfollow" : @"Follow");
-	[self.followUserBtn setTitle:buttonTitle forState:UIControlStateNormal];*/
-	
 	loadingIsFollowing = YES;
 	
 	[self initIsFollowingAPI];
@@ -435,11 +438,11 @@
 
 - (void)initIsFollowingAPI {
 	
-	NSString *postString = [NSString stringWithFormat:@"username=%@&following=", [self appDelegate].loggedInUsername, self.username];
+	NSString *postString = [NSString stringWithFormat:@"username=%@&following=%@", [self appDelegate].loggedInUsername, self.username];
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	
 	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"Profile"];	
+	NSString *methodName = [NSString stringWithString:@"isFollowing"];	
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
 	
 	// Initialiase the URL Request
@@ -458,14 +461,16 @@
     
     JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
 	
-	//NSLog(@"PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"ISFOLLOWING DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
 	NSAssert(aFetcher == isFollowingFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	loading = NO;
-	profileLoaded = YES;
+	loadingIsFollowing = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
 	
-	if ([theJSONFetcher.data length] > 0) {
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		isFollowingLoaded = YES;
 		
 		// Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -474,11 +479,9 @@
 		NSDictionary *results = [jsonString JSONValue];
 		
 		[jsonString release];
-		
-		// Build an array from the dictionary for easy access to each entry
-		NSString *result = [results objectForKey:@"following"];
 	
-		// Enable
+		// Update UI to reflect the result of the API call
+		NSString *result = [results objectForKey:@"following"];
 		[self updateFollowingButton:result];
 	}
 	
@@ -497,8 +500,8 @@
 	// then show the followingUser button. And vice-versa.
 	if ([isFollowing isEqualToString:@"true"])
 		[self.followingUserBtn setHidden:NO];
-	else
-		[self.followUserBtn setHidden:NO];
+	
+	else [self.followUserBtn setHidden:NO];
 }
 
 
@@ -559,6 +562,16 @@
 - (void)hideLoading {
 	
 	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
+}
+
+
+- (void)viewSettings:(id)sender {
+	
+	// Push the following VC onto the stack
+	TAMyContentVC *myContentVC = [[TAMyContentVC alloc] initWithNibName:@"TAMyContentVC" bundle:nil];
+	[myContentVC setUsername:self.username];
+	[self.navigationController pushViewController:myContentVC animated:YES];
+	[myContentVC release];
 }
 
 
