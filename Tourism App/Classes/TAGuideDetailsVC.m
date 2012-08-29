@@ -116,6 +116,22 @@
 		
 		// Fetch the guide data
 		[self getGuide];
+		
+		[self initIsLovedAPI];
+	}
+}
+
+
+#pragma UIActionSheetDelegate methods 
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	
+	// Love/Unlove
+	if (buttonIndex == 0) {
+	
+		if (isLoved) [self initUnloveAPI];
+		
+		else [self initLoveAPI];
 	}
 }
 
@@ -271,7 +287,7 @@
     
     NSAssert(aFetcher == guideFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	// NSLog(@"PRINTING GET GUIDE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"PRINTING GET GUIDE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
     if ([theJSONFetcher.data length] > 0) {
         
@@ -290,7 +306,7 @@
 			self.images = imagesArray;
 			[imagesArray release];
 			
-			NSLog(@"self.images:%@", self.images);
+			//NSLog(@"self.images:%@", self.images);
 		}
 		
 		[jsonString release];
@@ -310,7 +326,7 @@
 }
 
 
-- (void)followGuide {
+- (void)followGuide:(id)sender {
 	
 	NSString *jsonString = [NSString stringWithFormat:@"username=%@&guideID=%@&token=%@", [self appDelegate].loggedInUsername, [self guideID], [[self appDelegate] sessionToken]];
 	
@@ -339,7 +355,7 @@
     
     NSAssert(aFetcher == guideFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	//NSLog(@"PRINTING GET GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING FOLLOW GUIDE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
 	NSInteger statusCode = [theJSONFetcher statusCode];
 	
@@ -398,6 +414,224 @@
 	
 	[self.navigationController pushViewController:profileVC animated:YES];
 	[profileVC release];
+}
+
+
+- (void)initIsLovedAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&type=guide", [self appDelegate].loggedInUsername, self.guideID];	
+	
+	//username=fuzzyhead&code=nulprg&type=guide
+	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"isLoved"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	isLovedFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													receiver:self action:@selector(receivedIsLovedResponse:)];
+	[isLovedFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedIsLovedResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+	NSAssert(aFetcher == isLovedFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"loved"] isEqualToString:@"true"]) isLoved = YES;
+		
+		NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// Loved status
+	[self updateLovedStatus];
+	
+	[isLovedFetcher release];
+	isLovedFetcher = nil;
+    
+}
+
+
+/*	This function is called once an isLovedResponse is received from
+ the API. It uses the value of the lovesImage iVar to then set 
+ the title of loveButton button. The loveButton is then enable for interaction */
+- (void)updateLovedStatus {
+	
+	/*
+	NSString *status = [NSString stringWithFormat:@"%@", ((isLoved) ? @"loved" : @"love")];
+	
+	// Update love button title
+	[self.loveBtn setTitle:status forState:UIControlStateNormal];
+	
+	// update the background colour of the button
+	UIColor *newColor;
+	if (isLoved) newColor = [UIColor redColor];
+	else newColor = [UIColor lightGrayColor];
+	
+	[self.loveBtn setBackgroundColor:newColor];
+	
+	// Re-enable the button
+	[self.loveBtn setEnabled:YES];
+	*/
+}
+
+
+- (IBAction)optionsButtonTapped:(id)sender {
+	
+	//@"Share on Twitter", @"Vouch"
+	
+	NSString *loveStatus = ((isLoved) ? @"Unlove" : @"Love");
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:loveStatus, nil];
+	
+	[actionSheet showInView:[self view]];
+	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
+    [actionSheet release];
+}
+
+
+- (void)initLoveAPI {
+		
+	// Create API parameters
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@&type=guide", [self appDelegate].loggedInUsername, self.guideID, [self appDelegate].sessionToken];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Love"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	loveFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												 receiver:self action:@selector(receivedLoveResponse:)];
+	[loveFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedLoveResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == loveFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// The "Love" request was successfull
+	// Now update the iVar and UI
+	if (success) {
+		
+		isLoved = YES;
+		
+		[self updateLovedStatus];
+	}
+	
+	// This is to update the correct "ImageView" when viewing a bunch
+	// of images within a "Timeline" view controller
+	//if (success) [self updateImageViewWithImageID:imageID loveStatus:NO];
+	
+	[loveFetcher release];
+	loveFetcher = nil;
+    
+}
+
+
+- (void)initUnloveAPI {
+		
+	// Create API parameters
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@&type=guide", [self appDelegate].loggedInUsername, self.guideID, [self appDelegate].sessionToken];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"UnLove"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	loveFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												 receiver:self action:@selector(receivedUnloveResponse:)];
+	[loveFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedUnloveResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == loveFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// The "UnLove" request was successfull
+	// Now update the iVar and UI
+	if (success) {
+		
+		isLoved = NO;
+		
+		[self updateLovedStatus];
+	}
+	
+	// This is to update the correct "ImageView" when viewing a bunch
+	// of images within a "Timeline" view controller
+	//if (success) [self updateImageViewWithImageID:imageID loveStatus:NO];
+	
+	[loveFetcher release];
+	loveFetcher = nil;
+    
 }
 
 

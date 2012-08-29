@@ -7,11 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TALoginVC.h"
 
 @class JSONFetcher;
 
-@interface TAProfileVC : UIViewController <LoginDelegate> {
+@interface TAProfileVC : UIViewController {
 
 	// Data
 	JSONFetcher *profileFetcher;

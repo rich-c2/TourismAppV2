@@ -16,16 +16,19 @@ typedef enum  {
 	GuideModeViewing = 1
 } GuideMode;
 
-@interface TAGuideDetailsVC : UIViewController <GridImageDelegate> {
+@interface TAGuideDetailsVC : UIViewController <GridImageDelegate, UIActionSheetDelegate> {
 
 	GuideMode guideMode;
 	
 	JSONFetcher *guideFetcher;
+	JSONFetcher *isLovedFetcher;
+	JSONFetcher *loveFetcher;
 	
 	NSDictionary *guideData;
 	NSMutableArray *images;
 	NSString *guideID;
 	
+	BOOL isLoved;
 	BOOL loading;
 	BOOL guideLoaded;
 	
@@ -49,5 +52,6 @@ typedef enum  {
 @property (nonatomic, retain) IBOutlet UIView *imagesView;
 
 - (IBAction)authorButtonTapped:(id)sender;
+- (IBAction)optionsButtonTapped:(id)sender;
 
 @end

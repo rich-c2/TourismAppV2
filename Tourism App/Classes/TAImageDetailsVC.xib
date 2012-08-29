@@ -224,6 +224,7 @@
 								<string key="NSFrame">{{190, 449}, {94, 24}}</string>
 								<reference key="NSSuperview" ref="316212522"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MC42IDAuNiAwLjYAA</bytes>
@@ -265,7 +266,7 @@
 								<string key="NSFrame">{{62, 28}, {248, 21}}</string>
 								<reference key="NSSuperview" ref="316212522"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="1020742826"/>
+								<reference key="NSNextKeyView" ref="504477092"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentVerticalAlignment">0</int>
@@ -295,6 +296,28 @@
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIProgressViewStyle">1</int>
+							</object>
+							<object class="IBUIButton" id="504477092">
+								<reference key="NSNextResponder" ref="316212522"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrame">{{284, 17}, {29, 29}}</string>
+								<reference key="NSSuperview" ref="316212522"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="1020742826"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentHorizontalAlignment">0</int>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<int key="IBUIButtonType">5</int>
+								<reference key="IBUIHighlightedTitleColor" ref="628279127"/>
+								<object class="NSColor" key="IBUINormalTitleColor">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
+								</object>
+								<reference key="IBUINormalTitleShadowColor" ref="96654403"/>
+								<reference key="IBUIFontDescription" ref="1043831415"/>
+								<reference key="IBUIFont" ref="272486303"/>
 							</object>
 						</array>
 						<string key="NSFrameSize">{320, 367}</string>
@@ -425,11 +448,46 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">usernameByline</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="76730408"/>
+					</object>
+					<int key="connectionID">39</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="316212522"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">29</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">mapButtonTapped:</string>
+						<reference key="source" ref="67772458"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">34</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">usernameButtonTapped:</string>
+						<reference key="source" ref="76730408"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">38</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">loveButtonTapped:</string>
+						<reference key="source" ref="338272173"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">33</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -439,6 +497,24 @@
 						<int key="IBEventType">7</int>
 					</object>
 					<int key="connectionID">32</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">usernameButtonTapped:</string>
+						<reference key="source" ref="975309081"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">37</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">optionsButtonTapped:</string>
+						<reference key="source" ref="504477092"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">36</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -484,6 +560,7 @@
 							<reference ref="1039445868"/>
 							<reference ref="507902650"/>
 							<reference ref="67772458"/>
+							<reference ref="504477092"/>
 						</array>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -547,6 +624,11 @@
 						<reference key="object" ref="67772458"/>
 						<reference key="parent" ref="316212522"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">35</int>
+						<reference key="object" ref="504477092"/>
+						<reference key="parent" ref="316212522"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -562,6 +644,7 @@
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="15.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="16.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="35.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -573,24 +656,42 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">32</int>
+			<int key="maxID">39</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">TAImageDetailsVC</string>
 					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">lovesCountButtonTapped:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">lovesCountButtonTapped:</string>
-						<object class="IBActionInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="loveButtonTapped:">id</string>
+						<string key="lovesCountButtonTapped:">id</string>
+						<string key="mapButtonTapped:">id</string>
+						<string key="optionsButtonTapped:">id</string>
+						<string key="usernameButtonTapped:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="loveButtonTapped:">
+							<string key="name">loveButtonTapped:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="lovesCountButtonTapped:">
 							<string key="name">lovesCountButtonTapped:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</object>
+						<object class="IBActionInfo" key="mapButtonTapped:">
+							<string key="name">mapButtonTapped:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="optionsButtonTapped:">
+							<string key="name">optionsButtonTapped:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="usernameButtonTapped:">
+							<string key="name">usernameButtonTapped:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="avatar">UIImageView</string>
 						<string key="captionLabel">UILabel</string>
@@ -603,6 +704,7 @@
 						<string key="scrollView">UIScrollView</string>
 						<string key="subtitle">UIButton</string>
 						<string key="usernameBtn">UIButton</string>
+						<string key="usernameByline">UIButton</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="avatar">
@@ -647,6 +749,10 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="usernameBtn">
 							<string key="name">usernameBtn</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="usernameByline">
+							<string key="name">usernameByline</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
 					</dictionary>

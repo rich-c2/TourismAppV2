@@ -17,15 +17,14 @@ extern NSString* const TEST_API_ADDRESS;
 @class TAProfileVC;
 @class TANotificationsVC;
 @class TALoginVC;
-@class JSONFetcher;
 @class TAFeedVC;
 @class TAShareVC;
 @class TAExploreVC;
 
 @interface TAAppDelegate : UIResponder <UIApplicationDelegate> {
 	
-	// TEST Fetcher & login username
-	JSONFetcher *loginFetcher;
+	
+	BOOL userLoggedIn;
 	
 	IBOutlet TALoginVC *loginVC;
 
@@ -41,7 +40,8 @@ extern NSString* const TEST_API_ADDRESS;
 	NSString *loggedInUsername;
 }
 
-//@property (strong, nonatomic) UIWindow *window;
+@property (nonatomic) BOOL userLoggedIn;
+
 @property (strong, nonatomic) IBOutlet UIWindow *window;
 
 @property (nonatomic, retain) IBOutlet TALoginVC *loginVC;

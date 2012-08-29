@@ -3,7 +3,7 @@
 //  Tourism App
 //
 //  Created by Richard Lee on 22/08/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 C2 Media Pty Ltd. All rights reserved.
 //
 
 #import "TAGuidesListVC.h"
@@ -13,6 +13,7 @@
 #import "JSONFetcher.h"
 #import "SVProgressHUD.h"
 #import "TAGuideDetailsVC.h"
+#import "TACreateGuideVC.h"
 #import "Guide.h"
 #import "City.h"
 #import "Tag.h"
@@ -24,7 +25,7 @@
 @implementation TAGuidesListVC
 
 @synthesize guidesMode, guidesTable, guides, username;
-@synthesize selectedTag, selectedCity;
+@synthesize selectedTag, selectedCity, selectedTagID, selectedPhotoID;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -45,16 +46,17 @@
 
 - (void)viewDidUnload {
 	
+	self.selectedTagID = nil;
 	self.username = nil;
 	self.guides = nil;
 	self.selectedTag = nil; 
 	self.selectedCity = nil;
+	self.selectedPhotoID = nil;
 	
     [guidesTable release];
     guidesTable = nil;
+	
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -94,7 +96,13 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	
-    return [self.guides count];
+	NSInteger numOfRows = [self.guides count];
+	
+	// If we're adding to a guide, then add on one 
+	// more row to allow user to "Add to new" guide
+	if (self.guidesMode == GuidesModeAddTo) numOfRows++;
+	
+    return numOfRows;
 }
 
 
@@ -105,15 +113,26 @@
 	
 	if (self.guidesMode == GuidesModeAddTo) {
 		
-		Guide *guide = [self.guides objectAtIndex:[indexPath row]];
+		// deal with the "extra row" - which is going 
+		// to be the "add to new" guide row
+		if ([indexPath row] == [self.guides count]) {
 		
-		guideTitle = [guide title];
-		subtitle = [NSString stringWithFormat:@"City:%@/Tag:%@", [guide.city title], [guide.tag title]];
+			guideTitle = @"Add to new guide";
+			subtitle = @"Create a new guide with this image";
+		}
+		
+		else {
+			
+			Guide *guide = [self.guides objectAtIndex:[indexPath row]];
+			
+			guideTitle = [guide title];
+			subtitle = [NSString stringWithFormat:@"City:%@/Tag:%@", [guide.city title], [guide.tag title]];
+		}
 	}
 	
 	else {
 		
-		// Retrieve the Dictionary at the given index that's in self.users
+		// Retrieve the Dictionary at the given index that's in self.guides
 		NSDictionary *guide = [self.guides objectAtIndex:[indexPath row]];
 		
 		guideTitle = [guide objectForKey:@"title"];
@@ -147,17 +166,49 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	// Retrieve the Dictionary at the given index that's in self.users
-	NSDictionary *guide = [self.guides objectAtIndex:[indexPath row]];
 	
-	TAGuideDetailsVC *guideDetailsVC = [[TAGuideDetailsVC alloc] initWithNibName:@"TAGuideDetailsVC" bundle:nil];
-	[guideDetailsVC setGuideID:[guide objectForKey:@"guideID"]];
+	if (self.guidesMode == GuidesModeAddTo) {
+		
+		// deal with the "extra row" - which is going 
+		// to be the "add to new" guide row
+		if ([indexPath row] == [self.guides count]) {
 	
-	// Is this a guide that the logged-in user created or someone else's?
-	[guideDetailsVC setGuideMode:GuideModeCreated];
+			TACreateGuideVC *createGuideVC = [[TACreateGuideVC alloc] initWithNibName:@"TACreateGuideVC" bundle:nil];
+			[createGuideVC setImageCode:self.selectedPhotoID];
+			[createGuideVC setGuideTagID:self.selectedTagID];
+			[createGuideVC setGuideCity:self.selectedCity];
+			
+			[self.navigationController pushViewController:createGuideVC animated:YES];
+			[createGuideVC release];
+		}
+		
+		
+		// Add the photo to the Guide that was 
+		// selected from the table list
+		else {
+			
+			Guide *guide = [self.guides objectAtIndex:[indexPath row]];
+			
+			[self initAddToGuideAPI:guide];
+		}
+	}
+			
+	else {
 	
-	[self.navigationController pushViewController:guideDetailsVC animated:YES];
-	[guideDetailsVC release];
+		// Retrieve the Dictionary at the given index that's in self.users
+		NSDictionary *guide = [self.guides objectAtIndex:[indexPath row]];
+		
+		TAGuideDetailsVC *guideDetailsVC = [[TAGuideDetailsVC alloc] initWithNibName:@"TAGuideDetailsVC" bundle:nil];
+		[guideDetailsVC setGuideID:[guide objectForKey:@"guideID"]];
+		
+		// Is this a guide that the logged-in user created or someone else's?
+		if (self.guidesMode == GuidesModeMyGuides) [guideDetailsVC setGuideMode:GuideModeCreated];
+		
+		else if (self.guidesMode == GuidesModeViewing) [guideDetailsVC setGuideMode:GuideModeViewing];
+		
+		[self.navigationController pushViewController:guideDetailsVC animated:YES];
+		[guideDetailsVC release];
+	}
 }
 
 
@@ -205,10 +256,14 @@
 		// we can filter out the Guides that don't
 		// match the city/tag combo we're looking for
 		if (self.guidesMode == GuidesModeAddTo) {
-
-			NSArray *tempGuides = [[self appDelegate] serializeGuideData:self.guides];
 			
-			self.guides = (NSMutableArray *)[tempGuides filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"city.title = %@ AND tag.title = %@", self.selectedCity, self.selectedTag]];
+			NSArray *guidesArray = [results objectForKey:@"guides"];
+
+			NSArray *tempGuides = [[self appDelegate] serializeGuideData:guidesArray];
+			
+			NSLog(@"tempGuides:%@", tempGuides);
+			
+			self.guides = (NSMutableArray *)[tempGuides filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"city.title = %@ AND tag.tagID = %@", self.selectedCity, self.selectedTagID]];
 		}
 		
 		else {
@@ -301,8 +356,87 @@
 }
 
 
+- (void)initAddToGuideAPI:(Guide *)guide {
+
+	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&imageID=%@&guideID=%@", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], self.selectedPhotoID, guide.guideID];
+	
+	NSLog(@"ADD TO GUIDE string:%@", postString);
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"addtoguide"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	guidesFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+											 receiver:self
+											   action:@selector(receivedAddToGuideResponse:)];
+	[guidesFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedAddToGuideResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSLog(@"ADD TO GUIDE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == guidesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	loading = NO;
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	NSString *title;
+	NSString *message;
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) { 
+			
+			success = YES;
+			
+			title = @"Success!";
+			message = [NSString stringWithFormat:@"The photo was successfully added"];// to \"%@\"", ];
+		}
+		
+		//NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	
+	if (!success) {
+	
+		title = @"Sorry!";
+		message = @"There was an error adding that photo";
+	}
+	
+	
+	UIAlertView *av = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+	[av show];
+	[av release];
+	
+	[guidesFetcher release];
+	guidesFetcher = nil;
+}
+
+
 - (void)dealloc {
 	
+	[selectedPhotoID release];
+	[selectedTagID release];
 	[selectedTag release];
 	[selectedCity release];
 	[username release];

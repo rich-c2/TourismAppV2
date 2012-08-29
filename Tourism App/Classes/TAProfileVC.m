@@ -36,6 +36,9 @@
 	
     if (self) {
         
+		// Listen for when the user has logged-in
+		[self initLoginObserver];
+		
 		self.title = @"Account";
     }
     return self;
@@ -132,27 +135,39 @@
 }
 
 
-#pragma mark LoginDelegate functions
+#pragma mark MY-METHODS
 
-- (void)loginSuccessful:(NSDictionary *)userData {
+- (void)initLoginObserver {
 	
-	// Animate out of view
-	[self dismissModalViewControllerAnimated:YES];
+	// Get an iVar of TAAppDelegate
+	TAAppDelegate *appDelegate = [self appDelegate];
 	
-	// We're logged-in!
-	//userLoggedIn = YES;
+	/*
+     Register to receive change notifications for the "userLoggedIn" property of
+     the 'appDelegate' and specify that both the old and new values of "userLoggedIn"
+     should be provided in the observe… method.
+     */
+    [appDelegate addObserver:self
+						   forKeyPath:@"userLoggedIn"
+							  options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld)
+							  context:NULL];
+}
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object change:(NSDictionary *)change
+                       context:(void *)context {
 	
-	// TEST ////////////////////////////////////////////////////////////////////
+	NSInteger loggedIn = 0;
 	
-	// IF the loggedIn User is look at his/her own profile
-	// then disable the follow/unfollow buttons
-	if ([self.username isEqualToString:[self appDelegate].loggedInUsername]) {
+    if ([keyPath isEqual:@"userLoggedIn"])
+		loggedIn = [[change objectForKey:NSKeyValueChangeNewKey] intValue];
+	
+	
+	if (loggedIn == 1) {
 		
-		[self.followUserBtn setHidden:YES];
-		[self.followingUserBtn setHidden:YES];
+		self.username = [self appDelegate].loggedInUsername;
 	}
-	
-	///////////////////////////////////////////////////////////////////////////////
 }
 
 
@@ -521,6 +536,17 @@
 	// Push the following VC onto the stack
 	TAGuidesListVC *guidesListVC = [[TAGuidesListVC alloc] initWithNibName:@"TAGuidesListVC" bundle:nil];
 	[guidesListVC setUsername:self.username];
+	
+	
+	// Set the correct guides list 'mode'
+	// IF the username = the user who is logged-in
+	// then we're viewing "my guides", otherwise viewing 
+	// someone else's guides
+	if ([self.username isEqualToString:[self appDelegate].loggedInUsername]) 
+		[guidesListVC setGuidesMode:GuidesModeMyGuides];
+	else
+		[guidesListVC setGuidesMode:GuidesModeViewing];
+	
 	
 	[self.navigationController pushViewController:guidesListVC animated:YES];
 	[guidesListVC release];

@@ -15,14 +15,18 @@
 	JSONFetcher *fetcher;
 	
 	NSString *imageCode;
+	NSNumber *guideTagID;
+	NSString *guideCity;
 	
-	IBOutlet UITextField *guideIDField;
+	IBOutlet UITextField *titleField;
 }
 
 @property (nonatomic, retain) NSString *imageCode;
+@property (nonatomic, retain) NSNumber *guideTagID;
+@property (nonatomic, retain) NSString *guideCity;
 
-@property (nonatomic, retain) IBOutlet UITextField *guideIDField;
+@property (nonatomic, retain) IBOutlet UITextField *titleField;
 
-- (IBAction)addToGuideButtonTapped:(id)sender;
+- (IBAction)submitButtonTapped:(id)sender;
 
 @end

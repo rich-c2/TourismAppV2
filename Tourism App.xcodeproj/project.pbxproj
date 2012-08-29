@@ -67,6 +67,13 @@
 		9BB4045415ECA3910080E00E /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045315ECA3910080E00E /* Photo.m */; };
 		9BB4045715ECA3910080E00E /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045615ECA3910080E00E /* Tag.m */; };
 		9BB4045A15ECA3920080E00E /* City.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045915ECA3920080E00E /* City.m */; };
+		9BD79FEB15EDAAE50033EB64 /* TAMapVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FE915EDAAE40033EB64 /* TAMapVC.m */; };
+		9BD79FEC15EDAAE50033EB64 /* TAMapVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BD79FEA15EDAAE40033EB64 /* TAMapVC.xib */; };
+		9BD79FF415EDAF080033EB64 /* MyMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FF315EDAF080033EB64 /* MyMapAnnotation.m */; };
+		9BD79FF815EDB2C50033EB64 /* TACommentsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FF615EDB2C40033EB64 /* TACommentsVC.m */; };
+		9BD79FF915EDB2C50033EB64 /* TACommentsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BD79FF715EDB2C50033EB64 /* TACommentsVC.xib */; };
+		9BD7A00315EDCC1A0033EB64 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD7A00215EDCC1A0033EB64 /* Twitter.framework */; };
+		9BD7A00515EDCC260033EB64 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD7A00415EDCC250033EB64 /* Accounts.framework */; };
 		9BDEA9F915EC4B19000EF65F /* TALoginVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BDEA9F715EC4B18000EF65F /* TALoginVC.m */; };
 		9BDEA9FA15EC4B19000EF65F /* TALoginVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BDEA9F815EC4B19000EF65F /* TALoginVC.xib */; };
 		9BDEA9FE15EC59A2000EF65F /* TAGuideDetailsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BDEA9FC15EC59A1000EF65F /* TAGuideDetailsVC.m */; };
@@ -219,6 +226,16 @@
 		9BB4045615ECA3910080E00E /* Tag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Tag.m; path = Classes/Tag.m; sourceTree = "<group>"; };
 		9BB4045815ECA3920080E00E /* City.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = City.h; path = Classes/City.h; sourceTree = "<group>"; };
 		9BB4045915ECA3920080E00E /* City.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = City.m; path = Classes/City.m; sourceTree = "<group>"; };
+		9BD79FE815EDAAE40033EB64 /* TAMapVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAMapVC.h; path = Classes/TAMapVC.h; sourceTree = "<group>"; };
+		9BD79FE915EDAAE40033EB64 /* TAMapVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAMapVC.m; path = Classes/TAMapVC.m; sourceTree = "<group>"; };
+		9BD79FEA15EDAAE40033EB64 /* TAMapVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAMapVC.xib; path = Classes/TAMapVC.xib; sourceTree = "<group>"; };
+		9BD79FF215EDAF070033EB64 /* MyMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyMapAnnotation.h; sourceTree = "<group>"; };
+		9BD79FF315EDAF080033EB64 /* MyMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyMapAnnotation.m; sourceTree = "<group>"; };
+		9BD79FF515EDB2C40033EB64 /* TACommentsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACommentsVC.h; path = Classes/TACommentsVC.h; sourceTree = "<group>"; };
+		9BD79FF615EDB2C40033EB64 /* TACommentsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACommentsVC.m; path = Classes/TACommentsVC.m; sourceTree = "<group>"; };
+		9BD79FF715EDB2C50033EB64 /* TACommentsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACommentsVC.xib; path = Classes/TACommentsVC.xib; sourceTree = "<group>"; };
+		9BD7A00215EDCC1A0033EB64 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
+		9BD7A00415EDCC250033EB64 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		9BDEA9F615EC4B18000EF65F /* TALoginVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TALoginVC.h; path = Classes/TALoginVC.h; sourceTree = "<group>"; };
 		9BDEA9F715EC4B18000EF65F /* TALoginVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TALoginVC.m; path = Classes/TALoginVC.m; sourceTree = "<group>"; };
 		9BDEA9F815EC4B19000EF65F /* TALoginVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TALoginVC.xib; path = Classes/TALoginVC.xib; sourceTree = "<group>"; };
@@ -312,6 +329,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BD7A00515EDCC260033EB64 /* Accounts.framework in Frameworks */,
+				9BD7A00315EDCC1A0033EB64 /* Twitter.framework in Frameworks */,
 				9B09867315D8A0CE006F8B63 /* AddressBook.framework in Frameworks */,
 				9B09867415D8A0CE006F8B63 /* AddressBookUI.framework in Frameworks */,
 				9B09867015D8A0B8006F8B63 /* AssetsLibrary.framework in Frameworks */,
@@ -368,6 +387,8 @@
 		9B09862515D89F27006F8B63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BD7A00415EDCC250033EB64 /* Accounts.framework */,
+				9BD7A00215EDCC1A0033EB64 /* Twitter.framework */,
 				9B09867115D8A0CE006F8B63 /* AddressBook.framework */,
 				9B09867215D8A0CE006F8B63 /* AddressBookUI.framework */,
 				9B09866D15D8A08E006F8B63 /* libxml2.dylib */,
@@ -393,62 +414,35 @@
 		9B09862E15D89F27006F8B63 /* Tourism App */ = {
 			isa = PBXGroup;
 			children = (
-				9BDEAA0E15EC8887000EF65F /* Share */,
+				9BEF9C4E15E371BE000AEE5E /* AppDelegate */,
+				9BE61D1E15E4755A008A45D7 /* ASI */,
 				9BDEAA0815EC8867000EF65F /* Explore */,
 				9BDEAA0715EC8856000EF65F /* Feed */,
-				9BE61D7115E49BB3008A45D7 /* FastCell.h */,
-				9BE61D7215E49BB3008A45D7 /* FastCell.m */,
-				9BE61D6615E49659008A45D7 /* AsyncCell.h */,
-				9BE61D6715E49659008A45D7 /* AsyncCell.m */,
-				9BE61D6515E47CE7008A45D7 /* Networking */,
-				9BE61D1E15E4755A008A45D7 /* ASI */,
-				9BEF9C5015E3721C000AEE5E /* Misc. */,
-				9BEF9C4F15E371E2000AEE5E /* View */,
-				9BEF9C4E15E371BE000AEE5E /* AppDelegate */,
 				9B35808415E1DA61007309C0 /* Fetchers */,
+				9BD7A00815EDD3E20033EB64 /* Forms */,
+				9BD7A00915EDD4E70033EB64 /* Guides */,
 				9B35809315E1F6E9007309C0 /* JSON */,
+				9BEF9C5015E3721C000AEE5E /* Misc. */,
+				9BE61D6515E47CE7008A45D7 /* Networking */,
+				9BD7A00B15EDD53F0033EB64 /* Notifications */,
+				9BD7A00615EDD39F0033EB64 /* Objects */,
 				9B35806E15E1C19E007309C0 /* Profile */,
+				9BDEAA0E15EC8887000EF65F /* Share */,
 				9B09862F15D89F27006F8B63 /* Supporting Files */,
-				9BEF9C4115E3408A000AEE5E /* TAImageGridVC.h */,
-				9BEF9C4215E3408A000AEE5E /* TAImageGridVC.m */,
-				9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */,
+				9BD7A00A15EDD5200033EB64 /* Templates */,
+				9BD7A00715EDD3BE0033EB64 /* Table Cells */,
+				9BEF9C4F15E371E2000AEE5E /* View */,
 				9B09863A15D89F27006F8B63 /* Tourism_App.xcdatamodeld */,
-				9BB4045815ECA3920080E00E /* City.h */,
-				9BB4045915ECA3920080E00E /* City.m */,
-				9BB4045515ECA3910080E00E /* Tag.h */,
-				9BB4045615ECA3910080E00E /* Tag.m */,
-				9BB4045215ECA3910080E00E /* Photo.h */,
-				9BB4045315ECA3910080E00E /* Photo.m */,
-				9BB4044F15ECA3900080E00E /* User.h */,
-				9BB4045015ECA3900080E00E /* User.m */,
-				9BB4044B15ECA3900080E00E /* Guide.h */,
-				9BB4044C15ECA3900080E00E /* Guide.m */,
-				9BDF043D15EAEC42008AFBE2 /* Notification.h */,
-				9BDF043E15EAEC42008AFBE2 /* Notification.m */,
-				9BE61D7415E4A091008A45D7 /* TAGuidesListVC.h */,
-				9BE61D7515E4A091008A45D7 /* TAGuidesListVC.m */,
-				9BE61D7615E4A092008A45D7 /* TAGuidesListVC.xib */,
-				9BE61D7915E4B3E6008A45D7 /* TANotificationsVC.h */,
-				9BE61D7A15E4B3E6008A45D7 /* TANotificationsVC.m */,
-				9BE61D7B15E4B3E7008A45D7 /* TANotificationsVC.xib */,
-				9B09896915E74869005F53A1 /* TANotificationsManager.h */,
-				9B09896A15E74869005F53A1 /* TANotificationsManager.m */,
 				9BDF044415EB2531008AFBE2 /* TAImageDetailsVC.h */,
 				9BDF044515EB2531008AFBE2 /* TAImageDetailsVC.m */,
 				9BDF044615EB2531008AFBE2 /* TAImageDetailsVC.xib */,
-				9B7B0A0815EB49AB001C2E3E /* TASimpleListVC.h */,
-				9B7B0A0915EB49AB001C2E3E /* TASimpleListVC.m */,
-				9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */,
-				9B7B0A0E15EB5BB9001C2E3E /* TACreateGuideVC.h */,
-				9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */,
-				9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */,
-				9BDEA9F615EC4B18000EF65F /* TALoginVC.h */,
-				9BDEA9F715EC4B18000EF65F /* TALoginVC.m */,
-				9BDEA9F815EC4B19000EF65F /* TALoginVC.xib */,
-				9BDEA9FB15EC59A1000EF65F /* TAGuideDetailsVC.h */,
-				9BDEA9FC15EC59A1000EF65F /* TAGuideDetailsVC.m */,
-				9BDEA9FD15EC59A1000EF65F /* TAGuideDetailsVC.xib */,
 				9BDEAA0015EC76F2000EF65F /* MainWindow.xib */,
+				9BD79FE815EDAAE40033EB64 /* TAMapVC.h */,
+				9BD79FE915EDAAE40033EB64 /* TAMapVC.m */,
+				9BD79FEA15EDAAE40033EB64 /* TAMapVC.xib */,
+				9BD79FF515EDB2C40033EB64 /* TACommentsVC.h */,
+				9BD79FF615EDB2C40033EB64 /* TACommentsVC.m */,
+				9BD79FF715EDB2C50033EB64 /* TACommentsVC.xib */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -542,6 +536,89 @@
 				9B3580C015E1F8DE007309C0 /* SBJsonWriter.m */,
 			);
 			name = JSON;
+			sourceTree = "<group>";
+		};
+		9BD7A00615EDD39F0033EB64 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				9BD79FF215EDAF070033EB64 /* MyMapAnnotation.h */,
+				9BD79FF315EDAF080033EB64 /* MyMapAnnotation.m */,
+				9BB4045815ECA3920080E00E /* City.h */,
+				9BB4045915ECA3920080E00E /* City.m */,
+				9BB4045515ECA3910080E00E /* Tag.h */,
+				9BB4045615ECA3910080E00E /* Tag.m */,
+				9BB4045215ECA3910080E00E /* Photo.h */,
+				9BB4045315ECA3910080E00E /* Photo.m */,
+				9BB4044F15ECA3900080E00E /* User.h */,
+				9BB4045015ECA3900080E00E /* User.m */,
+				9BB4044B15ECA3900080E00E /* Guide.h */,
+				9BB4044C15ECA3900080E00E /* Guide.m */,
+				9BDF043D15EAEC42008AFBE2 /* Notification.h */,
+				9BDF043E15EAEC42008AFBE2 /* Notification.m */,
+			);
+			name = Objects;
+			sourceTree = "<group>";
+		};
+		9BD7A00715EDD3BE0033EB64 /* Table Cells */ = {
+			isa = PBXGroup;
+			children = (
+				9BE61D7115E49BB3008A45D7 /* FastCell.h */,
+				9BE61D7215E49BB3008A45D7 /* FastCell.m */,
+				9BE61D6615E49659008A45D7 /* AsyncCell.h */,
+				9BE61D6715E49659008A45D7 /* AsyncCell.m */,
+			);
+			name = "Table Cells";
+			sourceTree = "<group>";
+		};
+		9BD7A00815EDD3E20033EB64 /* Forms */ = {
+			isa = PBXGroup;
+			children = (
+				9BDEA9F615EC4B18000EF65F /* TALoginVC.h */,
+				9BDEA9F715EC4B18000EF65F /* TALoginVC.m */,
+				9BDEA9F815EC4B19000EF65F /* TALoginVC.xib */,
+			);
+			name = Forms;
+			sourceTree = "<group>";
+		};
+		9BD7A00915EDD4E70033EB64 /* Guides */ = {
+			isa = PBXGroup;
+			children = (
+				9BE61D7415E4A091008A45D7 /* TAGuidesListVC.h */,
+				9BE61D7515E4A091008A45D7 /* TAGuidesListVC.m */,
+				9BE61D7615E4A092008A45D7 /* TAGuidesListVC.xib */,
+				9B7B0A0E15EB5BB9001C2E3E /* TACreateGuideVC.h */,
+				9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */,
+				9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */,
+				9BDEA9FB15EC59A1000EF65F /* TAGuideDetailsVC.h */,
+				9BDEA9FC15EC59A1000EF65F /* TAGuideDetailsVC.m */,
+				9BDEA9FD15EC59A1000EF65F /* TAGuideDetailsVC.xib */,
+			);
+			name = Guides;
+			sourceTree = "<group>";
+		};
+		9BD7A00A15EDD5200033EB64 /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				9BEF9C4115E3408A000AEE5E /* TAImageGridVC.h */,
+				9BEF9C4215E3408A000AEE5E /* TAImageGridVC.m */,
+				9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */,
+				9B7B0A0815EB49AB001C2E3E /* TASimpleListVC.h */,
+				9B7B0A0915EB49AB001C2E3E /* TASimpleListVC.m */,
+				9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */,
+			);
+			name = Templates;
+			sourceTree = "<group>";
+		};
+		9BD7A00B15EDD53F0033EB64 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				9BE61D7915E4B3E6008A45D7 /* TANotificationsVC.h */,
+				9BE61D7A15E4B3E6008A45D7 /* TANotificationsVC.m */,
+				9BE61D7B15E4B3E7008A45D7 /* TANotificationsVC.xib */,
+				9B09896915E74869005F53A1 /* TANotificationsManager.h */,
+				9B09896A15E74869005F53A1 /* TANotificationsManager.m */,
+			);
+			name = Notifications;
 			sourceTree = "<group>";
 		};
 		9BDEAA0715EC8856000EF65F /* Feed */ = {
@@ -763,6 +840,8 @@
 				9BDEAA0D15EC887B000EF65F /* TAExploreVC.xib in Resources */,
 				9BDEAA1315EC8899000EF65F /* TAShareVC.xib in Resources */,
 				9BDEAA1815EC8FEA000EF65F /* TAMyContentVC.xib in Resources */,
+				9BD79FEC15EDAAE50033EB64 /* TAMapVC.xib in Resources */,
+				9BD79FF915EDB2C50033EB64 /* TACommentsVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -863,6 +942,9 @@
 				9BB4045415ECA3910080E00E /* Photo.m in Sources */,
 				9BB4045715ECA3910080E00E /* Tag.m in Sources */,
 				9BB4045A15ECA3920080E00E /* City.m in Sources */,
+				9BD79FEB15EDAAE50033EB64 /* TAMapVC.m in Sources */,
+				9BD79FF415EDAF080033EB64 /* MyMapAnnotation.m in Sources */,
+				9BD79FF815EDB2C50033EB64 /* TACommentsVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

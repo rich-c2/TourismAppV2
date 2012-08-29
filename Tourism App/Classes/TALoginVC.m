@@ -168,6 +168,9 @@ static NSString *kSavedPasswordKey = @"savedPasswordKey";
 		// Store logged-in username
 		[appDelegate setLoggedInUsername:self.usernameField.text];
 		
+		// We are now logged-in: update the iVar
+		[appDelegate setUserLoggedIn:YES];
+		
 		// Show tab bar view controllers
         appDelegate.window.rootViewController = appDelegate.tabBarController;
         appDelegate.tabBarController.selectedIndex = 0;

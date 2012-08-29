@@ -17,9 +17,11 @@
 #import "JSONFetcher.h"
 #import "SBJson.h"
 #import "Guide.h"
+#import "Tag.h"
 
-NSString* const DEMO_PASSWORD = @"password";
-NSString* const DEMO_USERNAME = @"rich";
+
+NSString* const DEMO_PASSWORD = @"pass";
+NSString* const DEMO_USERNAME = @"fuzzyhead";
 NSString* const API_ADDRESS = @"http://want.supergloo.net.au/api/";
 NSString* const FRONT_END_ADDRESS = @"http://want.supergloo.net.au"; 
 NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
@@ -32,7 +34,7 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 @synthesize profileVC, notificationsVC, tabBarController;
 @synthesize sessionToken, loggedInUsername, loginVC;
-@synthesize feedVC, exploreVC, shareVC;
+@synthesize feedVC, exploreVC, shareVC, userLoggedIn;
 
 
 - (void)dealloc {
@@ -271,6 +273,22 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
 	// TEST LOGIN
 	//[self login];
+	
+	// Setup the pre-defined Tag objects in Core Data
+	[self initTags];
+}
+
+
+- (void)initTags {
+	
+	[Tag tagWithTitle:@"Bars" andID:1 inManagedObjectContext:self.managedObjectContext];
+	[Tag tagWithTitle:@"Cafes" andID:2 inManagedObjectContext:self.managedObjectContext];
+	[Tag tagWithTitle:@"Museums" andID:3 inManagedObjectContext:self.managedObjectContext];
+	[Tag tagWithTitle:@"Galleries" andID:4 inManagedObjectContext:self.managedObjectContext];
+	[Tag tagWithTitle:@"Restaurants" andID:5 inManagedObjectContext:self.managedObjectContext];
+	[Tag tagWithTitle:@"Sports" andID:6 inManagedObjectContext:self.managedObjectContext];
+	
+	[self saveContext];
 }
 
 
@@ -357,96 +375,6 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 
 
 #pragma LOGIN METHODS 
-
-- (void)login {
-	
-	//[self showLoading];
-	// D0!0d3s
-	
-	NSString *jsonString = [NSString stringWithFormat:@"username=%@&password=%@", DEMO_USERNAME, DEMO_PASSWORD];
-	
-	NSLog(@"newJSON:%@", jsonString);
-	
-	// Convert string to data for transmission
-    NSData *jsonData = [jsonString dataUsingEncoding:NSASCIIStringEncoding];
-	
-	NSURL *url = [self createRequestURLWithMethod:@"Login" testMode:NO];
-    
-    // Initialiase the URL Request
-	NSMutableURLRequest *request = [self createPostRequestWithURL:url postData:jsonData];
-	
-	// JSONFetcher
-    loginFetcher = [[JSONFetcher alloc] initWithURLRequest:request
-											 receiver:self
-											   action:@selector(receivedLoginResponse:)];
-    [loginFetcher start];
-}
-
-
-// Example fetcher response handling
-- (void)receivedLoginResponse:(HTTPFetcher *)aFetcher {
-    
-    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
-    
-	NSAssert(aFetcher == loginFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
-	
-	BOOL loginSuccess = NO;
-	
-	if ([theJSONFetcher.data length] > 0) {
-		
-		// Store incoming data into a string
-		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
-		
-		// Create a dictionary from the JSON string
-		NSDictionary *results = [jsonString JSONValue];
-		
-		for (int i = 0; i < [[results allKeys] count]; i++) {
-			
-			NSString *key = [[results allKeys] objectAtIndex:i];
-			NSString *value = [results objectForKey:key];
-			
-			if ([key isEqualToString:@"result"]) loginSuccess = (([value isEqualToString:@"ok"]) ? YES : NO);
-			
-			// Pass the token value to the AppDelegate to be stored as 
-			// the session token for all API calls
-			else if ([key isEqualToString:@"token"]) [self setToken:[results objectForKey:key]];
-		}
-		
-		[jsonString release];
-	}
-	
-	NSString *message;
-	
-	// Login credentials were given the tick of approval by the API
-	// tell the delegate to animate this form out
-	if (loginSuccess) {
-		
-		message = @"Your login attempt was successful.";
-		
-		// Store logged-in username
-		[self setLoggedInUsername:DEMO_USERNAME];
-		
-		// Init notifications manager 
-		// This is a test setup for now. 
-		[self initNotificationsManager];
-	}
-	
-	else message = @"There was an error logging you in.";
-	
-	
-	UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Login result"
-														message:message
-													   delegate:nil
-											  cancelButtonTitle:@"OK"
-											  otherButtonTitles:nil];
-	[av show];
-	[av release];
-
-	[loginFetcher release];
-	loginFetcher = nil;
-    
-}
-
 
 - (NSArray *)serializeGuideData:(NSArray *)newGuides {
 	

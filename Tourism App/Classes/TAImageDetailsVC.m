@@ -3,7 +3,7 @@
 //  Tourism App
 //
 //  Created by Richard Lee on 27/08/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2012 C2 Media Pty Ltd. All rights reserved.
 //
 
 #import "TAImageDetailsVC.h"
@@ -15,6 +15,8 @@
 #import "ImageManager.h"
 #import "TASimpleListVC.h"
 #import "TAGuidesListVC.h"
+#import "TAMapVC.h"
+#import "TAProfileVC.h"
 
 @interface TAImageDetailsVC ()
 
@@ -22,7 +24,7 @@
 
 @implementation TAImageDetailsVC
 
-@synthesize scrollView, progressIndicator, avatar, imageCode;
+@synthesize scrollView, progressIndicator, avatar, imageCode, usernameByline;
 @synthesize usernameBtn, subtitle, mainPhoto, imageData, avatarURL, selectedURL;
 @synthesize captionLabel, loveBtn, mapBtn, commentBtn, lovesCountBtn;
 
@@ -65,6 +67,9 @@
 
 
 - (void)viewDidUnload {
+	
+	[usernameByline release];
+	self.usernameByline = nil;
 	
 	[lovesCountBtn release];
 	self.lovesCountBtn = nil;
@@ -120,6 +125,7 @@
 
 - (void)dealloc {
 	
+	[usernameByline release]; 
 	[selectedURL release];
 	[avatarURL release];
 	[imageData release];
@@ -143,9 +149,91 @@
 	if (!loading && !imageLoaded) {
 	
 		[self initMediaAPI];
+		
+		[self initIsLovedAPI];
 	}
 	
 	[super viewWillAppear:animated];
+}
+
+
+#pragma UIActionSheetDelegate methods 
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	
+	// Share on Twitter
+	if (buttonIndex == 0) [self showTweetSheet:nil];
+	
+	// Vouch
+	else if (buttonIndex == 1) {
+	
+		[self initVouchAPI];
+	}
+	
+}
+
+
+#pragma Twitter Framework methods
+
+- (IBAction)showTweetSheet:(id)sender {
+	
+    //  Create an instance of the Tweet Sheet
+    TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
+	
+    // Sets the completion handler.  Note that we don't know which thread the
+    // block will be called on, so we need to ensure that any UI updates occur
+    // on the main queue
+    tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result) {
+		
+		NSString *resultOutput;
+		
+        switch(result) {
+            case TWTweetComposeViewControllerResultCancelled:
+                //  This means the user cancelled without sending the Tweet
+				resultOutput = @"Tweet cancelled.";
+                break;
+            case TWTweetComposeViewControllerResultDone:
+				
+                //  This means the user hit 'Send'
+				resultOutput = @"You successfully shared this photo on Twitter.";
+                break;
+        }
+		
+		[self performSelectorOnMainThread:@selector(displayTweetResult:) withObject:resultOutput waitUntilDone:NO];
+		
+        //  dismiss the Tweet Sheet 
+        dispatch_async(dispatch_get_main_queue(), ^{            
+            [self dismissViewControllerAnimated:YES completion:^{
+                NSLog(@"Tweet Sheet has been dismissed."); 
+            }];
+        });
+    };
+	
+    //  Set the initial body of the Tweet
+    [tweetSheet setInitialText:@"Check out the photo I took on Tourism App:"]; 
+	
+    //  Adds an image to the Tweet
+    if (![tweetSheet addImage:self.mainPhoto.image]) {
+        NSLog(@"Unable to add the image!");
+    }
+	
+    //  Add an URL to the Tweet. You can add multiple URLs.
+    /*if (![tweetSheet addURL:[NSURL URLWithString:@"http://twitter.com/"]]){
+	 NSLog(@"Unable to add the URL!");
+	 }*/
+	
+    //  Presents the Tweet Sheet to the user
+    [self presentViewController:tweetSheet animated:NO completion:^{
+        NSLog(@"Tweet sheet has been presented.");
+    }];
+}
+
+
+- (void)displayTweetResult:(NSString *)output {
+	
+	UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Twitter" message:output delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+	[av show];
+	[av release];
 }
 
 
@@ -164,6 +252,8 @@
 		[self initAvatarImage:avatarURLString];
 		
 		[self.usernameBtn setTitle:[userDict objectForKey:@"username"] forState:UIControlStateNormal];
+		
+		[self.usernameByline setTitle:[userDict objectForKey:@"username"] forState:UIControlStateNormal];
 	}
 	
 
@@ -231,7 +321,7 @@
 	
 	NSAssert(aFetcher == mediaFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	//NSLog(@"PRINTING RECOMMENDATIONS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING MEDIA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
 	loading = NO;
 	
@@ -248,7 +338,7 @@
 		// Build an array from the dictionary for easy access to each entry
 		self.imageData = [results objectForKey:@"media"];
 		
-		NSLog(@"imageData:%@", self.imageData);
+		NSLog(@"MEDIA imageData:%@", self.imageData);
 		
 		[jsonString release];
 	}
@@ -339,18 +429,331 @@
 }
 
 
+- (IBAction)mapButtonTapped:(id)sender {
+	
+	NSDictionary *locationData = [self.imageData objectForKey:@"location"];
+	
+	TAMapVC *mapVC = [[TAMapVC alloc] initWithNibName:@"TAMapVC" bundle:nil];
+	[mapVC setLocationData:locationData];
+	[mapVC setMapMode:MapModeSingle];
+	
+	[self.navigationController pushViewController:mapVC animated:YES];
+	[mapVC release];
+}
+
+
 - (void)addPhotoToGuide:(id)sender {
 	
 	NSDictionary *userDict = [self.imageData objectForKey:@"user"];
+	NSNumber *tagID = [NSNumber numberWithInt:[[self.imageData objectForKey:@"tag"] intValue]];
 
 	TAGuidesListVC *guidesVC = [[TAGuidesListVC alloc] initWithNibName:@"TAGuidesListVC" bundle:nil];
 	[guidesVC setUsername:[userDict objectForKey:@"username"]];
 	[guidesVC setGuidesMode:GuidesModeAddTo];
-	[guidesVC setSelectedTag:[self.imageData objectForKey:@"tag"]];
+	[guidesVC setSelectedTagID:tagID];
 	[guidesVC setSelectedCity:[self.imageData objectForKey:@"city"]];
+	[guidesVC setSelectedPhotoID:[self.imageData objectForKey:@"code"]];
 	
 	[self.navigationController pushViewController:guidesVC animated:YES];
 	[guidesVC release];
+}
+
+
+- (IBAction)loveButtonTapped:(id)sender {
+
+	if (isLoved) [self initUnloveAPI];
+	
+	else [self initLoveAPI];
+}
+
+
+- (void)initLoveAPI {
+	
+	[self.loveBtn setEnabled:NO]; 
+	
+	// Create API parameters
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, self.imageCode, [self appDelegate].sessionToken];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Love"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	loveFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												 receiver:self action:@selector(receivedLoveResponse:)];
+	[loveFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedLoveResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == loveFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// The "Love" request was successfull
+	// Now update the iVar and UI
+	if (success) {
+		
+		isLoved = YES;
+		
+		[self updateLovedStatus];
+	}
+	
+	// This is to update the correct "ImageView" when viewing a bunch
+	// of images within a "Timeline" view controller
+	//if (success) [self updateImageViewWithImageID:imageID loveStatus:NO];
+	
+	[loveFetcher release];
+	loveFetcher = nil;
+    
+}
+
+
+- (void)initUnloveAPI {
+	
+	[self.loveBtn setEnabled:NO]; 
+	
+	// Create API parameters
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, self.imageCode, [self appDelegate].sessionToken];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"UnLove"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	loveFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													receiver:self action:@selector(receivedUnloveResponse:)];
+	[loveFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedUnloveResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == loveFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+
+	// The "UnLove" request was successfull
+	// Now update the iVar and UI
+	if (success) {
+	
+		isLoved = NO;
+		
+		[self updateLovedStatus];
+	}
+	
+	// This is to update the correct "ImageView" when viewing a bunch
+	// of images within a "Timeline" view controller
+	//if (success) [self updateImageViewWithImageID:imageID loveStatus:NO];
+	
+	[loveFetcher release];
+	loveFetcher = nil;
+    
+}
+
+
+- (void)initIsLovedAPI {
+	
+	[self.loveBtn setEnabled:NO]; 
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@", [self appDelegate].loggedInUsername, self.imageCode];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"isLoved"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	isLovedFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self action:@selector(receivedIsLovedResponse:)];
+	[isLovedFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedIsLovedResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+	NSAssert(aFetcher == isLovedFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"loved"] isEqualToString:@"true"]) isLoved = YES;
+		
+		NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// Loved status
+	[self updateLovedStatus];
+	
+	[isLovedFetcher release];
+	isLovedFetcher = nil;
+    
+}
+
+
+/*	This function is called once an isLovedResponse is received from
+ the API. It uses the value of the lovesImage iVar to then set 
+ the title of loveButton button. The loveButton is then enable for interaction */
+- (void)updateLovedStatus {
+	
+	NSString *status = [NSString stringWithFormat:@"%@", ((isLoved) ? @"loved" : @"love")];
+	
+	// Update love button title
+	[self.loveBtn setTitle:status forState:UIControlStateNormal];
+	
+	// update the background colour of the button
+	UIColor *newColor;
+	if (isLoved) newColor = [UIColor redColor];
+	else newColor = [UIColor lightGrayColor];
+	
+	[self.loveBtn setBackgroundColor:newColor];
+	
+	// Re-enable the button
+	[self.loveBtn setEnabled:YES];
+}
+
+
+// NOT YET TESTED!
+- (void)initVouchAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, self.imageCode, [[self appDelegate] sessionToken]];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Vouch"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	vouchFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													receiver:self action:@selector(receivedVouchResponse:)];
+	[vouchFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedVouchResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == vouchFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"VOUCH jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// The "Love" request was successfull
+	// Now update the iVar and UI
+	/*if (success) {
+		
+		isLoved = YES;
+		
+		[self updateLovedStatus];
+	}*/
+	
+	// This is to update the correct "ImageView" when viewing a bunch
+	// of images within a "Timeline" view controller
+	//if (success) [self updateImageViewWithImageID:imageID loveStatus:NO];
+	
+	[vouchFetcher release];
+	vouchFetcher = nil;
+    
+}
+
+
+- (IBAction)usernameButtonTapped:(id)sender {
+	
+	NSDictionary *userDict = [self.imageData objectForKey:@"user"];
+	
+	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+	[profileVC setUsername:[userDict objectForKey:@"username"]];
+	
+	[self.navigationController pushViewController:profileVC animated:YES];
+	[profileVC release];
+}
+
+
+- (IBAction)optionsButtonTapped:(id)sender {
+
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Share on Twitter", @"Vouch", nil];
+	
+	[actionSheet showInView:[self view]];
+	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
+    [actionSheet release];
 }
 
 

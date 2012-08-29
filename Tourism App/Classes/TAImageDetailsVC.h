@@ -7,20 +7,26 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Twitter/Twitter.h>
+#import <Accounts/Accounts.h>
 
 @class JSONFetcher;
 
-@interface TAImageDetailsVC : UIViewController {
+@interface TAImageDetailsVC : UIViewController <UIActionSheetDelegate> {
 	
 	// Data
 	NSString *imageCode;
 	JSONFetcher *mediaFetcher;
+	JSONFetcher *isLovedFetcher;
+	JSONFetcher *loveFetcher;
+	JSONFetcher *vouchFetcher;
 	NSDictionary *imageData;
 	NSURL *avatarURL;
 	NSURL *selectedURL;
 	
 	BOOL imageLoaded;
 	BOOL loading;
+	BOOL isLoved;
 
 	IBOutlet UIScrollView *scrollView;
 	
@@ -37,6 +43,7 @@
 	IBOutlet UIButton *mapBtn;
 	IBOutlet UIButton *commentBtn;
 	IBOutlet UIButton *lovesCountBtn;
+	IBOutlet UIButton *usernameByline;
 	
 }
 
@@ -60,7 +67,12 @@
 @property (nonatomic, retain) IBOutlet UIButton *mapBtn;
 @property (nonatomic, retain) IBOutlet UIButton *commentBtn;
 @property (nonatomic, retain) IBOutlet UIButton *lovesCountBtn;
+@property (nonatomic, retain) IBOutlet UIButton *usernameByline;
 
 - (IBAction)lovesCountButtonTapped:(id)sender;
+- (IBAction)loveButtonTapped:(id)sender;
+- (IBAction)mapButtonTapped:(id)sender;
+- (IBAction)optionsButtonTapped:(id)sender;
+- (IBAction)usernameButtonTapped:(id)sender;
 
 @end
