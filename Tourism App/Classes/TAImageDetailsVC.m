@@ -17,6 +17,8 @@
 #import "TAGuidesListVC.h"
 #import "TAMapVC.h"
 #import "TAProfileVC.h"
+#import "TACommentsVC.h"
+#import "TAImageGridVC.h"
 
 @interface TAImageDetailsVC ()
 
@@ -118,10 +120,12 @@
     [super viewDidUnload];
 }
 
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
+
 
 - (void)dealloc {
 	
@@ -151,6 +155,8 @@
 		[self initMediaAPI];
 		
 		[self initIsLovedAPI];
+		
+		[self initIsVouchedAPI];
 	}
 	
 	[super viewWillAppear:animated];
@@ -167,9 +173,9 @@
 	// Vouch
 	else if (buttonIndex == 1) {
 	
-		[self initVouchAPI];
+		if (isVouched)[self initUnvouchAPI];
+		else [self initVouchAPI];
 	}
-	
 }
 
 
@@ -672,7 +678,7 @@
 }
 
 
-// NOT YET TESTED!
+// TESTED!
 - (void)initVouchAPI {
 	
 	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, self.imageCode, [[self appDelegate] sessionToken]];	
@@ -716,14 +722,14 @@
 		[jsonString release];
 	}
 	
-	// The "Love" request was successfull
+	// The "Vouch" request was successfull
 	// Now update the iVar and UI
-	/*if (success) {
+	if (success) {
 		
-		isLoved = YES;
+		isVouched = YES;
 		
-		[self updateLovedStatus];
-	}*/
+		//[self updateLovedStatus];
+	}
 	
 	// This is to update the correct "ImageView" when viewing a bunch
 	// of images within a "Timeline" view controller
@@ -731,6 +737,120 @@
 	
 	[vouchFetcher release];
 	vouchFetcher = nil;
+    
+}
+
+
+// TESTED!
+- (void)initUnvouchAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, self.imageCode, [[self appDelegate] sessionToken]];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Unvouch"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	vouchFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self action:@selector(receivedUnvouchResponse:)];
+	[vouchFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedUnvouchResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == vouchFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"UNVOUCH jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// The "Unvouch" request was successfull
+	// Now update the iVar and UI
+	if (success) {
+		
+		isVouched = NO;
+		
+		//[self updateLovedStatus];
+	}
+	
+	// This is to update the correct "ImageView" when viewing a bunch
+	// of images within a "Timeline" view controller
+	//if (success) [self updateImageViewWithImageID:imageID loveStatus:NO];
+	
+	[vouchFetcher release];
+	vouchFetcher = nil;
+}
+
+
+// TESTED!
+- (void)initIsVouchedAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@", [self appDelegate].loggedInUsername, self.imageCode];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"isvouched"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	isVouchedFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self action:@selector(receivedIsVouchedResponse:)];
+	[isVouchedFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedIsVouchedResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+	NSAssert(aFetcher == isVouchedFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"vouched"] isEqualToString:@"true"]) isVouched = YES;
+		
+		NSLog(@"ISVOUCHED jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// Loved status
+	//[self updateLovedStatus];
+	
+	[isVouchedFetcher release];
+	isVouchedFetcher = nil;
     
 }
 
@@ -748,12 +868,37 @@
 
 
 - (IBAction)optionsButtonTapped:(id)sender {
+	
+	NSString *vouchStatus = ((isVouched) ? @"Unvouch" : @"Vouch");
 
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Share on Twitter", @"Vouch", nil];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Share on Twitter", vouchStatus, nil];
 	
 	[actionSheet showInView:[self view]];
 	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
     [actionSheet release];
+}
+
+
+- (IBAction)viewComments:(id)sender {
+
+	TACommentsVC *commentsVC = [[TACommentsVC alloc] initWithNibName:@"TACommentsVC" bundle:nil];
+	[commentsVC setImageCode:self.imageCode];
+	[self.navigationController pushViewController:commentsVC animated:YES];
+	[commentsVC release];
+}
+
+
+- (IBAction)cityTagTapped:(id)sender {
+	
+	NSNumber *tagID = [NSNumber numberWithInt:[[self.imageData objectForKey:@"tag"] intValue]];
+	
+	TAImageGridVC *imageGridVC = [[TAImageGridVC alloc] initWithNibName:@"TAImageGridVC" bundle:nil];
+	[imageGridVC setImagesMode:ImagesModeCityTag];
+	[imageGridVC setTagID:tagID];
+	[imageGridVC setCity:[self.imageData objectForKey:@"city"]];
+	
+	[self.navigationController pushViewController:imageGridVC animated:YES];
+	[imageGridVC release];
 }
 
 

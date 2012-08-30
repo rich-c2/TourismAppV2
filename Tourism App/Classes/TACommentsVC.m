@@ -76,7 +76,7 @@
 	
 		loading = YES;
 		
-		//[self initCommentsAPI];
+		[self initCommentsAPI];
 	}
 }
 

@@ -14,6 +14,7 @@
 #import "GridImage.h"
 #import "TAProfileVC.h"
 #import "TAImageDetailsVC.h"
+#import "TAMapVC.h"
 
 #define IMAGE_VIEW_TAG 7000
 #define GRID_IMAGE_WIDTH 75.0
@@ -132,6 +133,17 @@
 		if (isLoved) [self initUnloveAPI];
 		
 		else [self initLoveAPI];
+	}
+	
+	// View on map
+	else if (buttonIndex == 1) { 
+	
+		TAMapVC *mapVC = [[TAMapVC alloc] initWithNibName:@"TAMapVC" bundle:nil];
+		[mapVC setMapMode:MapModeMultiple];
+		[mapVC setPhotos:self.images];
+		
+		[self.navigationController pushViewController:mapVC animated:YES];
+		[mapVC release];
 	}
 }
 
@@ -501,7 +513,7 @@
 	
 	NSString *loveStatus = ((isLoved) ? @"Unlove" : @"Love");
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:loveStatus, nil];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:loveStatus, @"View on map", nil];
 	
 	[actionSheet showInView:[self view]];
 	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];

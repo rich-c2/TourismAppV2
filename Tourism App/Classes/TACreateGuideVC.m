@@ -12,6 +12,7 @@
 #import "SVProgressHUD.h"
 #import "JSONFetcher.h"
 #import "TAAppDelegate.h"
+#import "TAUsersVC.h"
 
 @interface TACreateGuideVC ()
 
@@ -19,7 +20,7 @@
 
 @implementation TACreateGuideVC
 
-@synthesize imageCode, titleField, guideTagID, guideCity;
+@synthesize imageCode, titleField, guideTagID, guideCity, recommendToUsernames;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -50,6 +51,7 @@
 	self.titleField = nil;
 	
 	self.imageCode = nil;
+	self.recommendToUsernames = nil;
 	
 	self.guideTagID = nil; 
 	self.guideCity = nil;
@@ -65,12 +67,23 @@
 
 - (void)dealloc {
 	
+	[recommendToUsernames release];
 	[guideTagID release]; 
 	[guideCity release];
 
 	[imageCode release];
 	[titleField release];
 	[super dealloc];
+}
+
+
+#pragma RecommendsDelegate methods
+
+- (void)recommendToUsernames:(NSMutableArray *)usernames {
+
+	// Retain the usernames that were selected 
+	// for this Guide to be recommend to
+	self.recommendToUsernames = usernames;
 }
 
 
@@ -162,6 +175,14 @@
 	else responseMessage = @"There was an error saving your guide.";
 	
 	
+	// FOR NOW: Kick off the "Recommend" API on the back of this one.
+	// These two function will probably have to be combined
+	if (submissionSuccess && [self.recommendToUsernames count] > 0) {
+	
+		[self initRecommendAPI:[guideData objectForKey:@"guideID"]];
+	}
+	
+	
 	// Show pop up for submission result
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:responseTitle
 														message:responseMessage
@@ -179,14 +200,77 @@
 		//[self.navigationController popToRootViewControllerAnimated:YES];
 	}
 	
+	// Clean up
+	[fetcher release];
+	fetcher = nil;
+    
+}
+
+
+- (void)initRecommendAPI:(NSString *)guideID {
+	
+	NSString *username = [self appDelegate].loggedInUsername;
+	NSString *usernames = [self.recommendToUsernames componentsJoinedByString:@","];
+	
+	NSString *postString = [NSString stringWithFormat:@"type=guide&username=%@&code=%@&usernames=%@&token=%@", username, guideID, usernames, [self appDelegate].sessionToken];
+	
+	NSLog(@"ADD GUIDE DATA:%@", postString);
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"recommend"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	recommendFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+											 receiver:self
+											   action:@selector(receivedRecommendResponse:)];
+	[recommendFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedRecommendResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSLog(@"RECOMMEND RESPONSE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == recommendFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	// New image data;
+	//NSDictionary *guideData;
+	//BOOL submissionSuccess;
+	
+	if ([theJSONFetcher.data length] > 0) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) {
+			
+			//submissionSuccess = YES;
+			
+			//guideData = [results objectForKey:@"guide"];
+		}
+		
+		[jsonString release];
+	}
+	
 	
 	// Hide loading animation
 	[self hideLoading];
 	
 	// Clean up
-	[fetcher release];
-	fetcher = nil;
-    
+	[recommendFetcher release];
+	recommendFetcher = nil;
 }
 
 
@@ -199,6 +283,18 @@
 - (void)hideLoading {
 	
 	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
+}
+
+
+- (IBAction)recommendButtonTapped:(id)sender {
+
+	TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
+	[usersVC setUsersMode:UsersModeRecommendTo];
+	[usersVC setSelectedUsername:[self appDelegate].loggedInUsername];
+	[usersVC setDelegate:self];
+	
+	[self.navigationController pushViewController:usersVC animated:YES];
+	[usersVC release];
 }
 
 

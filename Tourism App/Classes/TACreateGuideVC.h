@@ -7,12 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TAUsersVC.h"
 
 @class JSONFetcher;
 
-@interface TACreateGuideVC : UIViewController {
+@interface TACreateGuideVC : UIViewController <RecommendsDelegate> {
 
 	JSONFetcher *fetcher;
+	JSONFetcher *recommendFetcher;
+	
+	NSMutableArray *recommendToUsernames;
 	
 	NSString *imageCode;
 	NSNumber *guideTagID;
@@ -21,6 +25,8 @@
 	IBOutlet UITextField *titleField;
 }
 
+@property (nonatomic, retain) NSMutableArray *recommendToUsernames;
+
 @property (nonatomic, retain) NSString *imageCode;
 @property (nonatomic, retain) NSNumber *guideTagID;
 @property (nonatomic, retain) NSString *guideCity;
@@ -28,5 +34,6 @@
 @property (nonatomic, retain) IBOutlet UITextField *titleField;
 
 - (IBAction)submitButtonTapped:(id)sender;
+- (IBAction)recommendButtonTapped:(id)sender;
 
 @end

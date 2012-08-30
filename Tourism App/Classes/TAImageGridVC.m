@@ -27,6 +27,7 @@
 
 @implementation TAImageGridVC
 
+@synthesize tagID, tag, city;
 @synthesize imagesView, gridScrollView, loadMoreButton;
 @synthesize images, username, imagesMode;
 
@@ -47,7 +48,7 @@
     fetchSize = 12;
 	
 	// Init array
-	self.images = [NSMutableArray array];
+	//self.images = [NSMutableArray array];
 }
 
 
@@ -58,6 +59,10 @@
 }
 
 - (void)viewDidUnload {
+	
+	self.tagID = nil; 
+	self.tag = nil; 
+	self.city = nil;
 	
 	self.images = nil;
 	self.username = nil;
@@ -79,6 +84,10 @@
 
 - (void)dealloc {
 	
+	[tagID release]; 
+	[tag release]; 
+	[city release];
+	
 	[username release];
 	[images release];
     [gridScrollView release];
@@ -92,10 +101,39 @@
 	[super viewWillAppear:animated];
 	
 	if (!loading && !imagesLoaded) {
-	
-		if (self.imagesMode == ImagesModeMyPhotos) [self initUploadsAPI];
 		
-		else if (self.imagesMode == ImagesModeLikedPhotos) [self initLovedAPI];
+		switch (self.imagesMode) {
+				
+			case ImagesModeMyPhotos:
+				[self initUploadsAPI];
+				break;
+				
+			case ImagesModeLikedPhotos:
+				[self initLovedAPI];
+				break;
+				
+			case ImagesModeCityTag:
+				
+				if (!self.images) 
+					[self initFindMediaAPI];
+				else {
+					
+					// update the page index for 
+					// the next batch
+					imagesPageIndex++;
+					
+					// Re-enable the "load more" button
+					[self.loadMoreButton setEnabled:YES];
+					
+					// Update the image grid
+					[self updateImageGrid];
+				}
+				
+				break;
+				
+			default:
+				break;
+		}
 	}
 }
 
@@ -137,6 +175,69 @@
 
 #pragma MY-METHODS
 
+
+- (void)initFindMediaAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&pg=%i&sz=%i&token=%@", [self appDelegate].loggedInUsername, [self.tagID intValue], self.city, imagesPageIndex, fetchSize, [[self appDelegate] sessionToken]];
+	NSLog(@"jsonString:%@", jsonString);
+	
+	// Convert string to data for transmission
+	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"FindMedia"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Create URL request with URL and the JSON data
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+	imagesFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self
+													action:@selector(receivedFindMediaResponse:)];
+	[imagesFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedFindMediaResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == imagesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	//NSLog(@"PRINTING FIND MEDIA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	
+	loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        imagesLoaded = YES;
+		
+		// Store incoming data into a string
+		// Create a dictionary from the JSON string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		NSDictionary *results = [jsonString JSONValue];
+		[jsonString release];
+		
+		NSArray *imagesArray = [results objectForKey:@"media"];
+		[self.images addObjectsFromArray:imagesArray];
+		
+		//NSLog(@"IMAGES:%@", self.images);
+		
+		[self userUploadsRequestFinished];
+    }
+	
+	// hide loading
+	[self hideLoading];
+    
+    [imagesFetcher release];
+    imagesFetcher = nil;
+}
+
+
 - (IBAction)loadMoreButtonClicked:(id)sender {
 	
 	[self.loadMoreButton setEnabled:NO];
@@ -149,6 +250,8 @@
 	
 	// Make a new call to the Uploads API
 	if (self.imagesMode == ImagesModeMyPhotos) [self initUploadsAPI];
+	
+	else if (self.imagesMode == ImagesModeCityTag) [self initFindMediaAPI];
 }
 
 

@@ -19,6 +19,7 @@ typedef enum {
 	MapMode mapMode;
 
 	NSDictionary *locationData;
+	NSArray *photos;
 	
 	IBOutlet MKMapView *map;
 }
@@ -28,6 +29,7 @@ typedef enum {
 @property (nonatomic, retain) IBOutlet MKMapView *map;
 
 @property (nonatomic, retain) NSDictionary *locationData;
+@property (nonatomic, retain) NSArray *photos;
 
 
 @end

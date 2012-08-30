@@ -41,7 +41,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 	
-	self.guides = [NSMutableArray array];
+	//self.guides = [NSMutableArray array];
 }
 
 - (void)viewDidUnload {
@@ -72,10 +72,31 @@
 	if (!loading && !guidesLoaded) { 
 		
 		[self showLoading];
-	
-		if (self.guidesMode == GuidesModeFollowing) [self initFollowedGuidesAPI];
 		
-		else [self initMyGuidesAPI];
+		switch (self.guidesMode) {
+				
+			case GuidesModeFollowing:
+				[self initFollowedGuidesAPI];
+				break;
+				
+			case GuidesModeViewing:
+				[self initMyGuidesAPI];
+				break;
+				
+			case GuidesModeMyGuides:
+				[self initMyGuidesAPI];
+				break;
+				
+			case GuidesModeAddTo:
+				[self initMyGuidesAPI];
+				break;
+				
+			default:
+				NSLog(@"HERE ARE THE GUIDES:%@", self.guides);
+				[self.guidesTable reloadData];
+				[self hideLoading];
+				break;
+		}
 	}
 }
 
@@ -205,6 +226,8 @@
 		if (self.guidesMode == GuidesModeMyGuides) [guideDetailsVC setGuideMode:GuideModeCreated];
 		
 		else if (self.guidesMode == GuidesModeViewing) [guideDetailsVC setGuideMode:GuideModeViewing];
+		
+		else if (self.guidesMode == GuidesModeSearchResults) [guideDetailsVC setGuideMode:GuideModeViewing];
 		
 		[self.navigationController pushViewController:guideDetailsVC animated:YES];
 		[guideDetailsVC release];

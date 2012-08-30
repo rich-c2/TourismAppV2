@@ -224,7 +224,6 @@
 								<string key="NSFrame">{{190, 449}, {94, 24}}</string>
 								<reference key="NSSuperview" ref="316212522"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MC42IDAuNiAwLjYAA</bytes>
@@ -473,6 +472,15 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">cityTagTapped:</string>
+						<reference key="source" ref="1039445868"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">42</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">usernameButtonTapped:</string>
 						<reference key="source" ref="76730408"/>
 						<reference key="destination" ref="372490531"/>
@@ -482,12 +490,30 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">viewComments:</string>
+						<reference key="source" ref="170971718"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">40</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">loveButtonTapped:</string>
 						<reference key="source" ref="338272173"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
 					<int key="connectionID">33</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">viewComments:</string>
+						<reference key="source" ref="599936865"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">41</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -656,7 +682,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">39</int>
+			<int key="maxID">42</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -669,6 +695,7 @@
 						<string key="mapButtonTapped:">id</string>
 						<string key="optionsButtonTapped:">id</string>
 						<string key="usernameButtonTapped:">id</string>
+						<string key="viewComments:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="loveButtonTapped:">
@@ -689,6 +716,10 @@
 						</object>
 						<object class="IBActionInfo" key="usernameButtonTapped:">
 							<string key="name">usernameButtonTapped:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="viewComments:">
+							<string key="name">viewComments:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>

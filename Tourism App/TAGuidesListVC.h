@@ -14,7 +14,8 @@ typedef enum  {
 	GuidesModeMyGuides = 0,
 	GuidesModeFollowing = 1,
 	GuidesModeViewing = 2,
-	GuidesModeAddTo = 3
+	GuidesModeAddTo = 3,
+	GuidesModeSearchResults = 4
 } GuidesMode;
 
 @interface TAGuidesListVC : UIViewController {

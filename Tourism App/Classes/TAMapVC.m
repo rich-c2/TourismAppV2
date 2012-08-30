@@ -15,7 +15,7 @@
 
 @implementation TAMapVC
 
-@synthesize map, mapMode, locationData;
+@synthesize map, mapMode, locationData, photos;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -34,6 +34,7 @@
 
 - (void)viewDidUnload {
 	
+	self.photos = nil;
 	self.locationData = nil; 
 	
     [map release];
@@ -49,6 +50,7 @@
 
 - (void)dealloc {
 	
+	[photos release];
 	[locationData release];
     [map release];
     [super dealloc];
@@ -61,6 +63,8 @@
 	
 	if (self.mapMode == MapModeSingle) 
 		[self initSingleLocation];
+	else if (self.mapMode == MapModeMultiple) 
+		[self initMapLocations];
 }
 
 
@@ -122,6 +126,44 @@
 	MyMapAnnotation *mapAnnotation = [[MyMapAnnotation alloc] initWithCoordinate:coordLocation title:title];
 	[self.map addAnnotation:mapAnnotation];
 	[mapAnnotation release];
+}
+
+
+- (void)initMapLocations {
+	
+	// Map type
+	self.map.mapType = MKMapTypeStandard;
+	
+	/*Region and Zoom*/
+	MKCoordinateRegion region;
+	MKCoordinateSpan span;
+	span.latitudeDelta = 0.09;
+	span.longitudeDelta = 0.09;
+
+	for (int i = 0; i < [self.photos count]; i++) {
+		
+		NSDictionary *photoDict = [self.photos objectAtIndex:i];
+		NSDictionary *locationDict = [photoDict objectForKey:@"location"];
+		
+		CLLocationCoordinate2D coordLocation;
+		coordLocation.latitude = [[locationDict objectForKey:@"latitude"] doubleValue];
+		coordLocation.longitude = [[locationDict objectForKey:@"longitude"] doubleValue];
+		
+		if (i == 0) {
+		
+			region.span = span;
+			region.center = coordLocation;
+			
+			[self.map setRegion:region animated:TRUE];
+			[self.map regionThatFits:region];
+		}
+	
+		NSString *title = @"Test pin";
+		
+		MyMapAnnotation *mapAnnotation = [[MyMapAnnotation alloc] initWithCoordinate:coordLocation title:title];
+		[self.map addAnnotation:mapAnnotation];
+		[mapAnnotation release];
+	}
 }
 
 

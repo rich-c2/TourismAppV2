@@ -20,13 +20,20 @@
 	JSONFetcher *isLovedFetcher;
 	JSONFetcher *loveFetcher;
 	JSONFetcher *vouchFetcher;
+	JSONFetcher *isVouchedFetcher;
+	
 	NSDictionary *imageData;
 	NSURL *avatarURL;
 	NSURL *selectedURL;
 	
+	
+	// Loading iVars
 	BOOL imageLoaded;
 	BOOL loading;
+	
+	// Loved/Vouched
 	BOOL isLoved;
+	BOOL isVouched;
 
 	IBOutlet UIScrollView *scrollView;
 	
@@ -74,5 +81,6 @@
 - (IBAction)mapButtonTapped:(id)sender;
 - (IBAction)optionsButtonTapped:(id)sender;
 - (IBAction)usernameButtonTapped:(id)sender;
+- (IBAction)viewComments:(id)sender;
 
 @end

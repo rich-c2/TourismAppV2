@@ -12,6 +12,7 @@
 #import "SBJson.h"
 #import "TAProfileVC.h"
 #import "TAAppDelegate.h"
+#import "Tag.h"
 
 @interface TASimpleListVC ()
 
@@ -19,7 +20,7 @@
 
 @implementation TASimpleListVC
 
-@synthesize listItems, imageCode, listMode, listTable;
+@synthesize listItems, imageCode, listMode, listTable, managedObjectContext, delegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -48,12 +49,11 @@
 	
 	self.imageCode = nil;
 	self.listItems = nil;
+	self.managedObjectContext = nil;
 	
 	[listTable release];
 	listTable = nil;
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -75,12 +75,15 @@
 		
 		if (self.listMode == ListModeLovedBy) 
 			[self initLovedByAPI];
+		else if (self.listMode == ListModeTags) 
+			[self fetchTags];
 	}
 }
 
 
 - (void)dealloc {
 	
+	[managedObjectContext release];
 	[imageCode release];
 	[listItems release];
 	[listTable release];
@@ -104,10 +107,25 @@
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
-    // Retrieve the Dictionary at the given index that's in self.users
-	NSDictionary *user = [self.listItems objectAtIndex:[indexPath row]];
+	NSString *cellText;
+	    
+	if (self.listMode == ListModeLovedBy) {
+		
+		// Retrieve the Dictionary at the given index that's in self.users
+		NSDictionary *item = [self.listItems objectAtIndex:[indexPath row]];
+		
+		cellText = [item objectForKey:@"username"];
+	}
 	
-	cell.textLabel.text = [user objectForKey:@"username"];
+	// Tag mode - retrieve the Tag object from the array
+	else if (self.listMode == ListModeTags) {
+		
+		Tag *tag = [self.listItems objectAtIndex:[indexPath row]];
+		
+		cellText = tag.title;
+	}
+		
+	cell.textLabel.text = cellText;
 }
 
 
@@ -133,18 +151,52 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	// Retrieve the Dictionary at the given index that's in self.users
-	NSDictionary *user = [self.listItems objectAtIndex:[indexPath row]];
+	// If we're in 'Tag mode'
+	if (self.listMode == ListModeTags) {
 	
-	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-	[profileVC setUsername:[user objectForKey:@"username"]];
+		Tag *tag = [self.listItems objectAtIndex:[indexPath row]];
 	
-	[self.navigationController pushViewController:profileVC animated:YES];
-	[profileVC release];
+		// Pass selected tag back to the delegate
+		[self.delegate tagSelected:tag];
+		
+		// Go back to the previous screen
+		[self.navigationController popViewControllerAnimated:YES];
+	}
+	
+	else if (self.listMode == ListModeLovedBy) {
+	
+		// Retrieve the Dictionary at the given index that's in self.users
+		NSDictionary *user = [self.listItems objectAtIndex:[indexPath row]];
+		
+		TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+		[profileVC setUsername:[user objectForKey:@"username"]];
+		
+		[self.navigationController pushViewController:profileVC animated:YES];
+		[profileVC release];
+			
+	}
 }
 
 
 #pragma MY-METHODS
+
+- (void)fetchTags {
+	
+	// Create fetch request
+	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+	[fetchRequest setEntity:[NSEntityDescription entityForName:@"Tag" inManagedObjectContext:self.managedObjectContext]];
+	[fetchRequest setPredicate:nil];
+	[fetchRequest setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"title" ascending:NO]]];
+	
+	// Execute the fetch request
+	NSError *error = nil;
+	self.listItems = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+	
+	[fetchRequest release];
+	
+	[self hideLoading];
+}
+
 
 - (void)initLovedByAPI {
 	
@@ -201,7 +253,7 @@
 		
 		self.listItems = newUsers;
 		
-		NSLog(@"listItems:%@", self.listItems);
+		//NSLog(@"listItems:%@", self.listItems);
 		
 		// clean up
 		[jsonString release];

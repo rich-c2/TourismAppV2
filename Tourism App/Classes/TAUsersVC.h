@@ -20,8 +20,16 @@ typedef enum  {
 @class JSONFetcher;
 @class AsyncCell;
 
+@protocol RecommendsDelegate
+
+- (void)recommendToUsernames:(NSMutableArray *)usernames;
+
+@end
+
 @interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource> {
 
+	id <RecommendsDelegate> delegate;
+	
 	UsersMode usersMode;
 	
 	NSString *navigationTitle;
@@ -38,6 +46,8 @@ typedef enum  {
 	BOOL usersLoaded;
 	BOOL loading;
 }
+
+@property (nonatomic, retain) id <RecommendsDelegate> delegate;
 
 @property UsersMode usersMode;
 

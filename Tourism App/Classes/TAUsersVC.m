@@ -21,12 +21,13 @@
 
 @implementation TAUsersVC
 
-@synthesize usersMode, navigationTitle;
+@synthesize usersMode, navigationTitle, delegate;
 @synthesize usersTable, selectedUsername, users, managedObjectContext;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
         // Custom initialization
     }
@@ -39,6 +40,14 @@
     
 	// Set the title of this view controller
 	self.title = self.navigationTitle;
+	
+	if (self.usersMode == UsersModeRecommendTo) {
+		
+		UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(saveSelections:)];
+		buttonItem.target = self;
+		self.navigationItem.rightBarButtonItem = buttonItem;
+		[buttonItem release];
+	}
 }
 
 
@@ -88,19 +97,24 @@
 		// Show loading animation
 		[self showLoading];
 		
-		if (self.usersMode == UsersModeFollowing) 
-			[self initFollowingAPI];
-		
-		else if (self.usersMode == UsersModeFollowers) 
-			[self initFollowersAPI];
-		
-		//else if (self.usersMode == UsersModeRecommendTo) [self initFollowersAPI];
-		
-		/*else if (self.usersMode == UsersModeFindViaContacts) [self initFollowersAPI];
-		
-		else if (self.usersMode == UsersModeFindViaFB) [self initFollowersAPI];
-		
-		else if (self.usersMode == UsersModeFindViaTwitter) [self initFollowersAPI];*/
+		switch (self.usersMode) {
+				
+			case UsersModeFollowing:
+				[self initFollowingAPI];
+				break;
+			
+			case UsersModeFollowers:
+				[self initFollowersAPI];
+				break;
+				
+			case UsersModeRecommendTo:
+				[self.usersTable setAllowsMultipleSelection:YES];
+				[self initFollowersAPI];
+				break;
+				
+			default:
+				break;
+		}
 	}
 }
 
@@ -128,6 +142,8 @@
 	NSString *name = [user objectForKey:@"name"];
 	NSString *avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
 	
+	[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+	
 	[cell updateCellWithUsername:username withName:name imageURL:avatarURL];
 }
 
@@ -154,15 +170,24 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	// Retrieve the Dictionary at the given index that's in self.users
-	NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
-		
-	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-	[profileVC setUsername:[user objectForKey:@"username"]];
-	//[profileVC setManagedObjectContext:self.managedObjectContext];
+	/*if (self.usersMode == UsersModeRecommendTo) {
 	
-	[self.navigationController pushViewController:profileVC animated:YES];
-	[profileVC release];
+		AsyncCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+		
+		cell.c
+	}*/
+	
+	if (self.usersMode != UsersModeRecommendTo) {
+		
+		// Retrieve the Dictionary at the given index that's in self.users
+		NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
+		
+		TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+		[profileVC setUsername:[user objectForKey:@"username"]];
+		
+		[self.navigationController pushViewController:profileVC animated:YES];
+		[profileVC release];
+	}
 }
 
 
@@ -269,7 +294,7 @@
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
 		
-	//NSLog(@"PRINTING DATA:%@",[[NSString alloc] initWithData:theXMLFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"PRINTING FOLLOWERS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
     if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
         
@@ -322,5 +347,29 @@
     
     [self.navigationController popToRootViewControllerAnimated:NO];
 }
+
+
+- (void)saveSelections:(id)sender {
+
+	NSArray *selectedPaths = [self.usersTable indexPathsForSelectedRows];
+	NSMutableArray *selectedUsers = [NSMutableArray array];
+	
+	for (int i = 0; i < [selectedPaths count]; i++) {
+		
+		NSIndexPath *path = [selectedPaths objectAtIndex:i];
+		
+		NSDictionary *user = [self.users objectAtIndex:[path row]];
+		NSString *username = [user objectForKey:@"username"];
+		
+		[selectedUsers addObject:username];
+	}
+	
+	// Pass the usernames array to the delegate (Create Guide VC)
+	[self.delegate recommendToUsernames:selectedUsers];
+	
+	// Go back to Create Guide VC
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
 
 @end

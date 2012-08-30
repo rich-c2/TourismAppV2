@@ -7,20 +7,33 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Tag.h"
 
 typedef enum  {
-	ListModeLovedBy = 0
+	ListModeLovedBy = 0,
+	ListModeTags = 1
 } ListMode;
 
 @class JSONFetcher;
 
+@protocol TagsDelegate
+
+@optional
+- (void)tagSelected:(Tag *)tag;
+
+@end
+
 @interface TASimpleListVC : UIViewController {
+	
+	id <TagsDelegate> delegate;
+	
+	NSManagedObjectContext *managedObjectContext;
 
 	ListMode listMode;
 	NSString *imageCode;
 	
 	JSONFetcher *fetcher;
-	NSMutableArray *listItems;
+	NSArray *listItems;
 	
 	IBOutlet UITableView *listTable;
 	
@@ -28,10 +41,14 @@ typedef enum  {
 	BOOL loading;
 }
 
+@property (nonatomic, retain) id <TagsDelegate> delegate;
+
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
+
 @property ListMode listMode;
 @property (nonatomic, retain) NSString *imageCode;
 
-@property (nonatomic, retain) NSMutableArray *listItems;
+@property (nonatomic, retain) NSArray *listItems;
 
 @property (nonatomic, retain) IBOutlet UITableView *listTable;
 

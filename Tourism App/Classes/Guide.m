@@ -2,17 +2,18 @@
 //  Guide.m
 //  Tourism App
 //
-//  Created by Richard Lee on 28/08/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by Richard Lee on 30/08/12.
+//  Copyright (c) 2012 C2 Media Pty Ltd. All rights reserved.
 //
 
 #import "Guide.h"
 #import "City.h"
+#import "Photo.h"
 #import "Tag.h"
 #import "User.h"
 
-@implementation Guide
 
+@implementation Guide
 
 + (Guide *)guideWithGuideData:(NSDictionary *)guideData inManagedObjectContext:(NSManagedObjectContext *)context {
 	
