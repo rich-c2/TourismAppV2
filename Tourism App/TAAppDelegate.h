@@ -18,7 +18,7 @@ extern NSString* const TEST_API_ADDRESS;
 @class TANotificationsVC;
 @class TALoginVC;
 @class TAFeedVC;
-@class TAShareVC;
+@class TACameraVC;
 @class TAExploreVC;
 
 @interface TAAppDelegate : UIResponder <UIApplicationDelegate> {
@@ -32,7 +32,7 @@ extern NSString* const TEST_API_ADDRESS;
 	
 	TAFeedVC *feedVC;
 	TAExploreVC *exploreVC;
-	TAShareVC *shareVC;
+	TACameraVC *cameraVC;
 	TAProfileVC *profileVC;
 	TANotificationsVC *notificationsVC;
 	
@@ -50,7 +50,7 @@ extern NSString* const TEST_API_ADDRESS;
 
 @property (nonatomic, retain) TAFeedVC *feedVC;
 @property (nonatomic, retain) TAExploreVC *exploreVC;
-@property (nonatomic, retain) TAShareVC *shareVC;
+@property (nonatomic, retain) TACameraVC *cameraVC;
 @property (nonatomic, retain) TAProfileVC *profileVC; 
 @property (nonatomic, retain) TANotificationsVC *notificationsVC;
 

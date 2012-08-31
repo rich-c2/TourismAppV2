@@ -76,6 +76,8 @@
 	
 		loading = YES;
 		
+		[self showLoading];
+		
 		[self initCommentsAPI];
 	}
 }
@@ -99,12 +101,13 @@
 	
     // Retrieve the Dictionary at the given index that's in self.users
 	NSDictionary *comment = [self.comments objectAtIndex:[indexPath row]];
+	NSDictionary *userDict = [comment objectForKey:@"user"];
 	
-	/*NSString *username = [user objectForKey:@"username"];
-	NSString *name = [user objectForKey:@"name"];
-	NSString *avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
+	NSString *username = [userDict objectForKey:@"username"];
+	NSString *name = [comment objectForKey:@"comment"];
+	NSString *avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userDict objectForKey:@"avatar"]];
 	
-	[cell updateCellWithUsername:username withName:name imageURL:avatarURL];*/
+	[cell updateCellWithUsername:username withName:name imageURL:avatarURL];
 }
 
 
@@ -172,7 +175,7 @@
 	// We are not loading
 	loading = NO;
 
-	//NSLog(@"PRINTING COMMENTS DATA:%@",[[NSString alloc] initWithData:theXMLFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING COMMENTS DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
     
@@ -189,12 +192,16 @@
 		
 		// Build an array from the dictionary for easy access to each entry
 		self.comments = [results objectForKey:@"comments"];
+		
+		NSLog(@"HERE IS COMMENTS:%@", self.comments);
     }
 	
-	//[self.commentField setText:@""];
+	// Hide the loading animation
+	[self hideLoading];
 	
-	// Retrieve tracks from DB
-	//[self fetchCommentsFromCoreData];
+	[self.commentsTable reloadData];
+	
+	//[self.commentField setText:@""];
 	
 	// Make the keyboard appear straight away
 	//[self.commentField becomeFirstResponder];

@@ -20,7 +20,7 @@
 
 @implementation TAMediaResultsVC
 
-@synthesize tag, city, tagID, images;
+@synthesize tag, city, tagID, images, photosBtn, guidesBtn;
 @synthesize cityLabel, tagLabel, guides;
 
 
@@ -59,6 +59,10 @@
 	self.cityLabel = nil;
 	[tagLabel release];
 	self.tagLabel = nil;
+	[photosBtn release];
+	self.photosBtn = nil;
+	[guidesBtn release];
+	self.guidesBtn = nil;
     [super viewDidUnload];
 }
 
@@ -78,6 +82,8 @@
 	[city release];
 	[cityLabel release];
 	[tagLabel release];
+	[photosBtn release];
+	[guidesBtn release];
 	[super dealloc];
 }
 
@@ -93,7 +99,7 @@
 	
 	[self initFindMediaAPI];
 	
-	[self initFindGuidesAPI];
+	//[self initFindGuidesAPI];
 }
 
 
@@ -113,14 +119,14 @@
 
 - (void)initFindMediaAPI {
 	
-	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&pg=%i&sz=%@&token=%@", [self appDelegate].loggedInUsername, [self.tagID intValue], self.city, 0, @"20", [[self appDelegate] sessionToken]];
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&token=%@", [self appDelegate].loggedInUsername, [self.tagID intValue], self.city, [[self appDelegate] sessionToken]];
 	NSLog(@"jsonString:%@", jsonString);
 	
 	// Convert string to data for transmission
 	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
 	
 	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"FindMedia"];
+	NSString *methodName = [NSString stringWithString:@"FindMediaCount"];
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
 	
 	// Create URL request with URL and the JSON data
@@ -154,74 +160,29 @@
 		// Build an array from the dictionary for easy access to each entry
 		self.images = [results objectForKey:@"media"];
 		
+		[self.photosBtn setTitle:[NSString stringWithFormat:@"%@ photos", [results objectForKey:@"media"]] forState:UIControlStateNormal];
+		
+		[self.guidesBtn setTitle:[NSString stringWithFormat:@"%@ guides", [results objectForKey:@"guides"]] forState:UIControlStateNormal];
+		
+		//NSLog(@"MEDIA WATCH COUNT:%i", [self.images count]);
+		
 		[jsonString release];
     }
+	
+	// Hide the loading animation
+	[self hideLoading];
     
     [mediaFetcher release];
     mediaFetcher = nil;
 }
 
 
-- (void)initFindGuidesAPI {
-	
-	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&pg=%i&sz=%@&private=0&token=%@", [self appDelegate].loggedInUsername, [self.tagID intValue], self.city, 0, @"20", [[self appDelegate] sessionToken]];
-	
-	// Convert string to data for transmission
-	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
-	
-	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"FindGuides"];
-	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
-	
-	// Create URL request with URL and the JSON data
-	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
-	
-	// JSONFetcher
-	guidesFetcher = [[JSONFetcher alloc] initWithURLRequest:request
-												   receiver:self
-													 action:@selector(receivedFindGuidesResponse:)];
-	[guidesFetcher start];
-	
-	[self hideLoading];
-}	
-
-
-// Example fetcher response handling
-- (void)receivedFindGuidesResponse:(HTTPFetcher *)aFetcher {
-    
-    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
-    
-    NSAssert(aFetcher == guidesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
-	
-	NSLog(@"PRINTING GET GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
-    
-    if ([theJSONFetcher.data length] > 0) {
-        
-        // Store incoming data into a string
-		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
-		
-		// Create a dictionary from the JSON string
-		NSDictionary *results = [jsonString JSONValue];
-		
-		// Build an array from the dictionary for easy access to each entry
-		self.guides = [results objectForKey:@"guides"];
-		
-		[jsonString release];
-    }
-    
-    [guidesFetcher release];
-    guidesFetcher = nil;
-}
-
-
 - (IBAction)guidesButtonTapped:(id)sender {
-	
-	NSMutableArray *guidesCopy = [self.guides mutableCopy];
-	
+		
 	TAGuidesListVC *guidesListVC = [[TAGuidesListVC alloc] initWithNibName:@"TAGuidesListVC" bundle:nil];
 	[guidesListVC setGuidesMode:GuidesModeSearchResults];
-	[guidesListVC setGuides:guidesCopy];
-	[guidesCopy release];
+	[guidesListVC setSelectedTagID:self.tagID];
+	[guidesListVC setSelectedCity:self.city];
 	
 	[self.navigationController pushViewController:guidesListVC animated:YES];
 	[guidesListVC release];
@@ -230,13 +191,10 @@
 
 - (IBAction)photosButtonTapped:(id)sender {
 	
-	//NSMutableArray *imagesCopy = [self.images mutableCopy];
-	
-	NSLog(@"HERE ARE THE IMAGES:%@", self.images);
-	
 	TAImageGridVC *gridVC = [[TAImageGridVC alloc] initWithNibName:@"TAImageGridVC" bundle:nil];
 	[gridVC setImagesMode:ImagesModeCityTag];
-	[gridVC setImages:self.images];
+	[gridVC setCity:self.city];
+	[gridVC setTagID:self.tagID];
 	
 	[self.navigationController pushViewController:gridVC animated:YES];
 	[gridVC release];

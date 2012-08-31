@@ -188,6 +188,13 @@
 		[self.navigationController pushViewController:profileVC animated:YES];
 		[profileVC release];
 	}
+	
+	else {
+		
+		AsyncCell *cell = (AsyncCell *)[tableView cellForRowAtIndexPath:indexPath];
+		
+		[cell setSelected:YES];
+	}
 }
 
 

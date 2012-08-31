@@ -16,6 +16,7 @@
 static NSString *kAccountUsernameSavedKey = @"accountUsernameSavedKey";
 static NSString *kSavedUsernameKey = @"savedUsernameKey";
 static NSString *kSavedPasswordKey = @"savedPasswordKey";
+static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 @interface TALoginVC ()
 
@@ -151,6 +152,16 @@ static NSString *kSavedPasswordKey = @"savedPasswordKey";
 			// Pass the token value to the AppDelegate to be stored as 
 			// the session token for all API calls
 			else if ([key isEqualToString:@"token"]) [[self appDelegate] setToken:[results objectForKey:key]];
+			
+			if (loginSuccess) {
+			
+				NSDictionary *userDict = [results objectForKey:@"user"];
+				
+				NSString *city = [userDict objectForKey:@"city"];
+			
+				// A default city has just been selected. Store it.
+				[[NSUserDefaults standardUserDefaults] setObject:city forKey:kUserDefaultCityKey];
+			}
 		}
 		
 		[jsonString release];

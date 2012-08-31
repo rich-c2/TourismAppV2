@@ -16,6 +16,7 @@
 #import "TAProfileVC.h"
 #import "TAImageDetailsVC.h"
 #import "AsyncCell.h"
+#import "TAGuideDetailsVC.h"
 
 @interface TANotificationsVC ()
 
@@ -180,6 +181,20 @@
 		[profileVC setUsername:[notification objectForKey:@"code"]];
 		[self.navigationController pushViewController:profileVC animated:YES];
 		[profileVC release];
+	}
+	
+	else if ([type isEqualToString:@"guide"]) {
+		
+		// Push the User Profile VC onto the stack
+		// Tell the VC what Guide is in question (GuideID) and what mode
+		// we are viewing the guide details in. It is not our guide so we are
+		// in GuideModeViewing
+		TAGuideDetailsVC *guideDetailsVC = [[TAGuideDetailsVC alloc] initWithNibName:@"TAGuideDetailsVC" bundle:nil];
+		[guideDetailsVC setGuideID:[notification objectForKey:@"code"]];
+		[guideDetailsVC setGuideMode:GuideModeViewing];
+		
+		[self.navigationController pushViewController:guideDetailsVC animated:YES];
+		[guideDetailsVC release];
 	}
 }
 

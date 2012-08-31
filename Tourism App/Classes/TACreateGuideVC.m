@@ -80,6 +80,8 @@
 #pragma RecommendsDelegate methods
 
 - (void)recommendToUsernames:(NSMutableArray *)usernames {
+	
+	NSLog(@"SELECTED USERNAMES:%@", usernames);
 
 	// Retain the usernames that were selected 
 	// for this Guide to be recommend to
@@ -114,8 +116,14 @@
 	NSString *city = self.guideCity;
 	NSInteger tagID = [self.guideTagID intValue];
 	NSString *imageIDs = self.imageCode;
+	NSString *usernames = @"";
 	
-	NSString *postString = [NSString stringWithFormat:@"username=%@&title=%@&city=%@&tag=%i&imageIDs=%@&private=0&token=%@", username, title, city, tagID, imageIDs, [self appDelegate].sessionToken];
+	if ([self.recommendToUsernames count] > 0) 
+		usernames = [NSString stringWithFormat:@"&rec_usernames=%@", [self.recommendToUsernames componentsJoinedByString:@","]];
+	
+	NSString *postString = [NSString stringWithFormat:@"username=%@&title=%@&city=%@&tag=%i&imageIDs=%@&private=0&token=%@%@", username, title, city, tagID, imageIDs, [self appDelegate].sessionToken, usernames];
+	
+	
 	
 	NSLog(@"ADD GUIDE DATA:%@", postString);
 	
@@ -177,10 +185,10 @@
 	
 	// FOR NOW: Kick off the "Recommend" API on the back of this one.
 	// These two function will probably have to be combined
-	if (submissionSuccess && [self.recommendToUsernames count] > 0) {
+	/*if (submissionSuccess && [self.recommendToUsernames count] > 0) {
 	
 		[self initRecommendAPI:[guideData objectForKey:@"guideID"]];
-	}
+	}*/
 	
 	
 	// Show pop up for submission result

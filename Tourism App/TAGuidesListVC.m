@@ -91,6 +91,10 @@
 				[self initMyGuidesAPI];
 				break;
 				
+			case GuidesModeSearchResults:
+				[self initFindGuidesAPI];
+				break;
+				
 			default:
 				NSLog(@"HERE ARE THE GUIDES:%@", self.guides);
 				[self.guidesTable reloadData];
@@ -453,6 +457,63 @@
 	
 	[guidesFetcher release];
 	guidesFetcher = nil;
+}
+
+
+- (void)initFindGuidesAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&pg=%i&sz=%@&private=0&token=%@", [self appDelegate].loggedInUsername, [self.selectedTagID intValue], self.selectedCity, 0, @"20", [[self appDelegate] sessionToken]];
+	
+	// Convert string to data for transmission
+	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"FindGuides"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Create URL request with URL and the JSON data
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+	guidesFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												   receiver:self
+													 action:@selector(receivedFindGuidesResponse:)];
+	[guidesFetcher start];
+	
+	[self hideLoading];
+}	
+
+
+// Example fetcher response handling
+- (void)receivedFindGuidesResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == guidesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSLog(@"PRINTING GET GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+    if ([theJSONFetcher.data length] > 0) {
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		// Build an array from the dictionary for easy access to each entry
+		self.guides = [results objectForKey:@"guides"];
+		
+		[jsonString release];
+    }
+	
+	// Reload the table
+	[self.guidesTable reloadData];
+	
+	[self hideLoading];
+    
+    [guidesFetcher release];
+    guidesFetcher = nil;
 }
 
 

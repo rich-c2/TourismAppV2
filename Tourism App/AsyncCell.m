@@ -64,6 +64,7 @@ static UIFont* bold14 = nil;
 	}
 }
 
+
 - (void)dealloc {
     [info release];
     [image release];
@@ -71,11 +72,17 @@ static UIFont* bold14 = nil;
     [super dealloc];
 }
 
+
 - (void) drawContentView:(CGRect)rect {
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
-	[[UIColor whiteColor] set];
+	UIColor *bgColor;
+	
+	if (self.selected) bgColor = [UIColor cyanColor];
+	else bgColor = [UIColor whiteColor];
+	
+	[bgColor set];
 	CGContextFillRect(context, rect);
 	
 	CGFloat imageXPos = 5.0;
@@ -98,6 +105,7 @@ static UIFont* bold14 = nil;
 		[self.image drawInRect:r];
 	}
 }
+
 
 - (void) updateCellInfo:(NSDictionary*)_info {
 	self.info = _info;
@@ -126,5 +134,15 @@ static UIFont* bold14 = nil;
         [operation start];
     }
 }
+
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+	
+    [super setSelected:selected animated:animated];
+	
+    if (selected)[self.backgroundView setBackgroundColor:[UIColor cyanColor]];
+	else [self.backgroundView setBackgroundColor:[UIColor whiteColor]];
+}
+
 
 @end

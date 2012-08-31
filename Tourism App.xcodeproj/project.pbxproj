@@ -67,6 +67,8 @@
 		9B7B0A0C15EB49AB001C2E3E /* TASimpleListVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */; };
 		9B7B0A1115EB5BBA001C2E3E /* TACreateGuideVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */; };
 		9B7B0A1215EB5BBA001C2E3E /* TACreateGuideVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */; };
+		9BB3439615F096DB006BD1FD /* TACameraVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB3439415F096DB006BD1FD /* TACameraVC.m */; };
+		9BB3439715F096DB006BD1FD /* TACameraVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BB3439515F096DB006BD1FD /* TACameraVC.xib */; };
 		9BB4045115ECA3900080E00E /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045015ECA3900080E00E /* User.m */; };
 		9BB4045415ECA3910080E00E /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045315ECA3910080E00E /* Photo.m */; };
 		9BB4045715ECA3910080E00E /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045615ECA3910080E00E /* Tag.m */; };
@@ -228,6 +230,9 @@
 		9B7B0A0E15EB5BB9001C2E3E /* TACreateGuideVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACreateGuideVC.h; path = Classes/TACreateGuideVC.h; sourceTree = "<group>"; };
 		9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACreateGuideVC.m; path = Classes/TACreateGuideVC.m; sourceTree = "<group>"; };
 		9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACreateGuideVC.xib; path = Classes/TACreateGuideVC.xib; sourceTree = "<group>"; };
+		9BB3439315F096DB006BD1FD /* TACameraVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACameraVC.h; path = Classes/TACameraVC.h; sourceTree = "<group>"; };
+		9BB3439415F096DB006BD1FD /* TACameraVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACameraVC.m; path = Classes/TACameraVC.m; sourceTree = "<group>"; };
+		9BB3439515F096DB006BD1FD /* TACameraVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACameraVC.xib; path = Classes/TACameraVC.xib; sourceTree = "<group>"; };
 		9BB4044F15ECA3900080E00E /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = Classes/User.h; sourceTree = "<group>"; };
 		9BB4045015ECA3900080E00E /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = Classes/User.m; sourceTree = "<group>"; };
 		9BB4045215ECA3910080E00E /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = Classes/Photo.h; sourceTree = "<group>"; };
@@ -663,6 +668,9 @@
 				9BDEAA0F15EC8899000EF65F /* TAShareVC.h */,
 				9BDEAA1015EC8899000EF65F /* TAShareVC.m */,
 				9BDEAA1115EC8899000EF65F /* TAShareVC.xib */,
+				9BB3439315F096DB006BD1FD /* TACameraVC.h */,
+				9BB3439415F096DB006BD1FD /* TACameraVC.m */,
+				9BB3439515F096DB006BD1FD /* TACameraVC.xib */,
 			);
 			name = Share;
 			sourceTree = "<group>";
@@ -860,6 +868,7 @@
 				9BD79FF915EDB2C50033EB64 /* TACommentsVC.xib in Resources */,
 				9B48E96C15EEF7E700919F3A /* TACitiesListVC.xib in Resources */,
 				9B48E97215EF0C6000919F3A /* TAMediaResultsVC.xib in Resources */,
+				9BB3439715F096DB006BD1FD /* TACameraVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -965,6 +974,7 @@
 				9B6BE5E915EEDF0B00635C30 /* Guide.m in Sources */,
 				9B48E96B15EEF7E700919F3A /* TACitiesListVC.m in Sources */,
 				9B48E97115EF0C6000919F3A /* TAMediaResultsVC.m in Sources */,
+				9BB3439615F096DB006BD1FD /* TACameraVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

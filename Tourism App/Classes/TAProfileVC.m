@@ -166,7 +166,15 @@
 	
 	if (loggedIn == 1) {
 		
+		// Set the username for this profile
+		// It equals the username of whoever just logged-in
 		self.username = [self appDelegate].loggedInUsername;
+		
+		// Get an iVar of TAAppDelegate
+		// and STOP observing the AppDelegate's userLoggedIn
+		// property now that the user HAS logged-in
+		TAAppDelegate *appDelegate = [self appDelegate];
+		[appDelegate removeObserver:self forKeyPath:@"userLoggedIn"];
 	}
 }
 

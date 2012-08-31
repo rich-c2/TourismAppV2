@@ -100,7 +100,7 @@
 		if (numRecommendations > 0) [self updateRecommendations:numRecommendations];
 		if (numMe > 0) [self updateMe:numMe];
 		
-		//NSLog(@"jsonString:%@", jsonString);
+		NSLog(@"jsonString:%@", jsonString);
 		
 		[jsonString release];
 	}

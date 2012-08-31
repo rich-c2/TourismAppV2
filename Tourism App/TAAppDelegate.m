@@ -13,7 +13,7 @@
 #import "TANotificationsManager.h"
 #import "TAFeedVC.h"
 #import "TAExploreVC.h"
-#import "TAShareVC.h"
+#import "TACameraVC.h"
 #import "JSONFetcher.h"
 #import "SBJson.h"
 #import "Guide.h"
@@ -34,14 +34,14 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 @synthesize profileVC, notificationsVC, tabBarController;
 @synthesize sessionToken, loggedInUsername, loginVC;
-@synthesize feedVC, exploreVC, shareVC, userLoggedIn;
+@synthesize feedVC, exploreVC, cameraVC, userLoggedIn;
 
 
 - (void)dealloc {
 	
 	[feedVC release]; 
 	[exploreVC release]; 
-	[shareVC release];
+	[cameraVC release];
 	[notificationsVC release];
 	[profileVC release];
 	[tabBarController release];
@@ -82,12 +82,12 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
 	// Add Share tab ////////////////////////////////////////////////////////////////////////
 	
-	shareVC = [[TAShareVC alloc] initWithNibName:@"TAShareVC" bundle:nil];
+	cameraVC = [[TACameraVC alloc] initWithNibName:@"TACameraVC" bundle:nil];
 	
 	UINavigationController *navcon3 = [[UINavigationController alloc] init];
 	[navcon3.navigationBar setTintColor:[UIColor redColor]];
-	[navcon3 pushViewController:shareVC animated:NO];
-	[shareVC release];
+	[navcon3 pushViewController:cameraVC animated:NO];
+	[cameraVC release];
 	
 	
 	// Add News tab ////////////////////////////////////////////////////////////////////////
@@ -276,6 +276,8 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
 	// Setup the pre-defined Tag objects in Core Data
 	[self initTags];
+	
+	[self initNotificationsManager];
 }
 
 

@@ -46,9 +46,6 @@
 	
 	// The fetch size for each API call
     fetchSize = 12;
-	
-	// Init array
-	//self.images = [NSMutableArray array];
 }
 
 
@@ -102,6 +99,9 @@
 	
 	if (!loading && !imagesLoaded) {
 		
+		// Init array
+		if (!self.images) self.images = [NSMutableArray array];
+		
 		switch (self.imagesMode) {
 				
 			case ImagesModeMyPhotos:
@@ -113,22 +113,7 @@
 				break;
 				
 			case ImagesModeCityTag:
-				
-				if (!self.images) 
-					[self initFindMediaAPI];
-				else {
-					
-					// update the page index for 
-					// the next batch
-					imagesPageIndex++;
-					
-					// Re-enable the "load more" button
-					[self.loadMoreButton setEnabled:YES];
-					
-					// Update the image grid
-					[self updateImageGrid];
-				}
-				
+				[self initFindMediaAPI];
 				break;
 				
 			default:

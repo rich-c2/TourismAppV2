@@ -7,7 +7,43 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "GridImage.h"
 
-@interface TAFeedVC : UIViewController
+@class JSONFetcher;
+
+typedef enum {
+    FeedModeFeed = 0,
+	FeedModeLatest = 1, 
+    FeedModePopular = 2, 
+	FeedModeCity = 3 
+} FeedMode;
+
+@interface TAFeedVC : UIViewController <GridImageDelegate, UIActionSheetDelegate> {
+	
+	FeedMode feedMode;
+	
+	NSInteger fetchSize;
+	NSInteger imagesPageIndex;
+	
+	IBOutlet UIButton *loadMoreButton;
+	IBOutlet UIView *imagesView;
+	IBOutlet UIScrollView *gridScrollView;
+	
+	JSONFetcher *imagesFetcher;
+	
+	BOOL loading;
+	BOOL imagesLoaded;
+	
+	NSMutableArray *images;
+}
+
+@property FeedMode feedMode;
+
+@property (nonatomic, retain) IBOutlet UIButton *loadMoreButton;
+@property (nonatomic, retain) IBOutlet UIView *imagesView;
+@property (nonatomic, retain) IBOutlet UIScrollView *gridScrollView;
+
+@property (nonatomic, retain) IBOutlet NSMutableArray *images;
+
 
 @end

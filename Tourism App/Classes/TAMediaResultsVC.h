@@ -12,6 +12,9 @@
 
 @interface TAMediaResultsVC : UIViewController {
 
+	IBOutlet UIButton *photosBtn;
+	IBOutlet UIButton *guidesBtn;
+	
 	JSONFetcher *mediaFetcher;
 	JSONFetcher *guidesFetcher;
 	
@@ -24,6 +27,9 @@
 	NSMutableArray *guides;
 	NSMutableArray *images;
 }
+
+@property (nonatomic, retain) IBOutlet UIButton *photosBtn;
+@property (nonatomic, retain) IBOutlet UIButton *guidesBtn;
 
 @property (nonatomic, retain) NSNumber *tagID;
 @property (nonatomic, retain) NSString *tag;
