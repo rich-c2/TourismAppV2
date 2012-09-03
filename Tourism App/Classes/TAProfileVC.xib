@@ -245,12 +245,34 @@
 								<string key="NSFrame">{{20, 225}, {280, 37}}</string>
 								<reference key="NSSuperview" ref="366468853"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="744523475"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<int key="IBUIButtonType">1</int>
 								<string key="IBUINormalTitle">My Guides</string>
+								<reference key="IBUIHighlightedTitleColor" ref="739911370"/>
+								<object class="NSColor" key="IBUINormalTitleColor">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
+								</object>
+								<reference key="IBUINormalTitleShadowColor" ref="175195338"/>
+								<reference key="IBUIFontDescription" ref="92671930"/>
+								<reference key="IBUIFont" ref="231104639"/>
+							</object>
+							<object class="IBUIButton" id="744523475">
+								<reference key="NSNextResponder" ref="366468853"/>
+								<int key="NSvFlags">-2147483356</int>
+								<string key="NSFrame">{{20, 275}, {280, 37}}</string>
+								<reference key="NSSuperview" ref="366468853"/>
+								<reference key="NSWindow"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<int key="IBUIButtonType">1</int>
+								<string key="IBUINormalTitle">My Content</string>
 								<reference key="IBUIHighlightedTitleColor" ref="739911370"/>
 								<object class="NSColor" key="IBUINormalTitleColor">
 									<int key="NSColorSpace">1</int>
@@ -365,6 +387,14 @@
 					<int key="connectionID">27</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">myContentBtn</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="744523475"/>
+					</object>
+					<int key="connectionID">32</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">followersButtonTapped:</string>
 						<reference key="source" ref="39599856"/>
@@ -418,6 +448,15 @@
 					</object>
 					<int key="connectionID">29</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">myContentButtonTapped:</string>
+						<reference key="source" ref="744523475"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">33</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -459,6 +498,7 @@
 							<reference ref="1032638701"/>
 							<reference ref="477520141"/>
 							<reference ref="1040997217"/>
+							<reference ref="744523475"/>
 						</array>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -507,6 +547,11 @@
 						<reference key="object" ref="1040997217"/>
 						<reference key="parent" ref="366468853"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">30</int>
+						<reference key="object" ref="744523475"/>
+						<reference key="parent" ref="366468853"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -519,6 +564,7 @@
 				<string key="11.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="22.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="30.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -530,7 +576,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">29</int>
+			<int key="maxID">33</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -542,6 +588,7 @@
 						<string key="followersButtonTapped:">id</string>
 						<string key="followingButtonTapped:">id</string>
 						<string key="followingUserButtonTapped:">id</string>
+						<string key="myContentButtonTapped:">id</string>
 						<string key="photosButtonTapped:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
@@ -561,6 +608,10 @@
 							<string key="name">followingUserButtonTapped:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="myContentButtonTapped:">
+							<string key="name">myContentButtonTapped:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="photosButtonTapped:">
 							<string key="name">photosButtonTapped:</string>
 							<string key="candidateClassName">id</string>
@@ -572,6 +623,7 @@
 						<string key="followersBtn">UIButton</string>
 						<string key="followingBtn">UIButton</string>
 						<string key="followingUserBtn">UIButton</string>
+						<string key="myContentBtn">UIButton</string>
 						<string key="nameLabel">UILabel</string>
 						<string key="photosBtn">UIButton</string>
 						<string key="usernameLabel">UILabel</string>
@@ -595,6 +647,10 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="followingUserBtn">
 							<string key="name">followingUserBtn</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="myContentBtn">
+							<string key="name">myContentBtn</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="nameLabel">

@@ -37,6 +37,9 @@
 	
 	IBOutlet UIButton *followingBtn;
 	IBOutlet UIButton *followersBtn;
+	
+	// MY CONTENT
+	IBOutlet UIButton *myContentBtn;
 }
 
 @property (nonatomic, retain) NSString *username;
@@ -53,6 +56,8 @@
 @property (nonatomic, retain) IBOutlet UIButton *followingBtn;
 @property (nonatomic, retain) IBOutlet UIButton *followersBtn;
 
+@property (nonatomic, retain) IBOutlet UIButton *myContentBtn;
+
 - (void)showLoading;
 - (void)hideLoading;
 
@@ -64,5 +69,7 @@
 - (IBAction)followingUserButtonTapped:(id)sender;
 
 - (IBAction)photosButtonTapped:(id)sender;
+
+- (IBAction)myContentButtonTapped:(id)sender;
 
 @end

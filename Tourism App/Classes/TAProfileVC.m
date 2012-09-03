@@ -20,6 +20,7 @@
 #import "ImageManager.h"
 #import "TALoginVC.h"
 #import "TAMyContentVC.h"
+#import "TASettingsVC.h"
 
 @interface TAProfileVC ()
 
@@ -28,7 +29,7 @@
 @implementation TAProfileVC
 
 @synthesize username, avatarURL, usernameLabel, photosBtn, nameLabel, avatarView;
-@synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn;
+@synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn, myContentBtn;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -85,6 +86,8 @@
 	self.usernameLabel = nil;
 	[avatarView release];
 	self.avatarView = nil;
+	[myContentBtn release];
+	myContentBtn = nil;
     [super viewDidUnload];
 	
     // Release any retained subviews of the main view.
@@ -129,6 +132,9 @@
 		buttonItem.target = self;
 		self.navigationItem.rightBarButtonItem = buttonItem;
 		[buttonItem release];
+		
+		// SHOW MY CONTENT BUTTON
+		self.myContentBtn.hidden = NO;
 	}
 	
 	[super viewWillAppear:animated];
@@ -602,12 +608,20 @@
 - (void)viewSettings:(id)sender {
 	
 	// Push the following VC onto the stack
+	TASettingsVC *settingsVC = [[TASettingsVC alloc] initWithNibName:@"TASettingsVC" bundle:nil];
+	[self.navigationController pushViewController:settingsVC animated:YES];
+	[settingsVC release];
+}
+
+
+- (void)myContentButtonTapped:(id)sender {
+	
+	// Push the following VC onto the stack
 	TAMyContentVC *myContentVC = [[TAMyContentVC alloc] initWithNibName:@"TAMyContentVC" bundle:nil];
 	[myContentVC setUsername:self.username];
 	[self.navigationController pushViewController:myContentVC animated:YES];
 	[myContentVC release];
 }
-
 
 - (void)dealloc {
 	
@@ -621,6 +635,7 @@
     [followersBtn release];
 	[usernameLabel release];
 	[avatarView release];
+	[myContentBtn release];
     [super dealloc];
 }
 

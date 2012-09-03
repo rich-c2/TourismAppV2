@@ -126,6 +126,15 @@
 		9BEF9C4415E3408A000AEE5E /* TAImageGridVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEF9C4215E3408A000AEE5E /* TAImageGridVC.m */; };
 		9BEF9C4515E3408A000AEE5E /* TAImageGridVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */; };
 		9BEF9C4D15E371A9000AEE5E /* GridImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BEF9C4C15E371A9000AEE5E /* GridImage.m */; };
+		9BF6242815F42B2E00DB6B0B /* XMLFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6242715F42B2E00DB6B0B /* XMLFetcher.m */; };
+		9BF6242C15F42DD100DB6B0B /* XPathResultNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6242B15F42DD100DB6B0B /* XPathResultNode.m */; };
+		9BF6242F15F4438500DB6B0B /* MyCoreLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6242E15F4438500DB6B0B /* MyCoreLocation.m */; };
+		9BF6243315F46FA200DB6B0B /* TAPlacesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6243115F46FA200DB6B0B /* TAPlacesVC.m */; };
+		9BF6243415F46FA200DB6B0B /* TAPlacesVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF6243215F46FA200DB6B0B /* TAPlacesVC.xib */; };
+		9BF6244415F4852500DB6B0B /* TAMapItVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6244215F4852400DB6B0B /* TAMapItVC.m */; };
+		9BF6244515F4852500DB6B0B /* TAMapItVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF6244315F4852500DB6B0B /* TAMapItVC.xib */; };
+		9BF6244915F4957A00DB6B0B /* TASettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF6244715F4957900DB6B0B /* TASettingsVC.m */; };
+		9BF6244A15F4957A00DB6B0B /* TASettingsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BF6244815F4957900DB6B0B /* TASettingsVC.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -337,6 +346,21 @@
 		9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAImageGridVC.xib; path = Classes/TAImageGridVC.xib; sourceTree = "<group>"; };
 		9BEF9C4B15E371A9000AEE5E /* GridImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridImage.h; sourceTree = "<group>"; };
 		9BEF9C4C15E371A9000AEE5E /* GridImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridImage.m; sourceTree = "<group>"; };
+		9BF6242615F42B2E00DB6B0B /* XMLFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLFetcher.h; sourceTree = "<group>"; };
+		9BF6242715F42B2E00DB6B0B /* XMLFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLFetcher.m; sourceTree = "<group>"; };
+		9BF6242A15F42DD100DB6B0B /* XPathResultNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XPathResultNode.h; sourceTree = "<group>"; };
+		9BF6242B15F42DD100DB6B0B /* XPathResultNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XPathResultNode.m; sourceTree = "<group>"; };
+		9BF6242D15F4438500DB6B0B /* MyCoreLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyCoreLocation.h; sourceTree = "<group>"; };
+		9BF6242E15F4438500DB6B0B /* MyCoreLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyCoreLocation.m; sourceTree = "<group>"; };
+		9BF6243015F46FA200DB6B0B /* TAPlacesVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAPlacesVC.h; sourceTree = "<group>"; };
+		9BF6243115F46FA200DB6B0B /* TAPlacesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TAPlacesVC.m; sourceTree = "<group>"; };
+		9BF6243215F46FA200DB6B0B /* TAPlacesVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TAPlacesVC.xib; sourceTree = "<group>"; };
+		9BF6244115F4852400DB6B0B /* TAMapItVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAMapItVC.h; path = Classes/TAMapItVC.h; sourceTree = "<group>"; };
+		9BF6244215F4852400DB6B0B /* TAMapItVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAMapItVC.m; path = Classes/TAMapItVC.m; sourceTree = "<group>"; };
+		9BF6244315F4852500DB6B0B /* TAMapItVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAMapItVC.xib; path = Classes/TAMapItVC.xib; sourceTree = "<group>"; };
+		9BF6244615F4957800DB6B0B /* TASettingsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TASettingsVC.h; path = Classes/TASettingsVC.h; sourceTree = "<group>"; };
+		9BF6244715F4957900DB6B0B /* TASettingsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TASettingsVC.m; path = Classes/TASettingsVC.m; sourceTree = "<group>"; };
+		9BF6244815F4957900DB6B0B /* TASettingsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TASettingsVC.xib; path = Classes/TASettingsVC.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -461,6 +485,12 @@
 				9B48E96815EEF7E700919F3A /* TACitiesListVC.h */,
 				9B48E96915EEF7E700919F3A /* TACitiesListVC.m */,
 				9B48E96A15EEF7E700919F3A /* TACitiesListVC.xib */,
+				9BF6244115F4852400DB6B0B /* TAMapItVC.h */,
+				9BF6244215F4852400DB6B0B /* TAMapItVC.m */,
+				9BF6244315F4852500DB6B0B /* TAMapItVC.xib */,
+				9BF6244615F4957800DB6B0B /* TASettingsVC.h */,
+				9BF6244715F4957900DB6B0B /* TASettingsVC.m */,
+				9BF6244815F4957900DB6B0B /* TASettingsVC.xib */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -514,6 +544,10 @@
 		9B35808415E1DA61007309C0 /* Fetchers */ = {
 			isa = PBXGroup;
 			children = (
+				9BF6242A15F42DD100DB6B0B /* XPathResultNode.h */,
+				9BF6242B15F42DD100DB6B0B /* XPathResultNode.m */,
+				9BF6242615F42B2E00DB6B0B /* XMLFetcher.h */,
+				9BF6242715F42B2E00DB6B0B /* XMLFetcher.m */,
 				9B35809015E1F6D9007309C0 /* HTTPFetcher.h */,
 				9B35809115E1F6DA007309C0 /* HTTPFetcher.m */,
 				9B35808115E1CCA8007309C0 /* JSONFetcher.h */,
@@ -559,6 +593,8 @@
 		9BD7A00615EDD39F0033EB64 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				9BF6242D15F4438500DB6B0B /* MyCoreLocation.h */,
+				9BF6242E15F4438500DB6B0B /* MyCoreLocation.m */,
 				9BD79FF215EDAF070033EB64 /* MyMapAnnotation.h */,
 				9BD79FF315EDAF080033EB64 /* MyMapAnnotation.m */,
 				9BB4045815ECA3920080E00E /* City.h */,
@@ -671,6 +707,9 @@
 				9BB3439315F096DB006BD1FD /* TACameraVC.h */,
 				9BB3439415F096DB006BD1FD /* TACameraVC.m */,
 				9BB3439515F096DB006BD1FD /* TACameraVC.xib */,
+				9BF6243015F46FA200DB6B0B /* TAPlacesVC.h */,
+				9BF6243115F46FA200DB6B0B /* TAPlacesVC.m */,
+				9BF6243215F46FA200DB6B0B /* TAPlacesVC.xib */,
 			);
 			name = Share;
 			sourceTree = "<group>";
@@ -869,6 +908,9 @@
 				9B48E96C15EEF7E700919F3A /* TACitiesListVC.xib in Resources */,
 				9B48E97215EF0C6000919F3A /* TAMediaResultsVC.xib in Resources */,
 				9BB3439715F096DB006BD1FD /* TACameraVC.xib in Resources */,
+				9BF6243415F46FA200DB6B0B /* TAPlacesVC.xib in Resources */,
+				9BF6244515F4852500DB6B0B /* TAMapItVC.xib in Resources */,
+				9BF6244A15F4957A00DB6B0B /* TASettingsVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -975,6 +1017,12 @@
 				9B48E96B15EEF7E700919F3A /* TACitiesListVC.m in Sources */,
 				9B48E97115EF0C6000919F3A /* TAMediaResultsVC.m in Sources */,
 				9BB3439615F096DB006BD1FD /* TACameraVC.m in Sources */,
+				9BF6242815F42B2E00DB6B0B /* XMLFetcher.m in Sources */,
+				9BF6242C15F42DD100DB6B0B /* XPathResultNode.m in Sources */,
+				9BF6242F15F4438500DB6B0B /* MyCoreLocation.m in Sources */,
+				9BF6243315F46FA200DB6B0B /* TAPlacesVC.m in Sources */,
+				9BF6244415F4852500DB6B0B /* TAMapItVC.m in Sources */,
+				9BF6244915F4957A00DB6B0B /* TASettingsVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
