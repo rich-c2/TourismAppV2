@@ -56,6 +56,7 @@
     [super viewDidUnload];
 }
 
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
@@ -116,7 +117,6 @@
 	[self.navigationController pushViewController:citiesListVC animated:YES];
 	[citiesListVC release];
 }
-
 
 
 - (IBAction)exploreButtonTapped:(id)sender {

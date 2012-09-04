@@ -40,6 +40,8 @@
 	
 	// MY CONTENT
 	IBOutlet UIButton *myContentBtn;
+	IBOutlet UIButton *findFriendsBtn;
+	IBOutlet UIScrollView *contentScrollView;
 }
 
 @property (nonatomic, retain) NSString *username;
@@ -57,6 +59,9 @@
 @property (nonatomic, retain) IBOutlet UIButton *followersBtn;
 
 @property (nonatomic, retain) IBOutlet UIButton *myContentBtn;
+@property (nonatomic, retain) IBOutlet UIButton *findFriendsBtn;
+@property (nonatomic, retain) IBOutlet UIScrollView *contentScrollView;
+
 
 - (void)showLoading;
 - (void)hideLoading;
@@ -71,5 +76,6 @@
 - (IBAction)photosButtonTapped:(id)sender;
 
 - (IBAction)myContentButtonTapped:(id)sender;
+- (IBAction)findFriendsButtonTapped:(id)sender;
 
 @end

@@ -12,7 +12,7 @@
 
 @class Tag;
 
-@interface TAExploreVC : UIViewController <TagsDelegate, LocationsDelegate> {
+@interface TAExploreVC : UIViewController <TagsDelegate, CitiesDelegate> {
 	
 	Tag *selectedTag;
 	IBOutlet UIButton *tagBtn;

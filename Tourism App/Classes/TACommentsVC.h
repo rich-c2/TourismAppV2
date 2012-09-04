@@ -14,6 +14,7 @@
 @interface TACommentsVC : UIViewController {
 
 	JSONFetcher *commentsFetcher;
+	JSONFetcher *addFetcher;
 	
 	BOOL loading;
 	BOOL commentsLoaded;
@@ -21,12 +22,14 @@
 	NSString *imageCode;
 	NSMutableArray *comments;
 	
+	IBOutlet UITextField *commentField;
 	IBOutlet UITableView *commentsTable;
 }
 
 @property (nonatomic, retain) NSString *imageCode;
 @property (nonatomic, retain) NSMutableArray *comments;
 
+@property (nonatomic, retain) IBOutlet UITextField *commentField;
 @property (nonatomic, retain) IBOutlet UITableView *commentsTable;
 
 @end

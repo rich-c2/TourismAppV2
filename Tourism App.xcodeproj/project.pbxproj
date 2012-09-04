@@ -63,6 +63,7 @@
 		9B48E97115EF0C6000919F3A /* TAMediaResultsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B48E96F15EF0C6000919F3A /* TAMediaResultsVC.m */; };
 		9B48E97215EF0C6000919F3A /* TAMediaResultsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B48E97015EF0C6000919F3A /* TAMediaResultsVC.xib */; };
 		9B6BE5E915EEDF0B00635C30 /* Guide.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B6BE5E815EEDF0B00635C30 /* Guide.m */; };
+		9B726F8F15F5C320008ED4BB /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B726F8E15F5C320008ED4BB /* SBJsonBase.m */; };
 		9B7B0A0B15EB49AB001C2E3E /* TASimpleListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0915EB49AB001C2E3E /* TASimpleListVC.m */; };
 		9B7B0A0C15EB49AB001C2E3E /* TASimpleListVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */; };
 		9B7B0A1115EB5BBA001C2E3E /* TACreateGuideVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */; };
@@ -80,6 +81,9 @@
 		9BD79FF915EDB2C50033EB64 /* TACommentsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BD79FF715EDB2C50033EB64 /* TACommentsVC.xib */; };
 		9BD7A00315EDCC1A0033EB64 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD7A00215EDCC1A0033EB64 /* Twitter.framework */; };
 		9BD7A00515EDCC260033EB64 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD7A00415EDCC250033EB64 /* Accounts.framework */; };
+		9BD9B40915F573CF00179B85 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BD9B40815F573CF00179B85 /* MessageUI.framework */; };
+		9BD9B40E15F5798F00179B85 /* TAFriendsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD9B40C15F5798F00179B85 /* TAFriendsVC.m */; };
+		9BD9B40F15F5798F00179B85 /* TAFriendsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BD9B40D15F5798F00179B85 /* TAFriendsVC.xib */; };
 		9BDEA9F915EC4B19000EF65F /* TALoginVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BDEA9F715EC4B18000EF65F /* TALoginVC.m */; };
 		9BDEA9FA15EC4B19000EF65F /* TALoginVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BDEA9F815EC4B19000EF65F /* TALoginVC.xib */; };
 		9BDEA9FE15EC59A2000EF65F /* TAGuideDetailsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BDEA9FC15EC59A1000EF65F /* TAGuideDetailsVC.m */; };
@@ -197,7 +201,6 @@
 		9B35809115E1F6DA007309C0 /* HTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPFetcher.m; sourceTree = "<group>"; };
 		9B3580A815E1F8DE007309C0 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		9B3580A915E1F8DE007309C0 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
-		9B3580AA15E1F8DE007309C0 /* SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson.h; sourceTree = "<group>"; };
 		9B3580AB15E1F8DE007309C0 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
 		9B3580AC15E1F8DE007309C0 /* SBJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonParser.m; sourceTree = "<group>"; };
 		9B3580AD15E1F8DE007309C0 /* SBJsonStreamParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonStreamParser.h; sourceTree = "<group>"; };
@@ -233,6 +236,10 @@
 		9B48E97015EF0C6000919F3A /* TAMediaResultsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAMediaResultsVC.xib; path = Classes/TAMediaResultsVC.xib; sourceTree = "<group>"; };
 		9B6BE5E715EEDF0B00635C30 /* Guide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Guide.h; path = Classes/Guide.h; sourceTree = "<group>"; };
 		9B6BE5E815EEDF0B00635C30 /* Guide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Guide.m; path = Classes/Guide.m; sourceTree = "<group>"; };
+		9B726F8915F5C2F6008ED4BB /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
+		9B726F8D15F5C320008ED4BB /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
+		9B726F8E15F5C320008ED4BB /* SBJsonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonBase.m; sourceTree = "<group>"; };
+		9B726F9115F5DB66008ED4BB /* SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson.h; sourceTree = "<group>"; };
 		9B7B0A0815EB49AB001C2E3E /* TASimpleListVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TASimpleListVC.h; path = Classes/TASimpleListVC.h; sourceTree = "<group>"; };
 		9B7B0A0915EB49AB001C2E3E /* TASimpleListVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TASimpleListVC.m; path = Classes/TASimpleListVC.m; sourceTree = "<group>"; };
 		9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TASimpleListVC.xib; path = Classes/TASimpleListVC.xib; sourceTree = "<group>"; };
@@ -260,6 +267,10 @@
 		9BD79FF715EDB2C50033EB64 /* TACommentsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACommentsVC.xib; path = Classes/TACommentsVC.xib; sourceTree = "<group>"; };
 		9BD7A00215EDCC1A0033EB64 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		9BD7A00415EDCC250033EB64 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		9BD9B40815F573CF00179B85 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		9BD9B40B15F5798E00179B85 /* TAFriendsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAFriendsVC.h; path = Classes/TAFriendsVC.h; sourceTree = "<group>"; };
+		9BD9B40C15F5798F00179B85 /* TAFriendsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAFriendsVC.m; path = Classes/TAFriendsVC.m; sourceTree = "<group>"; };
+		9BD9B40D15F5798F00179B85 /* TAFriendsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAFriendsVC.xib; path = Classes/TAFriendsVC.xib; sourceTree = "<group>"; };
 		9BDEA9F615EC4B18000EF65F /* TALoginVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TALoginVC.h; path = Classes/TALoginVC.h; sourceTree = "<group>"; };
 		9BDEA9F715EC4B18000EF65F /* TALoginVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TALoginVC.m; path = Classes/TALoginVC.m; sourceTree = "<group>"; };
 		9BDEA9F815EC4B19000EF65F /* TALoginVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TALoginVC.xib; path = Classes/TALoginVC.xib; sourceTree = "<group>"; };
@@ -368,6 +379,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BD9B40915F573CF00179B85 /* MessageUI.framework in Frameworks */,
 				9BD7A00515EDCC260033EB64 /* Accounts.framework in Frameworks */,
 				9BD7A00315EDCC1A0033EB64 /* Twitter.framework in Frameworks */,
 				9B09867315D8A0CE006F8B63 /* AddressBook.framework in Frameworks */,
@@ -407,6 +419,7 @@
 		9B09861715D89F27006F8B63 = {
 			isa = PBXGroup;
 			children = (
+				9BD9B40815F573CF00179B85 /* MessageUI.framework */,
 				9B09862E15D89F27006F8B63 /* Tourism App */,
 				9B09864A15D89F28006F8B63 /* Tourism AppTests */,
 				9B09862515D89F27006F8B63 /* Frameworks */,
@@ -491,6 +504,9 @@
 				9BF6244615F4957800DB6B0B /* TASettingsVC.h */,
 				9BF6244715F4957900DB6B0B /* TASettingsVC.m */,
 				9BF6244815F4957900DB6B0B /* TASettingsVC.xib */,
+				9BD9B40B15F5798E00179B85 /* TAFriendsVC.h */,
+				9BD9B40C15F5798F00179B85 /* TAFriendsVC.m */,
+				9BD9B40D15F5798F00179B85 /* TAFriendsVC.xib */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -559,11 +575,14 @@
 		9B35809315E1F6E9007309C0 /* JSON */ = {
 			isa = PBXGroup;
 			children = (
+				9B726F9115F5DB66008ED4BB /* SBJson.h */,
+				9B726F8D15F5C320008ED4BB /* SBJsonBase.h */,
+				9B726F8E15F5C320008ED4BB /* SBJsonBase.m */,
+				9B726F8915F5C2F6008ED4BB /* JSON.h */,
 				9B3580CD15E1F8F3007309C0 /* NSObject+SBJson.h */,
 				9B3580CE15E1F8F3007309C0 /* NSObject+SBJson.m */,
 				9B3580A815E1F8DE007309C0 /* JSONKit.h */,
 				9B3580A915E1F8DE007309C0 /* JSONKit.m */,
-				9B3580AA15E1F8DE007309C0 /* SBJson.h */,
 				9B3580AB15E1F8DE007309C0 /* SBJsonParser.h */,
 				9B3580AC15E1F8DE007309C0 /* SBJsonParser.m */,
 				9B3580AD15E1F8DE007309C0 /* SBJsonStreamParser.h */,
@@ -911,6 +930,7 @@
 				9BF6243415F46FA200DB6B0B /* TAPlacesVC.xib in Resources */,
 				9BF6244515F4852500DB6B0B /* TAMapItVC.xib in Resources */,
 				9BF6244A15F4957A00DB6B0B /* TASettingsVC.xib in Resources */,
+				9BD9B40F15F5798F00179B85 /* TAFriendsVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1023,6 +1043,8 @@
 				9BF6243315F46FA200DB6B0B /* TAPlacesVC.m in Sources */,
 				9BF6244415F4852500DB6B0B /* TAMapItVC.m in Sources */,
 				9BF6244915F4957A00DB6B0B /* TASettingsVC.m in Sources */,
+				9BD9B40E15F5798F00179B85 /* TAFriendsVC.m in Sources */,
+				9B726F8F15F5C320008ED4BB /* SBJsonBase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

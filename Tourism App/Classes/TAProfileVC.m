@@ -21,6 +21,8 @@
 #import "TALoginVC.h"
 #import "TAMyContentVC.h"
 #import "TASettingsVC.h"
+#import "TASimpleListVC.h"
+#import "TAFriendsVC.h"
 
 @interface TAProfileVC ()
 
@@ -30,6 +32,8 @@
 
 @synthesize username, avatarURL, usernameLabel, photosBtn, nameLabel, avatarView;
 @synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn, myContentBtn;
+@synthesize findFriendsBtn, contentScrollView;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -87,16 +91,19 @@
 	[avatarView release];
 	self.avatarView = nil;
 	[myContentBtn release];
-	myContentBtn = nil;
-    [super viewDidUnload];
+	self.myContentBtn = nil;
+    [findFriendsBtn release];
+    self.findFriendsBtn = nil;
 	
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+	[contentScrollView release];
+	self.contentScrollView = nil;
+	
+    [super viewDidUnload];
 }
 
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
@@ -135,9 +142,29 @@
 		
 		// SHOW MY CONTENT BUTTON
 		self.myContentBtn.hidden = NO;
+		self.findFriendsBtn.hidden = NO;
 	}
 	
 	[super viewWillAppear:animated];
+}
+
+
+- (void)dealloc {
+	
+	[followingUserBtn release];
+	[avatarURL release];
+	[nameLabel release];
+	[photosBtn release];
+	[username release];
+    [followUserBtn release];
+    [followingBtn release];
+    [followersBtn release];
+	[usernameLabel release];
+	[avatarView release];
+	[myContentBtn release];
+    [findFriendsBtn release];
+	[contentScrollView release];
+    [super dealloc];
 }
 
 
@@ -421,8 +448,10 @@
 		// Build an array from the dictionary for easy access to each entry
 		NSDictionary *newUserData = [results objectForKey:@"user"];
 		
+		NSLog(@"new user data:%@", newUserData);
+		
 		// Update the current User object with the details
-		self.avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [newUserData objectForKey:@"avatar"]];
+		self.avatarURL = @"TEST TEST"; //[NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [newUserData objectForKey:@"avatar"]];
 		
 		// Update name
 		NSString *newFullName = [NSString stringWithFormat:@"%@ %@", [newUserData objectForKey:@"firstName"], [newUserData objectForKey:@"lastName"]]; 
@@ -614,7 +643,7 @@
 }
 
 
-- (void)myContentButtonTapped:(id)sender {
+- (IBAction)myContentButtonTapped:(id)sender {
 	
 	// Push the following VC onto the stack
 	TAMyContentVC *myContentVC = [[TAMyContentVC alloc] initWithNibName:@"TAMyContentVC" bundle:nil];
@@ -623,21 +652,15 @@
 	[myContentVC release];
 }
 
-- (void)dealloc {
+
+- (IBAction)findFriendsButtonTapped:(id)sender {
 	
-	[followingUserBtn release];
-	[avatarURL release];
-	[nameLabel release];
-	[photosBtn release];
-	[username release];
-    [followUserBtn release];
-    [followingBtn release];
-    [followersBtn release];
-	[usernameLabel release];
-	[avatarView release];
-	[myContentBtn release];
-    [super dealloc];
+	// Push the following VC onto the stack
+	TAFriendsVC *friendsVC = [[TAFriendsVC alloc] initWithNibName:@"TAFriendsVC" bundle:nil];
+	[self.navigationController pushViewController:friendsVC animated:YES];
+	[friendsVC release];
 }
+
 
 		 
 @end

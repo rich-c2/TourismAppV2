@@ -10,7 +10,7 @@
 
 @class JSONFetcher;
 
-@protocol LocationsDelegate
+@protocol CitiesDelegate
 
 - (void)locationSelected:(NSDictionary *)city;
 
@@ -18,7 +18,7 @@
 
 @interface TACitiesListVC : UIViewController {
 
-	id <LocationsDelegate> delegate;
+	id <CitiesDelegate> delegate;
 	
 	JSONFetcher *citiesFetcher;
 	
@@ -30,7 +30,7 @@
 	NSArray *cities;
 }
 
-@property (nonatomic, retain) id <LocationsDelegate> delegate;
+@property (nonatomic, retain) id <CitiesDelegate> delegate;
 
 @property (nonatomic, retain) IBOutlet UISearchBar *searchField;
 @property (nonatomic, retain) IBOutlet UITableView *citiesTable;

@@ -7,15 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
+#import "TACitiesListVC.h"
 
-@interface TASettingsVC : UIViewController {
+@interface TASettingsVC : UIViewController <CitiesDelegate, MFMailComposeViewControllerDelegate> {
 
-	NSArray *listItems;
+	NSDictionary *menuDictionary;
+	NSArray *keys;
 	
 	IBOutlet UITableView *settingsTable;
 }
 
-@property (nonatomic, retain) NSArray *listItems;
+@property (nonatomic, retain) NSDictionary *menuDictionary;
+@property (nonatomic, retain) NSArray *keys;
 
 @property (nonatomic, retain) IBOutlet UITableView *settingsTable;
 

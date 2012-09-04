@@ -115,7 +115,7 @@
 							<object class="IBUIButton" id="39599856">
 								<reference key="NSNextResponder" ref="366468853"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 118}, {130, 37}}</string>
+								<string key="NSFrame">{{20, 113}, {130, 37}}</string>
 								<reference key="NSSuperview" ref="366468853"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="907371316"/>
@@ -151,7 +151,7 @@
 							<object class="IBUIButton" id="907371316">
 								<reference key="NSNextResponder" ref="366468853"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{170, 118}, {130, 37}}</string>
+								<string key="NSFrame">{{170, 113}, {130, 37}}</string>
 								<reference key="NSSuperview" ref="366468853"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1016937871"/>
@@ -220,7 +220,7 @@
 							<object class="IBUIButton" id="1016937871">
 								<reference key="NSNextResponder" ref="366468853"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 175}, {280, 37}}</string>
+								<string key="NSFrame">{{20, 165}, {280, 37}}</string>
 								<reference key="NSSuperview" ref="366468853"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1032638701"/>
@@ -242,7 +242,7 @@
 							<object class="IBUIButton" id="1032638701">
 								<reference key="NSNextResponder" ref="366468853"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 225}, {280, 37}}</string>
+								<string key="NSFrame">{{20, 209}, {280, 37}}</string>
 								<reference key="NSSuperview" ref="366468853"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="744523475"/>
@@ -264,7 +264,29 @@
 							<object class="IBUIButton" id="744523475">
 								<reference key="NSNextResponder" ref="366468853"/>
 								<int key="NSvFlags">-2147483356</int>
-								<string key="NSFrame">{{20, 275}, {280, 37}}</string>
+								<string key="NSFrame">{{20, 253}, {280, 37}}</string>
+								<reference key="NSSuperview" ref="366468853"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="180603624"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+								<int key="IBUIContentVerticalAlignment">0</int>
+								<int key="IBUIButtonType">1</int>
+								<string key="IBUINormalTitle">My Content</string>
+								<reference key="IBUIHighlightedTitleColor" ref="739911370"/>
+								<object class="NSColor" key="IBUINormalTitleColor">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
+								</object>
+								<reference key="IBUINormalTitleShadowColor" ref="175195338"/>
+								<reference key="IBUIFontDescription" ref="92671930"/>
+								<reference key="IBUIFont" ref="231104639"/>
+							</object>
+							<object class="IBUIButton" id="180603624">
+								<reference key="NSNextResponder" ref="366468853"/>
+								<int key="NSvFlags">-2147483356</int>
+								<string key="NSFrame">{{20, 298}, {280, 37}}</string>
 								<reference key="NSSuperview" ref="366468853"/>
 								<reference key="NSWindow"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -272,7 +294,7 @@
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIContentVerticalAlignment">0</int>
 								<int key="IBUIButtonType">1</int>
-								<string key="IBUINormalTitle">My Content</string>
+								<string key="IBUINormalTitle">Find &amp; Invite Friends</string>
 								<reference key="IBUIHighlightedTitleColor" ref="739911370"/>
 								<object class="NSColor" key="IBUINormalTitleColor">
 									<int key="NSColorSpace">1</int>
@@ -395,6 +417,22 @@
 					<int key="connectionID">32</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">findFriendsBtn</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="180603624"/>
+					</object>
+					<int key="connectionID">38</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">contentScrollView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="366468853"/>
+					</object>
+					<int key="connectionID">40</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">followersButtonTapped:</string>
 						<reference key="source" ref="39599856"/>
@@ -457,6 +495,15 @@
 					</object>
 					<int key="connectionID">33</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">findFriendsButtonTapped:</string>
+						<reference key="source" ref="180603624"/>
+						<reference key="destination" ref="372490531"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">41</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -499,6 +546,7 @@
 							<reference ref="477520141"/>
 							<reference ref="1040997217"/>
 							<reference ref="744523475"/>
+							<reference ref="180603624"/>
 						</array>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -552,6 +600,11 @@
 						<reference key="object" ref="744523475"/>
 						<reference key="parent" ref="366468853"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">34</int>
+						<reference key="object" ref="180603624"/>
+						<reference key="parent" ref="366468853"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -565,6 +618,7 @@
 				<string key="12.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="22.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="30.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="34.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -576,7 +630,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">33</int>
+			<int key="maxID">41</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -584,6 +638,7 @@
 					<string key="className">TAProfileVC</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="findFriendsButtonTapped:">id</string>
 						<string key="followUserButtonTapped:">id</string>
 						<string key="followersButtonTapped:">id</string>
 						<string key="followingButtonTapped:">id</string>
@@ -592,6 +647,10 @@
 						<string key="photosButtonTapped:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="findFriendsButtonTapped:">
+							<string key="name">findFriendsButtonTapped:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="followUserButtonTapped:">
 							<string key="name">followUserButtonTapped:</string>
 							<string key="candidateClassName">id</string>
@@ -619,6 +678,8 @@
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="avatarView">UIImageView</string>
+						<string key="contentScrollView">UIScrollView</string>
+						<string key="findFriendsBtn">UIButton</string>
 						<string key="followUserBtn">UIButton</string>
 						<string key="followersBtn">UIButton</string>
 						<string key="followingBtn">UIButton</string>
@@ -632,6 +693,14 @@
 						<object class="IBToOneOutletInfo" key="avatarView">
 							<string key="name">avatarView</string>
 							<string key="candidateClassName">UIImageView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="contentScrollView">
+							<string key="name">contentScrollView</string>
+							<string key="candidateClassName">UIScrollView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="findFriendsBtn">
+							<string key="name">findFriendsBtn</string>
+							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="followUserBtn">
 							<string key="name">followUserBtn</string>

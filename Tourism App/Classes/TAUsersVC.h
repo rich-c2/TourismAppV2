@@ -14,7 +14,8 @@ typedef enum  {
 	UsersModeRecommendTo = 2,
 	UsersModeFindViaContacts = 3,
 	UsersModeFindViaFB = 4,
-	UsersModeFindViaTwitter = 5
+	UsersModeFindViaTwitter = 5, 
+	UsersModeSearchUsers = 6
 } UsersMode;
 
 @class JSONFetcher;
@@ -29,6 +30,8 @@ typedef enum  {
 @interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource> {
 
 	id <RecommendsDelegate> delegate;
+	
+	IBOutlet UISearchBar *searchField;
 	
 	UsersMode usersMode;
 	
@@ -48,6 +51,8 @@ typedef enum  {
 }
 
 @property (nonatomic, retain) id <RecommendsDelegate> delegate;
+
+@property (nonatomic, retain) IBOutlet UISearchBar *searchField;
 
 @property UsersMode usersMode;
 

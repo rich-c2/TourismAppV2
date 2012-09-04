@@ -19,7 +19,7 @@
 
 @implementation TACommentsVC
 
-@synthesize comments, commentsTable, imageCode;
+@synthesize comments, commentsTable, imageCode, commentField;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -51,6 +51,9 @@
     [commentsTable release];
     self.commentsTable = nil;
 	
+    [commentField release];
+    self.commentField = nil;
+	
     [super viewDidUnload];
 }
 
@@ -64,6 +67,7 @@
 	[imageCode release];
 	[comments release]; 
     [commentsTable release];
+    [commentField release];
     [super dealloc];
 }
 
@@ -73,6 +77,10 @@
 	[super viewWillAppear:animated];
 	
 	if (!loading && !commentsLoaded) {
+		
+		// Show the keyboard and focus on the
+		// comment text field
+		[self.commentField becomeFirstResponder];
 	
 		loading = YES;
 		
@@ -80,6 +88,16 @@
 		
 		[self initCommentsAPI];
 	}
+}
+
+
+#pragma mark - UITextField delegations
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	
+	// Submit comment to the API
+	[self initAddCommentAPI];
+    
+    return YES;
 }
 
 
@@ -225,6 +243,74 @@
 }
 
 
+- (void)initAddCommentAPI {
+	
+	// Clear the text field
+	[self.commentField setText:@""];
+	
+	// Start loading animation
+	[self showLoading];
+	
+	NSString *commentText = self.commentField.text;
+	
+	// Convert string to data for transmission
+	NSString *jsonString = [NSString stringWithFormat:@"code=%@&username=%@&comment=%@&token=%@", self.imageCode, [self appDelegate].loggedInUsername, commentText, [self appDelegate].sessionToken];
+	NSData *jsonData = [jsonString dataUsingEncoding:NSASCIIStringEncoding];
+    
+    // Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"AddComment"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+    
+    // Initialiase the URL Request
+    NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+    addFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+											 receiver:self
+											   action:@selector(receivedAddCommentResponse:)];
+    [addFetcher start];
+}									
+
+
+// Example fetcher response handling
+- (void)receivedAddCommentResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == addFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSLog(@"PRINTING ADD COMMENT DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) {
+			
+			NSDictionary *newCommentData = [results objectForKey:@"comment"];
+			
+			NSLog(@"newCommentData:%@", newCommentData);
+			
+			[self.comments addObject:newCommentData];
+		}
+		
+		[jsonString release];
+    }
+	
+	[self.commentsTable reloadData];
+	
+	[self hideLoading];
+    
+    [addFetcher release];
+    addFetcher = nil;
+}
 
 
 

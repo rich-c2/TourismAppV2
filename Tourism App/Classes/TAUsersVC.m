@@ -21,7 +21,7 @@
 
 @implementation TAUsersVC
 
-@synthesize usersMode, navigationTitle, delegate;
+@synthesize usersMode, navigationTitle, delegate, searchField;
 @synthesize usersTable, selectedUsername, users, managedObjectContext;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -48,6 +48,22 @@
 		self.navigationItem.rightBarButtonItem = buttonItem;
 		[buttonItem release];
 	}
+	
+	
+	// If the mode is UsersModeSearchUsers
+	// then we need to show the search bar
+	if (self.usersMode == UsersModeSearchUsers) {
+		
+		self.searchField.hidden = NO;
+		
+		CGFloat barHeight = self.searchField.frame.size.height;
+		
+		// Adjust the position of the table
+		CGRect frame = self.usersTable.frame;
+		frame.origin.y += barHeight;
+		frame.size.height -= barHeight;
+		[self.usersTable setFrame:frame];
+	}
 }
 
 
@@ -59,6 +75,9 @@
 
 
 - (void)viewDidUnload {
+	
+	[searchField release];
+	self.searchField = nil;
 	
     [super viewDidUnload];
     
@@ -77,7 +96,7 @@
 	[selectedUsername release];
 	[users release];
 	[managedObjectContext release];
-	
+	[searchField release];
 	[super dealloc];
 }
 
@@ -112,10 +131,27 @@
 				[self initFollowersAPI];
 				break;
 				
+			case UsersModeFindViaFB:
+				[self initFBFriendsAPI];
+				break;
+				
 			default:
+				loading = NO;
+				[self hideLoading];
 				break;
 		}
 	}
+}
+
+
+#pragma mark Search Bar Delegate methods
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+	
+	// Hide keyboard
+	[self.searchField resignFirstResponder];
+	
+	// Call "FindUser" API
+	if (!loading) [self initFindUserAPI];
 }
 
 
@@ -135,12 +171,32 @@
 
 - (void)configureCell:(AsyncCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
+	NSString *name;
+	NSString *username;
+	NSString *avatarURL;
+	
     // Retrieve the Dictionary at the given index that's in self.users
 	NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
 	
-	NSString *username = [user objectForKey:@"username"];
-	NSString *name = [user objectForKey:@"name"];
-	NSString *avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
+	
+	// FOR NOW - account for the fact that FindUser returns
+	// a set of Users in a different format
+	if (self.usersMode == UsersModeSearchUsers) {
+	
+		NSDictionary *userData = [user objectForKey:@"user"];
+		
+		name = [NSString stringWithFormat:@"%@ %@", [userData objectForKey:@"firstName"], [userData objectForKey:@"lastName"]];
+		username = [userData objectForKey:@"username"];
+		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userData objectForKey:@"avatar"]];
+	}
+	
+	else {
+		
+		name = [user objectForKey:@"name"];
+		
+		username = [user objectForKey:@"username"];
+		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
+	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
 	
@@ -182,8 +238,23 @@
 		// Retrieve the Dictionary at the given index that's in self.users
 		NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
 		
+		NSString *username;
+		
+		// The FindUser API returns a different structure of JSON
+		// so we have to access the "username" a different way
+		if (self.usersMode == UsersModeSearchUsers) {
+			
+			NSDictionary *userData = [user objectForKey:@"user"];
+			username = [userData objectForKey:@"username"];
+		}
+		
+		else {
+			
+			username = [user objectForKey:@"username"];
+		}
+		
 		TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-		[profileVC setUsername:[user objectForKey:@"username"]];
+		[profileVC setUsername:username];
 		
 		[self.navigationController pushViewController:profileVC animated:YES];
 		[profileVC release];
@@ -377,6 +448,65 @@
 	// Go back to Create Guide VC
 	[self.navigationController popViewControllerAnimated:YES];
 }
+
+
+- (void)initFindUserAPI {
+	
+	NSString *postString = [NSString stringWithFormat:@"q=%@", self.searchField.text];
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"FindUser"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	usersFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												   receiver:self action:@selector(receivedFindUserResponse:)];
+	[usersFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedFindUserResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == usersFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	// We are not loading
+	loading = NO;
+	
+	NSLog(@"PRINTING USER SEARCH DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// We've finished loading the cities
+		usersLoaded = YES;
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		// Build an array from the dictionary for easy access to each entry
+		self.users = [results objectForKey:@"users"];
+		
+		NSLog(@"self.users:%@", self.users);
+    }
+	
+	[self hideLoading];
+	
+	[self.usersTable reloadData];
+    
+    [usersFetcher release];
+    usersFetcher = nil;
+}
+
 
 
 @end

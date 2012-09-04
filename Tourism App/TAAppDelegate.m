@@ -19,7 +19,6 @@
 #import "Guide.h"
 #import "Tag.h"
 
-
 NSString* const DEMO_PASSWORD = @"pass";
 NSString* const DEMO_USERNAME = @"fuzzyhead";
 NSString* const API_ADDRESS = @"http://want.supergloo.net.au/api/";
@@ -374,6 +373,7 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
 	return url;
 } 
+
 
 
 #pragma LOGIN METHODS 
