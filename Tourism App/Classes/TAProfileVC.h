@@ -62,6 +62,7 @@
 @property (nonatomic, retain) IBOutlet UIButton *findFriendsBtn;
 @property (nonatomic, retain) IBOutlet UIScrollView *contentScrollView;
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil observeLogin:(BOOL)observe;
 
 - (void)showLoading;
 - (void)hideLoading;
@@ -77,5 +78,7 @@
 
 - (IBAction)myContentButtonTapped:(id)sender;
 - (IBAction)findFriendsButtonTapped:(id)sender;
+
+- (void)willLogout;
 
 @end

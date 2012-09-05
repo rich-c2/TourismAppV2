@@ -245,9 +245,6 @@
 
 - (void)initAddCommentAPI {
 	
-	// Clear the text field
-	[self.commentField setText:@""];
-	
 	// Start loading animation
 	[self showLoading];
 	
@@ -269,6 +266,9 @@
 											 receiver:self
 											   action:@selector(receivedAddCommentResponse:)];
     [addFetcher start];
+	
+	// Clear the text field
+	[self.commentField setText:@""];
 }									
 
 

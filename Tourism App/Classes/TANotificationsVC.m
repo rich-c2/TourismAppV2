@@ -463,4 +463,11 @@
 
 
 
+- (void)willLogout {
+    
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
+
+
+
 @end

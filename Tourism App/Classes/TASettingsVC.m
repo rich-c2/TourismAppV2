@@ -9,6 +9,13 @@
 #import "TASettingsVC.h"
 #import "TACitiesListVC.h"
 #import <MessageUI/MessageUI.h>
+#import "TAAppDelegate.h"
+#import "JSONFetcher.h"
+#import "SBJson.h"
+#import "SVProgressHUD.h"
+#import "EditProfileVC.h"
+
+static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 @interface TASettingsVC ()
 
@@ -32,14 +39,23 @@
 	
     [super viewDidLoad];
 	
-	NSArray *accountObjects = [NSArray arrayWithObjects:@"Private photos", @"Default city", nil];
+	NSArray *accountObjects = [NSArray arrayWithObjects:@"Log out", @"Private photos", @"Edit profile", nil];
 	NSArray *otherObjects = [NSArray arrayWithObjects:@"About", @"Contact support", nil];
+	NSArray *cityObjects = [NSArray arrayWithObjects:[self getUsersDefaultCity], nil];
 	
-	self.keys = [NSArray arrayWithObjects:@"Account", @"Other", nil];
-	NSArray *objects = [NSArray arrayWithObjects:accountObjects, otherObjects, nil];
+	self.keys = [NSArray arrayWithObjects:@"Account", @"Default City", @"Other", nil];
+	NSArray *objects = [NSArray arrayWithObjects:accountObjects, cityObjects, otherObjects, nil];
 	
-	self.menuDictionary = [NSDictionary dictionaryWithObjects:objects forKeys:self.keys];
+	self.menuDictionary = [NSMutableDictionary dictionaryWithObjects:objects forKeys:self.keys];
 }
+
+
+#pragma mark - Private Methods
+- (TAAppDelegate *)appDelegate {
+	
+    return (TAAppDelegate *)[[UIApplication sharedApplication] delegate];
+}
+
 
 - (void)viewDidUnload {
 	
@@ -70,11 +86,20 @@
 
 - (void)locationSelected:(NSDictionary *)city {
 	
-	// Set the selected City
-	//[self setSelectedCity:city]; 
+	[self showLoading];
 	
-	// Set the city button's title to that of the City selected
-	//[self.cityBtn setTitle:[city objectForKey:@"city"] forState:UIControlStateNormal];
+	NSString *newCity = [city objectForKey:@"city"];
+	
+	[self initUpdateProfileAPI:newCity];
+	
+	// Replace the default city value in the menuDictionary
+	NSArray *newCityObjects = [NSArray arrayWithObjects:newCity, nil];
+	[self.menuDictionary setValue:newCityObjects forKey:@"Default City"];
+	
+	[self.settingsTable reloadData];
+	
+	// A default city has just been selected. Store it.
+	[[NSUserDefaults standardUserDefaults] setObject:newCity forKey:kUserDefaultCityKey];
 }
 
 
@@ -164,16 +189,35 @@
 	NSArray *listData =[self.menuDictionary objectForKey:[self.keys objectAtIndex:[indexPath section]]]; 
 	NSString *listItem = [listData objectAtIndex:[indexPath row]];
 		
+	NSString *key = [self.keys objectAtIndex:[indexPath section]];
 	
-	if ([listItem isEqualToString:@"Private photos"]){
+	
+	
+	// DO LOG OUTT!!!!!!!!
+	if ([listItem isEqualToString:@"Log out"]){
+		
+		// Log the user out
+		[self logout];
+	}
+	
+	else if ([listItem isEqualToString:@"Private photos"]){
 		
 		
 	}
+
 	
-	else if ([listItem isEqualToString:@"Default city"]){
+	else if ([listItem isEqualToString:@"Edit profile"]){
+		
+		EditProfileVC *editProfileVC = [[EditProfileVC alloc] initWithNibName:@"EditProfileVC" bundle:nil];
+		
+		[self.navigationController pushViewController:editProfileVC animated:YES];
+		[editProfileVC release];
+	}
+	
+	else if ([key isEqualToString:@"Default City"]){
 		
 		TACitiesListVC *citiesListVC = [[TACitiesListVC alloc] initWithNibName:@"TACitiesListVC" bundle:nil];
-		//[citiesListVC setDelegate:self];
+		[citiesListVC setDelegate:self];
 		
 		[self.navigationController pushViewController:citiesListVC animated:YES];
 		[citiesListVC release];
@@ -213,7 +257,99 @@
 		[picker release];
 	}
 }
+							
+							
+- (NSString *)getUsersDefaultCity {
+	
+	// In time this should be a property that will be saved in NSUserDefaults.
+	NSString *defaultCity = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultCityKey];
+	
+	return defaultCity;
+}
 
+
+
+- (void)initUpdateProfileAPI:(NSString *)newCity {
+	
+	// Convert string to data for transmission
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&city=%@&token=%@", [self appDelegate].loggedInUsername, newCity, [[self appDelegate] sessionToken]];
+    NSData *jsonData = [jsonString dataUsingEncoding:NSASCIIStringEncoding];
+    
+    // Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Login"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+    
+    // Initialiase the URL Request
+    NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+    profileFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self
+													action:@selector(receivedUpdateProfileResponse:)];
+    [profileFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedUpdateProfileResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSLog(@"UPDATE PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == profileFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	//loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		/*NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		 
+		 // Create a dictionary from the JSON string
+		 NSDictionary *results = [jsonString JSONValue];
+		 
+		 // Build an array from the dictionary for easy access to each entry
+		 NSDictionary *newUserData = [results objectForKey:@"user"];
+		 
+		[jsonString release];*/
+	}
+	
+	// Hide loading view
+	[self hideLoading];
+	
+	[profileFetcher release];
+	profileFetcher = nil;
+    
+}
+
+
+- (void)showLoading {
+	
+	[SVProgressHUD showInView:self.view status:nil networkIndicator:YES posY:-1 maskType:SVProgressHUDMaskTypeClear];
+}
+
+
+- (void)hideLoading {
+	
+	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
+}
+
+
+#pragma mark - Public Methods
+
+- (void)logout {
+	
+    [[self appDelegate].loginVC logout];
+}
+
+
+- (void)willLogout {
+    
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
 
 
 @end

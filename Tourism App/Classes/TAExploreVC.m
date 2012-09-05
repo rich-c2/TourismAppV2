@@ -11,6 +11,7 @@
 #import "TAAppDelegate.h"
 #import "TACitiesListVC.h"
 #import "TAMediaResultsVC.h"
+#import "MyCoreLocation.h"
 
 @interface TAExploreVC ()
 
@@ -18,7 +19,9 @@
 
 @implementation TAExploreVC
 
-@synthesize tagBtn, selectedTag, selectedCity, cityBtn;
+@synthesize tagBtn, selectedTag, selectedCity, cityBtn, locationManager, currentLocation;
+@synthesize nearbyBtn;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -30,10 +33,17 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+	
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+	// Get user location
+	MyCoreLocation *location = [[MyCoreLocation alloc] init];
+	self.locationManager = location;
+	[location release];
+	
+	// We are the delegate for the MyCoreLocation object
+	[self.locationManager setCaller:self];
 }
 
 
@@ -46,6 +56,9 @@
 
 - (void)viewDidUnload {
 	
+	self.locationManager = nil;
+	self.currentLocation = nil;
+	
 	self.selectedTag = nil;
 	self.selectedCity = nil;
 	
@@ -53,6 +66,10 @@
 	tagBtn = nil;
 	[cityBtn release];
 	self.cityBtn = nil;
+	
+	[nearbyBtn release];
+	self.nearbyBtn = nil;
+	
     [super viewDidUnload];
 }
 
@@ -65,17 +82,36 @@
 
 - (void)dealloc {
 	
+	[currentLocation release];
+	[locationManager release];
 	[selectedCity release];
 	[selectedTag release];
 	[tagBtn release];
 	[cityBtn release];
+	[nearbyBtn release];
 	[super dealloc];
+}
+
+
+#pragma mark - Private Methods
+- (void)updateLocationDidFinish:(CLLocation *)loc {
+    
+    if (currentLocation) [currentLocation release];
+    currentLocation = [loc retain];
+	
+	// Stop the loading animation
+	//[self.loadingSpinner stopAnimating];
+	
+	NSLog(@"FOUND LOCATION:%f\%f", self.currentLocation.coordinate.latitude, self.currentLocation.coordinate.longitude);
+	
 }
 
 
 #pragma LocationsDelegate
 
 - (void)locationSelected:(NSDictionary *)city {
+	
+	useCurrentLocation = NO;
 	
 	// Set the selected City
 	[self setSelectedCity:city]; 
@@ -96,6 +132,11 @@
 	[self.tagBtn setTitle:tag.title forState:UIControlStateNormal];
 }
 
+
+- (void)willLogout {
+    
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
 
 - (IBAction)selectTagButtonTapped:(id)sender {
 
@@ -125,9 +166,19 @@
 	[mediaResultsVC setCity:[self.selectedCity objectForKey:@"city"]];
 	[mediaResultsVC setTag:self.selectedTag.title];
 	[mediaResultsVC setTagID:self.selectedTag.tagID];
+	
+	
+	// NEARBY FUNCTIONALITY NOT IMPLEMENTED
+	
 
 	[self.navigationController pushViewController:mediaResultsVC animated:YES];
 	[mediaResultsVC release];
+}
+
+
+- (IBAction)nearbyButtonTapped:(id)sender {
+
+	useCurrentLocation = YES;
 }
 
 

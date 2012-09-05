@@ -43,5 +43,6 @@ typedef enum  {
 @property (nonatomic, retain) IBOutlet UITableView *recommendationsTable;
 
 - (NSString *)getSelectedCategory;
+- (void)willLogout;
 
 @end

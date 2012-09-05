@@ -101,8 +101,8 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
 	// Add Profile tab ////////////////////////////////////////////////////////////////////////
 	
-	profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-	[profileVC setUsername:DEMO_USERNAME];
+	profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil observeLogin:YES];
+	
 	
 	UINavigationController *navcon5 = [[UINavigationController alloc] init];
 	[navcon5.navigationBar setTintColor:[UIColor redColor]];

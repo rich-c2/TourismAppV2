@@ -100,6 +100,11 @@
 		9BDF043F15EAEC42008AFBE2 /* Notification.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BDF043E15EAEC42008AFBE2 /* Notification.m */; };
 		9BDF044715EB2531008AFBE2 /* TAImageDetailsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BDF044515EB2531008AFBE2 /* TAImageDetailsVC.m */; };
 		9BDF044815EB2531008AFBE2 /* TAImageDetailsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BDF044615EB2531008AFBE2 /* TAImageDetailsVC.xib */; };
+		9BE0FE3F15F6C1A400E19851 /* ImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE0FE3E15F6C1A400E19851 /* ImageView.m */; };
+		9BE0FE4415F6C22500E19851 /* TATimelineVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE0FE4215F6C22500E19851 /* TATimelineVC.m */; };
+		9BE0FE4515F6C22500E19851 /* TATimelineVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BE0FE4315F6C22500E19851 /* TATimelineVC.xib */; };
+		9BE0FE4915F6D9AF00E19851 /* EditProfileVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE0FE4715F6D9AF00E19851 /* EditProfileVC.m */; };
+		9BE0FE4A15F6D9AF00E19851 /* EditProfileVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BE0FE4815F6D9AF00E19851 /* EditProfileVC.xib */; };
 		9BE61D3415E475CF008A45D7 /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE61D2115E475CF008A45D7 /* ASIAuthenticationDialog.m */; };
 		9BE61D3515E475CF008A45D7 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE61D2415E475CF008A45D7 /* ASIDataCompressor.m */; };
 		9BE61D3615E475CF008A45D7 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BE61D2615E475CF008A45D7 /* ASIDataDecompressor.m */; };
@@ -234,6 +239,7 @@
 		9B48E96E15EF0C6000919F3A /* TAMediaResultsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAMediaResultsVC.h; path = Classes/TAMediaResultsVC.h; sourceTree = "<group>"; };
 		9B48E96F15EF0C6000919F3A /* TAMediaResultsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAMediaResultsVC.m; path = Classes/TAMediaResultsVC.m; sourceTree = "<group>"; };
 		9B48E97015EF0C6000919F3A /* TAMediaResultsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAMediaResultsVC.xib; path = Classes/TAMediaResultsVC.xib; sourceTree = "<group>"; };
+		9B69152715F6E09400964273 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		9B6BE5E715EEDF0B00635C30 /* Guide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Guide.h; path = Classes/Guide.h; sourceTree = "<group>"; };
 		9B6BE5E815EEDF0B00635C30 /* Guide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Guide.m; path = Classes/Guide.m; sourceTree = "<group>"; };
 		9B726F8915F5C2F6008ED4BB /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -295,6 +301,14 @@
 		9BDF044415EB2531008AFBE2 /* TAImageDetailsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAImageDetailsVC.h; path = Classes/TAImageDetailsVC.h; sourceTree = "<group>"; };
 		9BDF044515EB2531008AFBE2 /* TAImageDetailsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAImageDetailsVC.m; path = Classes/TAImageDetailsVC.m; sourceTree = "<group>"; };
 		9BDF044615EB2531008AFBE2 /* TAImageDetailsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAImageDetailsVC.xib; path = Classes/TAImageDetailsVC.xib; sourceTree = "<group>"; };
+		9BE0FE3D15F6C1A400E19851 /* ImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageView.h; sourceTree = "<group>"; };
+		9BE0FE3E15F6C1A400E19851 /* ImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageView.m; sourceTree = "<group>"; };
+		9BE0FE4115F6C22500E19851 /* TATimelineVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TATimelineVC.h; path = Classes/TATimelineVC.h; sourceTree = "<group>"; };
+		9BE0FE4215F6C22500E19851 /* TATimelineVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TATimelineVC.m; path = Classes/TATimelineVC.m; sourceTree = "<group>"; };
+		9BE0FE4315F6C22500E19851 /* TATimelineVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TATimelineVC.xib; path = Classes/TATimelineVC.xib; sourceTree = "<group>"; };
+		9BE0FE4615F6D9AE00E19851 /* EditProfileVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditProfileVC.h; sourceTree = "<group>"; };
+		9BE0FE4715F6D9AF00E19851 /* EditProfileVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditProfileVC.m; sourceTree = "<group>"; };
+		9BE0FE4815F6D9AF00E19851 /* EditProfileVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditProfileVC.xib; sourceTree = "<group>"; };
 		9BE61D2015E475CF008A45D7 /* ASIAuthenticationDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIAuthenticationDialog.h; sourceTree = "<group>"; };
 		9BE61D2115E475CF008A45D7 /* ASIAuthenticationDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIAuthenticationDialog.m; sourceTree = "<group>"; };
 		9BE61D2215E475CF008A45D7 /* ASICacheDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASICacheDelegate.h; sourceTree = "<group>"; };
@@ -466,6 +480,10 @@
 		9B09862E15D89F27006F8B63 /* Tourism App */ = {
 			isa = PBXGroup;
 			children = (
+				9B69152715F6E09400964273 /* Constants.h */,
+				9BE0FE4615F6D9AE00E19851 /* EditProfileVC.h */,
+				9BE0FE4715F6D9AF00E19851 /* EditProfileVC.m */,
+				9BE0FE4815F6D9AF00E19851 /* EditProfileVC.xib */,
 				9BEF9C4E15E371BE000AEE5E /* AppDelegate */,
 				9BE61D1E15E4755A008A45D7 /* ASI */,
 				9BDEAA0815EC8867000EF65F /* Explore */,
@@ -672,12 +690,17 @@
 		9BD7A00A15EDD5200033EB64 /* Templates */ = {
 			isa = PBXGroup;
 			children = (
+				9BE0FE3D15F6C1A400E19851 /* ImageView.h */,
+				9BE0FE3E15F6C1A400E19851 /* ImageView.m */,
 				9BEF9C4115E3408A000AEE5E /* TAImageGridVC.h */,
 				9BEF9C4215E3408A000AEE5E /* TAImageGridVC.m */,
 				9BEF9C4315E3408A000AEE5E /* TAImageGridVC.xib */,
 				9B7B0A0815EB49AB001C2E3E /* TASimpleListVC.h */,
 				9B7B0A0915EB49AB001C2E3E /* TASimpleListVC.m */,
 				9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */,
+				9BE0FE4115F6C22500E19851 /* TATimelineVC.h */,
+				9BE0FE4215F6C22500E19851 /* TATimelineVC.m */,
+				9BE0FE4315F6C22500E19851 /* TATimelineVC.xib */,
 			);
 			name = Templates;
 			sourceTree = "<group>";
@@ -931,6 +954,8 @@
 				9BF6244515F4852500DB6B0B /* TAMapItVC.xib in Resources */,
 				9BF6244A15F4957A00DB6B0B /* TASettingsVC.xib in Resources */,
 				9BD9B40F15F5798F00179B85 /* TAFriendsVC.xib in Resources */,
+				9BE0FE4515F6C22500E19851 /* TATimelineVC.xib in Resources */,
+				9BE0FE4A15F6D9AF00E19851 /* EditProfileVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1045,6 +1070,9 @@
 				9BF6244915F4957A00DB6B0B /* TASettingsVC.m in Sources */,
 				9BD9B40E15F5798F00179B85 /* TAFriendsVC.m in Sources */,
 				9B726F8F15F5C320008ED4BB /* SBJsonBase.m in Sources */,
+				9BE0FE3F15F6C1A400E19851 /* ImageView.m in Sources */,
+				9BE0FE4415F6C22500E19851 /* TATimelineVC.m in Sources */,
+				9BE0FE4915F6D9AF00E19851 /* EditProfileVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

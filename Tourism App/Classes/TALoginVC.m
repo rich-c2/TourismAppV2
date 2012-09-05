@@ -12,6 +12,11 @@
 #import "JSONFetcher.h"
 #import "SBJson.h"
 #import "SVProgressHUD.h"
+#import "TAFeedVC.h"
+#import "TAExploreVC.h"
+#import "TACameraVC.h"
+#import "TAProfileVC.h"
+#import "TANotificationsVC.h"
 
 static NSString *kAccountUsernameSavedKey = @"accountUsernameSavedKey";
 static NSString *kSavedUsernameKey = @"savedUsernameKey";
@@ -244,6 +249,35 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		NSString *savedPassword = [defaults objectForKey:kSavedPasswordKey];
         self.passwordField.text = savedPassword;
     }
+}
+
+
+- (void)logout {
+    
+    // Clear objects
+    TAAppDelegate *appDelegate = [self appDelegate];
+    
+    // LOGOUT FROM SERVER?
+    
+    // Reset workordersLoaded
+	[appDelegate setUserLoggedIn:NO];
+    appDelegate.loggedInUsername = nil;
+	appDelegate.sessionToken = nil;
+    
+    // Re-configure each tab's view controllers
+    [(TAFeedVC *)[[(UINavigationController *)[appDelegate.tabBarController.viewControllers objectAtIndex:0] viewControllers] objectAtIndex:0] willLogout];
+    
+    [(TAExploreVC *)[[(UINavigationController *)[appDelegate.tabBarController.viewControllers objectAtIndex:1] viewControllers] objectAtIndex:0] willLogout];
+    
+    [(TACameraVC *)[[(UINavigationController *)[appDelegate.tabBarController.viewControllers objectAtIndex:2] viewControllers] objectAtIndex:0] willLogout];
+	
+    [(TANotificationsVC *)[(UINavigationController *)[appDelegate.tabBarController.viewControllers objectAtIndex:3] topViewController] willLogout];
+    
+    [(TAProfileVC *)[(UINavigationController *)[appDelegate.tabBarController.viewControllers objectAtIndex:4] topViewController] willLogout];
+	
+    // Reset Window to display Login form
+    appDelegate.window.rootViewController = self;
+	
 }
 
 

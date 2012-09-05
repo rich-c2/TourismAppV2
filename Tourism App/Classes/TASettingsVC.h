@@ -10,15 +10,19 @@
 #import <MessageUI/MessageUI.h>
 #import "TACitiesListVC.h"
 
+@class JSONFetcher;
+
 @interface TASettingsVC : UIViewController <CitiesDelegate, MFMailComposeViewControllerDelegate> {
 
-	NSDictionary *menuDictionary;
+	NSMutableDictionary *menuDictionary;
 	NSArray *keys;
 	
 	IBOutlet UITableView *settingsTable;
+	
+	JSONFetcher *profileFetcher;
 }
 
-@property (nonatomic, retain) NSDictionary *menuDictionary;
+@property (nonatomic, retain) NSMutableDictionary *menuDictionary;
 @property (nonatomic, retain) NSArray *keys;
 
 @property (nonatomic, retain) IBOutlet UITableView *settingsTable;

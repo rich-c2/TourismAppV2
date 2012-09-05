@@ -13,12 +13,14 @@
 #import "GridImage.h"
 #import "SVProgressHUD.h"
 #import "TAImageDetailsVC.h"
+#import "TATimelineVC.h"
 
 
 #define IMAGE_VIEW_TAG 7000
 #define GRID_IMAGE_WIDTH 75.0
 #define GRID_IMAGE_HEIGHT 75.0
 #define IMAGE_PADDING 4.0
+#define MAIN_CONTENT_HEIGHT 367.0
 
 static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
@@ -28,7 +30,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 @implementation TAFeedVC
 
-@synthesize imagesView, gridScrollView, loadMoreButton;
+@synthesize imagesView, gridScrollView;
 @synthesize images, feedMode;
 
 
@@ -54,7 +56,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	self.images = [NSMutableArray array];
 	
 	// The fetch size for each API call
-    fetchSize = 16;
+    fetchSize = 20;
 	
 	// Add a bar button item to the top-right of the navigation
 	// bar that will trigeer an Action Sheet containing the different
@@ -81,11 +83,10 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
     self.gridScrollView = nil;
     [imagesView release];
     self.imagesView = nil;
-    [loadMoreButton release];
-    self.loadMoreButton = nil;
 	
     [super viewDidUnload];
 }
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -125,6 +126,45 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 				break;
 		}
 	}*/
+}
+
+
+#pragma UIScrollViewDelegate methods 
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	
+	// Set the "refresh" iVar to YES when we've
+	// detected that the user has dragged the scroll
+	// view to the bottom
+	NSInteger yOffset = (int)scrollView.contentOffset.y;
+	NSInteger height = (int)scrollView.contentSize.height;
+	NSInteger differential = height - yOffset;
+	
+	NSLog(@"yOffset:%i|height:%i|differential:%i", yOffset, height, differential);
+	
+	if (differential == MAIN_CONTENT_HEIGHT) {
+		refresh = YES;
+	}
+}
+
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+	
+	// If the scroll view has reach the "refresh" point
+	// and more images are not currently being
+	// loaded, then load more images
+	if (refresh && !loading){
+		
+		NSLog(@"REFRESSHHHHHHHH");
+		
+		[self loadMoreImages];
+	}
+}
+
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+
+	NSLog(@"REFRESH IS:%@", ((refresh) ? @"YES" : @"NO"));
 }
 
 
@@ -199,13 +239,15 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)gridImageButtonClicked:(NSInteger)viewTag {
 	
 	NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
+	NSString *imageID = [image objectForKey:@"code"];
 	
 	// Push the Image Details VC onto the stack
-	TAImageDetailsVC *imageDetailsVC = [[TAImageDetailsVC alloc] initWithNibName:@"TAImageDetailsVC" bundle:nil];
-	[imageDetailsVC setImageCode:[image objectForKey:@"code"]];
+	TATimelineVC *timelineVC = [[TATimelineVC alloc] initWithNibName:@"TATimelineVC" bundle:nil];
+	[timelineVC setImages:self.images];
+	[timelineVC setSelectedImageID:imageID];
 	
-	[self.navigationController pushViewController:imageDetailsVC animated:YES];
-	[imageDetailsVC release];
+	[self.navigationController pushViewController:timelineVC animated:YES];
+	[timelineVC release];
 }
 
 
@@ -230,6 +272,12 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 
 #pragma MY-METHODS
+
+- (void)willLogout {
+    
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
+
 
 - (void)initLoginObserver {
 	
@@ -262,6 +310,15 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		
 		[self showLoading];
 		
+		// Reset page index and call the two
+		// relevant APIs
+		imagesPageIndex = 0;
+		
+		[self removeThumbnails];
+		
+		// Clear images array
+		[self.images removeAllObjects];
+		
 		// Load the FEED from the API
 		self.feedMode = FeedModeFeed;
 		[self initFeedAPI];
@@ -269,8 +326,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		// Get an iVar of TAAppDelegate
 		// and STOP observing the AppDelegate's userLoggedIn
 		// property now that the user HAS logged-in
-		TAAppDelegate *appDelegate = [self appDelegate];
-		[appDelegate removeObserver:self forKeyPath:@"userLoggedIn"];
+		//TAAppDelegate *appDelegate = [self appDelegate];
+		//[appDelegate removeObserver:self forKeyPath:@"userLoggedIn"];
 	}
 }
 
@@ -357,18 +414,13 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
 	// Update the scroll view's content height
 	CGRect imagesViewFrame = self.imagesView.frame;
-	CGRect loadMoreFrame = self.loadMoreButton.frame;
 	CGFloat gridRowsHeight = (rowCount * (GRID_IMAGE_HEIGHT + IMAGE_PADDING));
-	CGFloat sViewContentHeight = imagesViewFrame.origin.y + gridRowsHeight  + loadMoreFrame.size.height + IMAGE_PADDING;
+	
+	CGFloat sViewContentHeight = imagesViewFrame.origin.y + gridRowsHeight + IMAGE_PADDING;
 	
 	// Set image view frame height
 	imagesViewFrame.size.height = gridRowsHeight;
 	[self.imagesView setFrame:imagesViewFrame];
-	
-	// POSITION LOAD MORE BUTTON
-	CGFloat buttonYPos = imagesViewFrame.origin.y + gridRowsHeight;
-	loadMoreFrame.origin.y = buttonYPos; 
-	[self.loadMoreButton setFrame:loadMoreFrame];
 	
 	// Adjust content height of the scroll view
 	[self.gridScrollView setContentSize:CGSizeMake(self.gridScrollView.frame.size.width, sViewContentHeight)];
@@ -442,9 +494,6 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	// update the page index for 
 	// the next batch
 	imagesPageIndex++;
-	
-	// Re-enable the "load more" button
-	[self.loadMoreButton setEnabled:YES];
 	
 	// Update the image grid
 	[self updateImageGrid];
@@ -642,20 +691,33 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 }
 
 
-- (IBAction)loadMoreButtonClicked:(id)sender {
+- (IBAction)loadMoreImages {
 	
-	[self.loadMoreButton setEnabled:NO];
+	[self showLoading];
 	
-	//[self initLatestAPI];
+	refresh = NO;
 	
-	//[self initPopularAPI];
-	
-	[self initFeedAPI];
-	
-	// Make a new call to the Uploads API
-	//if (self.imagesMode == ImagesModeMyPhotos) [self initUploadsAPI];
-	
-	//else if (self.imagesMode == ImagesModeCityTag) [self initFindMediaAPI];
+	switch (self.feedMode) {
+			
+		case FeedModeFeed:
+			[self initFeedAPI];
+			break;
+			
+		case FeedModeLatest:
+			[self initLatestAPI];
+			break;
+			
+		case FeedModePopular:
+			[self initPopularAPI];
+			break;
+			
+		case FeedModeCity:
+			[self initFindMediaAPI];
+			break;
+			
+		default:
+			break;
+	}
 }
 
 

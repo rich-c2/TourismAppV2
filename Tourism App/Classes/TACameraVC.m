@@ -28,8 +28,10 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
-        // Custom initialization
+        
+		self.title = @"Share";
     }
     return self;
 }
@@ -63,6 +65,7 @@
 	self.takePhotoBtn = nil;
 	[selectPhotoBtn release];
 	self.selectPhotoBtn = nil;
+	
     [super viewDidUnload];
 }
 
@@ -354,6 +357,12 @@
     }
 	
     return gps;
+}
+
+
+- (void)willLogout {
+    
+    [self.navigationController popToRootViewControllerAnimated:NO];
 }
 
 

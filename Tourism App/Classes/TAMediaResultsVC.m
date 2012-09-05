@@ -98,8 +98,6 @@
 	[self showLoading];
 	
 	[self initFindMediaAPI];
-	
-	//[self initFindGuidesAPI];
 }
 
 

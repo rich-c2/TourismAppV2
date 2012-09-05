@@ -44,5 +44,6 @@
 @property (nonatomic, retain) IBOutlet UIImageView *photo;
 
 - (IBAction)newPhotoApproved:(id)sender;
+- (void)willLogout;
 
 @end

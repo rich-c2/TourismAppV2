@@ -29,6 +29,8 @@
 @synthesize scrollView, progressIndicator, avatar, imageCode, usernameByline;
 @synthesize usernameBtn, subtitle, mainPhoto, imageData, avatarURL, selectedURL;
 @synthesize captionLabel, loveBtn, mapBtn, commentBtn, lovesCountBtn;
+@synthesize verifiedView;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -117,6 +119,8 @@
 	
 	[lovesCountBtn release];
 	lovesCountBtn = nil;
+	[verifiedView release];
+	verifiedView = nil;
     [super viewDidUnload];
 }
 
@@ -144,6 +148,7 @@
     [progressIndicator release];
     [subtitle release];
 	[lovesCountBtn release];
+	[verifiedView release];
     [super dealloc];
 }
 
@@ -267,13 +272,9 @@
 	if ([imageKeys containsObject:@"count"]) { 
 		
 		NSDictionary *countDict = [self.imageData objectForKey:@"count"];
-		NSInteger lovesCount = [[countDict objectForKey:@"loves"] intValue];
+		lovesCount = [[countDict objectForKey:@"loves"] intValue];
 		
-		NSString *lovesText;
-		if (lovesCount == 1) lovesText = [NSString stringWithFormat:@"%i love", lovesCount];
-		else lovesText = [NSString stringWithFormat:@"%i loves", lovesCount];
-		
-		[self.lovesCountBtn setTitle:[NSString stringWithFormat:lovesText] forState:UIControlStateNormal];
+		[self updateLovesCount];
 	}
 	
 	
@@ -299,6 +300,19 @@
 		NSDictionary *pathsDict = [self.imageData objectForKey:@"paths"];
 		[self initImage:[NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [pathsDict objectForKey:@"zoom"]]];
 	}
+	
+	
+	// VERIFIED
+	if ([imageKeys containsObject:@"verified"]) {
+		
+		NSInteger verified = [[self.imageData objectForKey:@"verified"] intValue];
+		
+		UIColor *bgColor;
+		bgColor = ((verified == 1) ? [UIColor greenColor] : [UIColor redColor]);
+		
+		[self.verifiedView setBackgroundColor:bgColor];
+	}
+	
 }
 
 
@@ -509,6 +523,9 @@
 		// Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
 		
+		
+		NSLog(@"LOVED RESPONSE:%@", jsonString);
+		
 		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
 		
@@ -526,6 +543,9 @@
 		isLoved = YES;
 		
 		[self updateLovedStatus];
+		
+		lovesCount++;
+		[self updateLovesCount];
 	}
 	
 	// This is to update the correct "ImageView" when viewing a bunch
@@ -535,6 +555,18 @@
 	[loveFetcher release];
 	loveFetcher = nil;
     
+}
+
+
+- (void)updateLovesCount {
+	
+	// LOVES
+	NSString *countStr;
+	
+	if (lovesCount == 1) countStr = [NSString stringWithFormat:@"%i love", lovesCount];
+	else countStr = [NSString stringWithFormat:@"%i loves", lovesCount];
+	
+	[self.lovesCountBtn setTitle:countStr forState:UIControlStateNormal];
 }
 
 
@@ -591,6 +623,9 @@
 		isLoved = NO;
 		
 		[self updateLovedStatus];
+		
+		lovesCount--;
+		[self updateLovesCount];
 	}
 	
 	// This is to update the correct "ImageView" when viewing a bunch

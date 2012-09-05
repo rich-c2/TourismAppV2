@@ -35,14 +35,14 @@
 @synthesize findFriendsBtn, contentScrollView;
 
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil observeLogin:(BOOL)observe {
 	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 	
     if (self) {
         
 		// Listen for when the user has logged-in
-		[self initLoginObserver];
+		if (observe) [self initLoginObserver];
 		
 		self.title = @"Account";
     }
@@ -62,7 +62,8 @@
     [super viewDidLoad];
 	
 	// Update username label
-	[self.usernameLabel setText:self.username];
+	if ([self.username length] > 0)
+		[self.usernameLabel setText:self.username];
 }
 
 
@@ -110,39 +111,39 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	
-	// Start fetching the Profile API
-	// if we're not already loading it.
-	if (!loading && !profileLoaded) { 
-		
-		[self showLoading];
-		
-		[self loadUserDetails];
-	}
+	if ([self.username length] > 0){
 	
-	// IF we're not already loading 
-	// "isFollowing" API then start it
-	if (!loadingIsFollowing && !isFollowingLoaded) {
-		
-		// IF the loggedIn User is look at his/her own profile
-		// then disable the follow/unfollow buttons
-		if (![self.username isEqualToString:[self appDelegate].loggedInUsername]) {
-	
-			[self detectFollowStatus];
+		// Start fetching the Profile API
+		// if we're not already loading it.
+		if (!loading && !profileLoaded) { 
+			
+			[self showLoading];
+			
+			[self loadUserDetails];
 		}
-	}
-	
-	// FOR NOW: Add an "save" button to the top-right of the nav bar
-	// if this is a guide NOT created by the logged-in user
-	if (!self.navigationItem.rightBarButtonItem && [self.username isEqualToString:[self appDelegate].loggedInUsername]) {
 		
-		UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"settings" style:UIBarButtonItemStyleDone target:self action:@selector(viewSettings:)];
-		buttonItem.target = self;
-		self.navigationItem.rightBarButtonItem = buttonItem;
-		[buttonItem release];
+		// IF we're not already loading 
+		// "isFollowing" API then start it
+		if (!loadingIsFollowing && !isFollowingLoaded) {
+			
+			// IF the loggedIn User is look at his/her own profile
+			// then disable the follow/unfollow buttons
+			if (![self.username isEqualToString:[self appDelegate].loggedInUsername]) {
 		
-		// SHOW MY CONTENT BUTTON
-		self.myContentBtn.hidden = NO;
-		self.findFriendsBtn.hidden = NO;
+				[self detectFollowStatus];
+			}
+		}
+		
+		// FOR NOW: Add an "save" button to the top-right of the nav bar
+		// if this is a guide NOT created by the logged-in user
+		if (!self.navigationItem.rightBarButtonItem && [self.username isEqualToString:[self appDelegate].loggedInUsername]) {
+			
+			[self setupNavBar];
+			
+			// SHOW MY CONTENT BUTTON
+			self.myContentBtn.hidden = NO;
+			self.findFriendsBtn.hidden = NO;
+		}
 	}
 	
 	[super viewWillAppear:animated];
@@ -199,15 +200,33 @@
 	
 	if (loggedIn == 1) {
 		
+		[self setupNavBar];
+		
+		// SHOW MY CONTENT BUTTON
+		self.myContentBtn.hidden = NO;
+		self.findFriendsBtn.hidden = NO;
+		
 		// Set the username for this profile
 		// It equals the username of whoever just logged-in
 		self.username = [self appDelegate].loggedInUsername;
 		
+		[self.usernameLabel setText:self.username];
+		
+		[self showLoading];
+		
+		[self loadUserDetails];
+		
+		
 		// Get an iVar of TAAppDelegate
 		// and STOP observing the AppDelegate's userLoggedIn
 		// property now that the user HAS logged-in
-		TAAppDelegate *appDelegate = [self appDelegate];
-		[appDelegate removeObserver:self forKeyPath:@"userLoggedIn"];
+		//TAAppDelegate *appDelegate = [self appDelegate];
+		//[appDelegate removeObserver:self forKeyPath:@"userLoggedIn"];
+	}
+	
+	else if (loggedIn == 0) { 
+	
+		[self clearUIFields];
 	}
 }
 
@@ -659,6 +678,44 @@
 	TAFriendsVC *friendsVC = [[TAFriendsVC alloc] initWithNibName:@"TAFriendsVC" bundle:nil];
 	[self.navigationController pushViewController:friendsVC animated:YES];
 	[friendsVC release];
+}
+
+
+- (void)willLogout {
+	
+	[self clearUIFields];
+    
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
+
+
+- (void)setupNavBar {
+
+	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"settings" style:UIBarButtonItemStyleDone target:self action:@selector(viewSettings:)];
+	buttonItem.target = self;
+	self.navigationItem.rightBarButtonItem = buttonItem;
+	[buttonItem release];
+}
+
+
+- (void)clearUIFields {
+	
+	// Start 'observing' for when the user
+	// logs in again 
+	//[self initLoginObserver];
+
+	self.username = nil;
+	self.nameLabel.text = nil;
+	self.myContentBtn.hidden = YES;
+	self.findFriendsBtn.hidden = YES;
+	[self.followersBtn setTitle:@"0 Followers" forState:UIControlStateNormal];
+	[self.followingBtn setTitle:@"0 Following" forState:UIControlStateNormal];
+	self.followingUserBtn.hidden = YES;
+	self.followUserBtn.hidden = YES;
+	
+	self.avatarURL = nil;
+	self.avatarView.image = nil;
+	[self.photosBtn setTitle:@"Photos" forState:UIControlStateNormal];
 }
 
 

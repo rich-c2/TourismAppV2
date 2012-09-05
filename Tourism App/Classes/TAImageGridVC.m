@@ -19,6 +19,7 @@
 #define GRID_IMAGE_WIDTH 75.0
 #define GRID_IMAGE_HEIGHT 75.0
 #define IMAGE_PADDING 4.0
+#define MAIN_CONTENT_HEIGHT 367.0
 
 
 @interface TAImageGridVC ()
@@ -28,7 +29,7 @@
 @implementation TAImageGridVC
 
 @synthesize tagID, tag, city;
-@synthesize imagesView, gridScrollView, loadMoreButton;
+@synthesize imagesView, gridScrollView;
 @synthesize images, username, imagesMode;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -45,7 +46,7 @@
     [super viewDidLoad];
 	
 	// The fetch size for each API call
-    fetchSize = 12;
+    fetchSize = 20;
 }
 
 
@@ -68,8 +69,6 @@
     gridScrollView = nil;
     [imagesView release];
     imagesView = nil;
-    [loadMoreButton release];
-    loadMoreButton = nil;
 	
     [super viewDidUnload];
 }
@@ -89,7 +88,6 @@
 	[images release];
     [gridScrollView release];
     [imagesView release];
-    [loadMoreButton release];
     [super dealloc];
 }
 
@@ -140,6 +138,30 @@
 	}
 	
 	[gridImages release];
+}
+
+
+#pragma UIScrollViewDelegate methods 
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+
+	// Set the "refresh" iVar to YES when we've
+	// detected that the user has dragged the scroll
+	// view to the bottom
+	NSInteger yOffset = (int)scrollView.contentOffset.y;
+	NSInteger height = (int)scrollView.contentSize.height;
+	NSInteger differential = height - yOffset;
+	
+	if (differential == MAIN_CONTENT_HEIGHT) refresh = YES;
+}
+
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+
+	// If the scroll view has reach the "refresh" point
+	// and more images are not currently being
+	// loaded, then load more images
+	if (refresh && !loading) [self loadMoreImages];
 }
 
 
@@ -223,16 +245,12 @@
 }
 
 
-- (IBAction)loadMoreButtonClicked:(id)sender {
+- (IBAction)loadMoreImages {
 	
-	[self.loadMoreButton setEnabled:NO];
+	[self showLoading];
 	
-	/*
-	if (self.collectionMode == CollectionModeLikedAndUser) [self callUserImagesAndLovedImagesAPI];
-	else if (self.collectionMode == CollectionModeLiked) [self fetchLovedImages];	
-	else [self fetchUserImages];
-	*/
-	
+	refresh = NO;
+		
 	// Make a new call to the Uploads API
 	if (self.imagesMode == ImagesModeMyPhotos) [self initUploadsAPI];
 	
@@ -312,18 +330,13 @@
 	
 	// Update the scroll view's content height
 	CGRect imagesViewFrame = self.imagesView.frame;
-	CGRect loadMoreFrame = self.loadMoreButton.frame;
 	CGFloat gridRowsHeight = (rowCount * (GRID_IMAGE_HEIGHT + IMAGE_PADDING));
-	CGFloat sViewContentHeight = imagesViewFrame.origin.y + gridRowsHeight  + loadMoreFrame.size.height + IMAGE_PADDING;
+	
+	CGFloat sViewContentHeight = imagesViewFrame.origin.y + gridRowsHeight + IMAGE_PADDING;
 	
 	// Set image view frame height
 	imagesViewFrame.size.height = gridRowsHeight;
 	[self.imagesView setFrame:imagesViewFrame];
-	
-	// POSITION LOAD MORE BUTTON
-	CGFloat buttonYPos = imagesViewFrame.origin.y + gridRowsHeight;
-	loadMoreFrame.origin.y = buttonYPos; 
-	[self.loadMoreButton setFrame:loadMoreFrame];
 	
 	// Adjust content height of the scroll view
 	[self.gridScrollView setContentSize:CGSizeMake(self.gridScrollView.frame.size.width, sViewContentHeight)];
@@ -393,9 +406,6 @@
 	// update the page index for 
 	// the next batch
 	imagesPageIndex++;
-	
-	// Re-enable the "load more" button
-	[self.loadMoreButton setEnabled:YES];
 	
 	// Update the image grid
 	[self updateImageGrid];
@@ -467,9 +477,6 @@
 	// update the page index for 
 	// the next batch
 	imagesPageIndex++;
-	
-	// Re-enable the "load more" button
-	[self.loadMoreButton setEnabled:YES];
 	
 	// Update the image grid
 	[self updateImageGrid];

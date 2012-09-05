@@ -29,7 +29,6 @@ typedef enum  {
 	NSInteger fetchSize;
 	NSInteger imagesPageIndex;
 
-	IBOutlet UIButton *loadMoreButton;
 	IBOutlet UIView *imagesView;
 	IBOutlet UIScrollView *gridScrollView;
 	
@@ -37,6 +36,7 @@ typedef enum  {
 	
 	BOOL loading;
 	BOOL imagesLoaded;
+	BOOL refresh;
 	
 	NSString *username;
 	NSMutableArray *images;
@@ -48,7 +48,6 @@ typedef enum  {
 @property (nonatomic, retain) NSString *tag;
 @property (nonatomic, retain) NSString *city;
 
-@property (nonatomic, retain) IBOutlet UIButton *loadMoreButton;
 @property (nonatomic, retain) IBOutlet UIView *imagesView;
 @property (nonatomic, retain) IBOutlet UIScrollView *gridScrollView;
 

@@ -27,6 +27,13 @@
 	NSURL *selectedURL;
 	
 	
+	// TEMP VERIFIED VIEW
+	IBOutlet UIView *verifiedView;
+	
+	// TEMP LOVES COUNT iVAR
+	NSInteger lovesCount;
+	
+	
 	// Loading iVars
 	BOOL imageLoaded;
 	BOOL loading;
@@ -58,6 +65,8 @@
 @property (nonatomic, retain) NSDictionary *imageData;
 @property (nonatomic, retain) NSURL *avatarURL;
 @property (nonatomic, retain) NSURL *selectedURL;
+
+@property (nonatomic, retain) IBOutlet UIView *verifiedView;
 
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 
