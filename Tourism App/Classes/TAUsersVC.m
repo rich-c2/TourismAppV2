@@ -181,7 +181,7 @@
 	
 	// FOR NOW - account for the fact that FindUser returns
 	// a set of Users in a different format
-	if (self.usersMode == UsersModeSearchUsers) {
+	/*if (self.usersMode == UsersModeSearchUsers) {
 	
 		NSDictionary *userData = [user objectForKey:@"user"];
 		
@@ -190,13 +190,13 @@
 		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userData objectForKey:@"avatar"]];
 	}
 	
-	else {
+	else {*/
 		
 		name = [user objectForKey:@"name"];
 		
 		username = [user objectForKey:@"username"];
 		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
-	}
+	//}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
 	
@@ -242,16 +242,16 @@
 		
 		// The FindUser API returns a different structure of JSON
 		// so we have to access the "username" a different way
-		if (self.usersMode == UsersModeSearchUsers) {
+		/*if (self.usersMode == UsersModeSearchUsers) {
 			
 			NSDictionary *userData = [user objectForKey:@"user"];
 			username = [userData objectForKey:@"username"];
 		}
 		
-		else {
+		else {*/
 			
 			username = [user objectForKey:@"username"];
-		}
+		//}
 		
 		TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
 		[profileVC setUsername:username];

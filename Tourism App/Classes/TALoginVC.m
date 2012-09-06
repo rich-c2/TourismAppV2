@@ -82,6 +82,14 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 }
 
 
+- (void)viewWillAppear:(BOOL)animated {
+
+	[self.usernameField becomeFirstResponder];
+	
+	[super viewWillAppear:animated];
+}
+
+
 #pragma mark - UITextField delegations
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     

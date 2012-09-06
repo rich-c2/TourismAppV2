@@ -15,6 +15,10 @@
 #import "SBJson.h"
 #import "JSONFetcher.h"
 #import "TACommentsVC.h"
+#import "TAMapVC.h"
+#import "TAGuidesListVC.h"
+#import "TAImageGridVC.h"
+#import "Tag.h"
 
 #define IMAGE_HEIGHT 415
 #define IMAGE_PADDING 30
@@ -27,8 +31,8 @@
 
 @implementation TATimelineVC
 
-@synthesize timelineScrollView, selectedImageID;
-@synthesize images;
+@synthesize timelineScrollView, selectedImageID, managedObjectContext;
+@synthesize images, addToGuideBtn, imagesDictionary;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -44,7 +48,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+	self.managedObjectContext = [self appDelegate].managedObjectContext;
 }
 
 
@@ -61,6 +66,8 @@
 	
 	self.selectedImageID = nil;
 	self.images = nil;
+	self.addToGuideBtn = nil;
+	self.imagesDictionary = nil;
 	
     [super viewDidUnload];
 }
@@ -74,6 +81,8 @@
 
 - (void)dealloc {
 	
+	[imagesDictionary release];
+	[addToGuideBtn release];
 	[selectedImageID release];
 	[images release];
     [timelineScrollView release];
@@ -93,14 +102,26 @@
 		
 		[self showLoading];
 		
-		[self populateTimeline];
+		[self createDataProperties];
 		
-		//[self fetchLovedImages];
+		[self populateTimeline];
 	}
 }
 
 
 # pragma UIScrollViewDelegate methods 
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+	
+	self.navigationItem.rightBarButtonItem = nil;
+}
+
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+
+	self.navigationItem.rightBarButtonItem = self.addToGuideBtn;
+}
+
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	
@@ -120,6 +141,12 @@
 		ImageView *imageView = (ImageView *)[self.timelineScrollView viewWithTag:imageViewTag];
 		[imageView initImage];
 	}
+}
+
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	
+	self.navigationItem.rightBarButtonItem = self.addToGuideBtn;
 }
 
 
@@ -186,6 +213,33 @@
 }
 
 
+- (void)mapButtonClicked:(NSString *)imageID location:(NSDictionary *)locationData {
+
+	TAMapVC *mapVC = [[TAMapVC alloc] initWithNibName:@"TAMapVC" bundle:nil];
+	[mapVC setLocationData:locationData];
+	[mapVC setMapMode:MapModeSingle];
+	
+	[self.navigationController pushViewController:mapVC animated:YES];
+	[mapVC release];
+}
+
+
+- (void)cityTagButtonClicked:(NSString *)imageID {
+	
+	NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
+	NSNumber *tagID = [NSNumber numberWithInt:[[image objectForKey:@"tag"] intValue]];
+	NSString *city = [image objectForKey:@"city"];
+
+	TAImageGridVC *imageGridVC = [[TAImageGridVC alloc] initWithNibName:@"TAImageGridVC" bundle:nil];
+	[imageGridVC setImagesMode:ImagesModeCityTag];
+	[imageGridVC setTagID:tagID];
+	[imageGridVC setCity:city];
+
+	[self.navigationController pushViewController:imageGridVC animated:YES];
+	[imageGridVC release];
+}
+
+
 /*
 	This function is responsible for 
 	iterating through the self.images on hand, creating
@@ -220,12 +274,11 @@
 		NSString *avatarURLString = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userDict objectForKey:@"avatar"]];
 		
 		NSString *city = [image objectForKey:@"city"];
-		NSString *tag = [image objectForKey:@"tag"];
+		Tag *tag = [Tag tagWithID:[[image objectForKey:@"tag"] intValue] inManagedObjectContext:self.managedObjectContext];
 		
 		
 		if ([[image objectForKey:@"code"] isEqualToString:self.selectedImageID]) {
 			
-			NSLog(@"SELECTED IMAGE:%@", image);
 			selectedYPos = yPos;
 		}
 		
@@ -236,9 +289,13 @@
 		
 		NSString *timeElapsed = [image objectForKey:@"elapsed"];
 		
+		BOOL verified = (([[image objectForKey:@"verified"] intValue] == 1) ? YES : NO);
+		
 		CGRect viewFrame = CGRectMake(xPos, yPos, 300.0, aViewHeight);
-		ImageView *aView = [[ImageView alloc] initWithFrame:viewFrame imageURL:imageURL username:username avatarURL:avatarURL loves:lovesCount dateText:timeElapsed cityText:city tagText:tag];
-
+		ImageView *aView = [[ImageView alloc] initWithFrame:viewFrame imageURL:imageURL username:username avatarURL:avatarURL loves:lovesCount dateText:timeElapsed cityText:city tagText:tag.title verified:verified];
+		
+		// FOR NOW pass the location data to the image view
+		[aView setLocationData:[image objectForKey:@"location"]];
 		
 		[aView setImageID:imageID];
 		[aView setUsername:username];
@@ -268,6 +325,15 @@
 		CGPoint newOffset = CGPointMake(0.0, (selectedYPos - (IMAGE_PADDING-20)));
 		[self.timelineScrollView setContentOffset:newOffset animated:YES];
 	}
+	
+	// Add submit button to the top nav bar
+	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"Add" style:UIBarButtonItemStyleDone target:self action:@selector(addToGuide:)];
+	buttonItem.target = self;
+	
+	self.addToGuideBtn = buttonItem;
+	[buttonItem release];
+	
+	self.navigationItem.rightBarButtonItem = self.addToGuideBtn;
 	
 	loading = NO;
 	
@@ -438,6 +504,44 @@
 	NSString *text = [self textFromSeconds:seconds];
 	
 	return text;
+}
+
+
+- (void)addToGuide:(id)sender {
+
+	// Use the index and convert it to a tag using the IMAGES_TAG as
+	// the base. Use the tag to access the relevant ImageView
+	// and initialise image download
+	NSInteger imageViewTag = IMAGE_VIEW_TAG + scrollIndex;
+	ImageView *imageView = (ImageView *)[self.timelineScrollView viewWithTag:imageViewTag];
+	
+	NSDictionary *imageData = [self.imagesDictionary objectForKey:[imageView imageID]];
+	
+	NSNumber *tagID = [NSNumber numberWithInt:[[imageData objectForKey:@"tag"] intValue]];
+	
+	TAGuidesListVC *guidesVC = [[TAGuidesListVC alloc] initWithNibName:@"TAGuidesListVC" bundle:nil];
+	[guidesVC setUsername:[self appDelegate].loggedInUsername];
+	[guidesVC setGuidesMode:GuidesModeAddTo];
+	[guidesVC setSelectedTagID:tagID];
+	[guidesVC setSelectedCity:[imageData objectForKey:@"city"]];
+	[guidesVC setSelectedPhotoID:[imageData objectForKey:@"code"]];
+	
+	[self.navigationController pushViewController:guidesVC animated:YES];
+	[guidesVC release];
+}
+
+
+- (void)createDataProperties {
+
+	self.imagesDictionary = [NSMutableDictionary dictionary];
+	
+	for (NSDictionary *image in self.images) {
+	
+		NSString *key = [image objectForKey:@"code"];
+	
+		[self.imagesDictionary setObject:image forKey:key];
+	}
+
 }
 
 

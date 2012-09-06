@@ -136,13 +136,16 @@
 		
 		// FOR NOW: Add an "save" button to the top-right of the nav bar
 		// if this is a guide NOT created by the logged-in user
-		if (!self.navigationItem.rightBarButtonItem && [self.username isEqualToString:[self appDelegate].loggedInUsername]) {
+		if ([self.username isEqualToString:[self appDelegate].loggedInUsername]) {
 			
 			[self setupNavBar];
+		}
+		
+		else {
 			
-			// SHOW MY CONTENT BUTTON
-			self.myContentBtn.hidden = NO;
-			self.findFriendsBtn.hidden = NO;
+			// HIDE MY CONTENT BUTTON
+			self.myContentBtn.hidden = YES;
+			self.findFriendsBtn.hidden = YES;
 		}
 	}
 	
@@ -201,10 +204,6 @@
 	if (loggedIn == 1) {
 		
 		[self setupNavBar];
-		
-		// SHOW MY CONTENT BUTTON
-		self.myContentBtn.hidden = NO;
-		self.findFriendsBtn.hidden = NO;
 		
 		// Set the username for this profile
 		// It equals the username of whoever just logged-in

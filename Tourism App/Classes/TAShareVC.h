@@ -41,6 +41,11 @@
 	NSURL *imageReferenceURL;
 	
 	CLLocation *currentLocation;
+	
+	IBOutlet UILabel *placeTitleLabel;
+	IBOutlet UILabel *placeAddressLabel;
+	IBOutlet UIScrollView *scrollView;
+	
 }
 
 @property (nonatomic, retain) IBOutlet UITextField *captionField;
@@ -57,6 +62,10 @@
 @property (nonatomic, retain) NSURL *imageReferenceURL;
 
 @property (nonatomic, retain) CLLocation *currentLocation;
+
+@property (nonatomic, retain) IBOutlet UILabel *placeTitleLabel;
+@property (nonatomic, retain) IBOutlet UILabel *placeAddressLabel;
+@property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 
 
 @end

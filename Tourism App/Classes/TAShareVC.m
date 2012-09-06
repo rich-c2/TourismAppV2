@@ -30,6 +30,7 @@
 
 @synthesize photo, imageReferenceURL, selectedCity, tagBtn, captionField, map;
 @synthesize currentLocation, selectedTag, cityLabel, recommendToUsernames, placeData;
+@synthesize placeTitleLabel, placeAddressLabel, scrollView;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -56,6 +57,10 @@
 	buttonItem.target = self;
 	self.navigationItem.rightBarButtonItem = buttonItem;
 	[buttonItem release];
+	
+	
+	[self.scrollView setContentSize:CGSizeMake(self.scrollView.frame.size.width, 450.0)];
+	
 	
 	
 	// Determine the 'current location' being used for 
@@ -96,6 +101,15 @@
 	
 	[map release];
 	self.map = nil;
+	[placeTitleLabel release];
+	self.placeTitleLabel = nil;
+	
+	[placeAddressLabel release];
+	self.placeAddressLabel = nil;
+	
+	[scrollView release];
+	self.scrollView = nil;
+	
 	[super viewDidUnload];
 }
 
@@ -121,6 +135,9 @@
 	[tagBtn release];
 	[cityLabel release];
 	[map release];
+	[placeTitleLabel release];
+	[placeAddressLabel release];
+	[scrollView release];
 	[super dealloc];
 }
 
@@ -147,6 +164,26 @@
 	CLLocation *newLocation = [[CLLocation alloc] initWithLatitude:newCoord.latitude longitude:newCoord.longitude];
 	self.currentLocation = newLocation;
 	[newLocation release];
+	
+	// Update place title and place address
+	self.placeTitleLabel.text = [self.placeData objectForKey:@"name"];
+	
+	NSArray *locationKeys = [locationData allKeys];
+	NSMutableString *formattedAddress = [NSMutableString string];
+	
+	if ([locationKeys containsObject:@"address"])
+		[formattedAddress appendString:[locationData objectForKey:@"address"]];
+	
+	if ([locationKeys containsObject:@"city"])
+		[formattedAddress appendFormat:@" %@", [locationData objectForKey:@"city"]];
+	
+	if ([locationKeys containsObject:@"state"])
+		[formattedAddress appendFormat:@" %@", [locationData objectForKey:@"state"]];
+	
+	if ([locationKeys containsObject:@"postalCode"])
+		[formattedAddress appendFormat:@" %@", [locationData objectForKey:@"postalCode"]];
+	
+	self.placeAddressLabel.text = formattedAddress;
 }
 
 

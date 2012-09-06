@@ -188,7 +188,7 @@ NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZ
     
     NSAssert(aFetcher == venuesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	NSLog(@"PRINTING DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"PRINTING VENUES DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
 	//[self.loadingSpinner stopAnimating];
     

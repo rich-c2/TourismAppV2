@@ -13,6 +13,7 @@
 #import "JSONFetcher.h"
 #import "TAAppDelegate.h"
 #import "TAUsersVC.h"
+#import "Tag.h"
 
 @interface TACreateGuideVC ()
 
@@ -21,6 +22,7 @@
 @implementation TACreateGuideVC
 
 @synthesize imageCode, titleField, guideTagID, guideCity, recommendToUsernames;
+@synthesize tagLabel, cityLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,6 +45,13 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	// Set the city label
+	self.cityLabel.text = self.guideCity;
+	
+	// Set the tag label
+	Tag *tag = [Tag tagWithID:[self.guideTagID intValue] inManagedObjectContext:[self appDelegate].managedObjectContext];
+	self.tagLabel.text = tag.title;	
 }
 
 - (void)viewDidUnload {
@@ -55,6 +64,11 @@
 	
 	self.guideTagID = nil; 
 	self.guideCity = nil;
+	
+    [cityLabel release];
+    self.cityLabel = nil;
+    [tagLabel release];
+    self.tagLabel = nil;
 	
 	[super viewDidUnload];
 }
@@ -73,6 +87,8 @@
 
 	[imageCode release];
 	[titleField release];
+    [cityLabel release];
+    [tagLabel release];
 	[super dealloc];
 }
 

@@ -19,6 +19,7 @@
 #import "TAProfileVC.h"
 #import "TACommentsVC.h"
 #import "TAImageGridVC.h"
+#import "TAUsersVC.h"
 
 @interface TAImageDetailsVC ()
 
@@ -58,7 +59,7 @@
 	[self setUIElements];
 	
 	// Scroll view
-	CGSize newSize = CGSizeMake(self.scrollView.frame.size.width, self.loveBtn.frame.origin.y + self.loveBtn.frame.size.height + 10.0);
+	CGSize newSize = CGSizeMake(self.scrollView.frame.size.width, self.loveBtn.frame.origin.y + self.loveBtn.frame.size.height + 100.0);
 	[self.scrollView setContentSize:newSize];
 }
 
@@ -165,6 +166,18 @@
 	}
 	
 	[super viewWillAppear:animated];
+}
+
+
+#pragma RecommendsDelegate methods
+
+- (void)recommendToUsernames:(NSMutableArray *)usernames {
+	
+	[self showLoading];
+	
+	// Retain the usernames that were selected 
+	// for this Guide to be recommend to
+	[self initRecommendAPI:usernames];
 }
 
 
@@ -934,6 +947,72 @@
 	
 	[self.navigationController pushViewController:imageGridVC animated:YES];
 	[imageGridVC release];
+}
+
+
+- (IBAction)initFollowersList:(id)sender {
+
+	TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
+	[usersVC setUsersMode:UsersModeRecommendTo];
+	[usersVC setSelectedUsername:[self appDelegate].loggedInUsername];
+	[usersVC setDelegate:self];
+	
+	[self.navigationController pushViewController:usersVC animated:YES];
+	[usersVC release];
+}
+
+
+- (void)initRecommendAPI:(NSMutableArray *)usernames {
+	
+	NSString *usernamesStr = [NSString stringWithFormat:@"%@", [usernames componentsJoinedByString:@","]];
+
+	NSString *postString = [NSString stringWithFormat:@"token=%@&username=%@&code=%@&usernames=%@", [[self appDelegate] sessionToken], [self appDelegate].loggedInUsername, self.imageCode, usernamesStr];
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Recommend"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	recommendFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												   receiver:self
+													 action:@selector(receivedRecommendResponse:)];
+	[recommendFetcher start];
+	
+}
+
+
+// Example fetcher response handling
+- (void)receivedRecommendResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == recommendFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		//NSDictionary *results = [jsonString JSONValue];
+		
+		//if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString RECOMMEND:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	[recommendFetcher release];
+	recommendFetcher = nil;
+    
 }
 
 

@@ -131,18 +131,18 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 #pragma UIScrollViewDelegate methods 
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	
-	// Set the "refresh" iVar to YES when we've
-	// detected that the user has dragged the scroll
-	// view to the bottom
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+
 	NSInteger yOffset = (int)scrollView.contentOffset.y;
 	NSInteger height = (int)scrollView.contentSize.height;
 	NSInteger differential = height - yOffset;
 	
-	NSLog(@"yOffset:%i|height:%i|differential:%i", yOffset, height, differential);
+	//NSLog(@"yOffset:%i|height:%i|differential:%i", yOffset, height, differential);
 	
 	if (differential == MAIN_CONTENT_HEIGHT) {
+		
+		NSLog(@"FRESH");
+		
 		refresh = YES;
 	}
 }
@@ -165,6 +165,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 
 	NSLog(@"REFRESH IS:%@", ((refresh) ? @"YES" : @"NO"));
+	
+	refresh = NO;
 }
 
 

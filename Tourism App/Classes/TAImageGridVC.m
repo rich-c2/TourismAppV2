@@ -143,16 +143,20 @@
 
 #pragma UIScrollViewDelegate methods 
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-
-	// Set the "refresh" iVar to YES when we've
-	// detected that the user has dragged the scroll
-	// view to the bottom
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+	
 	NSInteger yOffset = (int)scrollView.contentOffset.y;
 	NSInteger height = (int)scrollView.contentSize.height;
 	NSInteger differential = height - yOffset;
 	
-	if (differential == MAIN_CONTENT_HEIGHT) refresh = YES;
+	//NSLog(@"yOffset:%i|height:%i|differential:%i", yOffset, height, differential);
+	
+	if (differential == MAIN_CONTENT_HEIGHT) {
+		
+		NSLog(@"FRESH");
+		
+		refresh = YES;
+	}
 }
 
 
@@ -162,6 +166,14 @@
 	// and more images are not currently being
 	// loaded, then load more images
 	if (refresh && !loading) [self loadMoreImages];
+}
+
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+	
+	NSLog(@"REFRESH IS:%@", ((refresh) ? @"YES" : @"NO"));
+	
+	refresh = NO;
 }
 
 

@@ -13,6 +13,8 @@
 
 @interface TATimelineVC : UIViewController <ImageViewDelegate> {
 
+	NSManagedObjectContext *managedObjectContext;
+	
 	// love fetcher
 	JSONFetcher *loveFetcher;
 	
@@ -28,11 +30,19 @@
 	BOOL loaded;
 	
 	NSTimer *loadedTimer;
+	
+	NSMutableDictionary *imagesDictionary;
+	UIBarButtonItem *addToGuideBtn;
 }
+
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 
 @property (nonatomic, retain) IBOutlet UIScrollView *timelineScrollView;
 @property (nonatomic, retain) NSString *selectedImageID;
 
 @property (nonatomic, retain) NSArray *images;
+
+@property (nonatomic, retain) NSMutableDictionary *imagesDictionary;
+@property (nonatomic, retain) UIBarButtonItem *addToGuideBtn;
 
 @end

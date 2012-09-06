@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <Twitter/Twitter.h>
 #import <Accounts/Accounts.h>
+#import "TAUsersVC.h"
 
 @class JSONFetcher;
 
-@interface TAImageDetailsVC : UIViewController <UIActionSheetDelegate> {
+@interface TAImageDetailsVC : UIViewController <UIActionSheetDelegate, RecommendsDelegate> {
 	
 	// Data
 	NSString *imageCode;
@@ -21,6 +22,7 @@
 	JSONFetcher *loveFetcher;
 	JSONFetcher *vouchFetcher;
 	JSONFetcher *isVouchedFetcher;
+	JSONFetcher *recommendFetcher;
 	
 	NSDictionary *imageData;
 	NSURL *avatarURL;
@@ -91,5 +93,6 @@
 - (IBAction)optionsButtonTapped:(id)sender;
 - (IBAction)usernameButtonTapped:(id)sender;
 - (IBAction)viewComments:(id)sender;
+- (IBAction)initFollowersList:(id)sender;
 
 @end

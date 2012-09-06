@@ -22,6 +22,8 @@
 	NSNumber *guideTagID;
 	NSString *guideCity;
 	
+	IBOutlet UILabel *tagLabel;
+	IBOutlet UILabel *cityLabel;
 	IBOutlet UITextField *titleField;
 }
 
@@ -31,6 +33,8 @@
 @property (nonatomic, retain) NSNumber *guideTagID;
 @property (nonatomic, retain) NSString *guideCity;
 
+@property (nonatomic, retain) IBOutlet UILabel *tagLabel;
+@property (nonatomic, retain) IBOutlet UILabel *cityLabel;
 @property (nonatomic, retain) IBOutlet UITextField *titleField;
 
 - (IBAction)submitButtonTapped:(id)sender;

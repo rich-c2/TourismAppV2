@@ -15,7 +15,7 @@
 
 @implementation TAMapItVC
 
-@synthesize map, currentLocation, delegate;
+@synthesize map, currentLocation, delegate, address;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -46,6 +46,9 @@
     self.map = nil;
 	self.currentLocation = nil;
 	
+    [address release];
+    self.address = nil;
+	
     [super viewDidUnload];
 }
 
@@ -58,6 +61,7 @@
 	
 	[currentLocation release];
     [map release];
+    [address release];
     [super dealloc];
 }
 
@@ -115,6 +119,9 @@ didChangeDragState:(MKAnnotationViewDragState)newState
 		
 		self.currentLocation = newLocation;
 		[newLocation release];
+		
+		// Update street address label
+		[self updateAddress];
     }
 }
 
@@ -159,7 +166,10 @@ didChangeDragState:(MKAnnotationViewDragState)newState
 	MyMapAnnotation *mapAnnotation = [[MyMapAnnotation alloc] initWithCoordinate:self.currentLocation.coordinate title:title];
 	[self.map addAnnotation:mapAnnotation];
 	[mapAnnotation release];
-
+	
+	
+	// Update street address label
+	[self updateAddress];
 }
 
 
@@ -173,6 +183,28 @@ didChangeDragState:(MKAnnotationViewDragState)newState
 	UIViewController *shareVC = [viewControllers objectAtIndex:([viewControllers count] - 3)];
 	
 	[self.navigationController popToViewController:shareVC animated:YES];
+}
+
+
+- (void)updateAddress {
+
+	CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+	[geocoder reverseGeocodeLocation:self.currentLocation completionHandler:^(NSArray *placemarks, NSError *error)
+	 {
+		 
+		 if(placemarks && placemarks.count > 0) {
+			 
+			 NSLog(@"Received placemarks: %@", placemarks);
+			 CLPlacemark *topResult = [placemarks objectAtIndex:0];
+			 
+			 // Update the label at the bottom of the mapContainer to display the latest fetched address
+			 NSString *locationAddress = [NSString stringWithFormat:@"%@ %@, %@ %@ %@", [topResult subThoroughfare],[topResult thoroughfare],[topResult subLocality], [topResult administrativeArea], [topResult postalCode]];
+			 
+			 if ([locationAddress length] > 0) self.address.text = locationAddress;
+		 }
+	 }];
+	
+	[geocoder release];
 }
 
 

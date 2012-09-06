@@ -12,12 +12,12 @@
 
 @implementation ImageView
 
-@synthesize delegate, imageID, username, loveButton, lovesCountBtn;
+@synthesize delegate, imageID, username, loveButton, lovesCountBtn, locationData;
 @synthesize avatarView, imageView, urlString, loadingSpinner, progressView;
 
 - (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString 
 		   username:(NSString *)_username avatarURL:(NSString *)avatarURL
-			  loves:(NSInteger)loves dateText:(NSString *)dateText cityText:(NSString *)cityText tagText:(NSString *)tagText {
+			  loves:(NSInteger)loves dateText:(NSString *)dateText cityText:(NSString *)cityText tagText:(NSString *)tagText verified:(BOOL)verified {
 	
     self = [super initWithFrame:frame];
 	
@@ -48,12 +48,27 @@
 		
 		
 		// City/Tag label
-		UILabel *cityLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 20.0, 130.0, 25.0)];
-		[cityLabel setBackgroundColor:[UIColor clearColor]];
-		[cityLabel setText:[NSString stringWithFormat:@"%@/%@", cityText, tagText]];
-		[cityLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:12.0]];
-		[self addSubview:cityLabel];
-		[cityLabel release];
+		NSString *btnTitle = [NSString stringWithFormat:@"%@/%@", cityText, tagText];
+		UIButton *cityTagBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+		[cityTagBtn setFrame:CGRectMake(55.0, 20.0, 130.0, 25.0)];
+		[cityTagBtn setBackgroundColor:[UIColor clearColor]];
+		[cityTagBtn setTitle:btnTitle forState:UIControlStateNormal];
+		[cityTagBtn setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+		[cityTagBtn addTarget:self action:@selector(cityTagClicked:) forControlEvents:UIControlEventTouchUpInside];		
+		[cityTagBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:12.0]];
+		[cityTagBtn setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
+		[self addSubview:cityTagBtn];
+		
+		
+		// Verified
+		UIView *verifiedView = [[UIView alloc] initWithFrame:CGRectMake(213.0, 0.0, 25.0, 25.0)];
+		
+		UIColor *bgColor;
+		bgColor = ((verified) ? [UIColor greenColor] : [UIColor redColor]);		
+		
+		[verifiedView setBackgroundColor:bgColor];
+		[self addSubview:verifiedView];
+		[verifiedView release];
 		
 		
 		// Date label
@@ -215,9 +230,16 @@
 
 
 - (void)mapButtonClicked:(id)sender {
-	
+		
 	// pass info on to delegate
-	[self.delegate mapButtonClicked:self.imageID];
+	[self.delegate mapButtonClicked:self.imageID location:self.locationData];
+}
+
+
+- (void)cityTagClicked:(id)sender {
+
+	// pass info on to delegate
+	[self.delegate cityTagButtonClicked:self.imageID];
 }
 
 

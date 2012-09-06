@@ -15,12 +15,14 @@
 
 	id <PlacesDelegate> delegate;
 	
+	IBOutlet UILabel *address;
 	IBOutlet MKMapView *map;
 	CLLocation *currentLocation;
 }
 
 @property (nonatomic, retain) id <PlacesDelegate> delegate;
 
+@property (nonatomic, retain) IBOutlet UILabel *address;
 @property (nonatomic, retain) IBOutlet MKMapView *map;
 @property (nonatomic, retain) CLLocation *currentLocation;
 
