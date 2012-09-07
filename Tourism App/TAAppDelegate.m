@@ -18,6 +18,7 @@
 #import "SBJson.h"
 #import "Guide.h"
 #import "Tag.h"
+#import "Photo.h"
 
 NSString* const DEMO_PASSWORD = @"pass";
 NSString* const DEMO_USERNAME = @"fuzzyhead";
@@ -290,6 +291,27 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	[Tag tagWithTitle:@"Sports" andID:6 inManagedObjectContext:self.managedObjectContext];
 	
 	[self saveContext];
+}
+
+
+- (NSMutableArray *)serializeImageData:(NSArray *)newPhotos {
+	
+	NSMutableArray *returnArray = [NSMutableArray array];
+	
+	for (int i = 0; i < [newPhotos count]; i++) {
+		
+		NSDictionary *photoDict = [newPhotos objectAtIndex:i];
+		
+		NSLog(@"SAVING Photo:%@", [photoDict objectForKey:@"caption"]);
+		
+		// Add to Core Data DB
+		Photo *photo = [Photo photoWithPhotoData:photoDict inManagedObjectContext:self.managedObjectContext];
+		
+		// Add to return array
+		[returnArray addObject:photo];
+	}
+	
+	return returnArray;
 }
 
 

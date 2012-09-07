@@ -123,6 +123,17 @@
 }
 
 
+#pragma RecommendsDelegate methods
+
+- (void)recommendToUsernames:(NSMutableArray *)usernames {
+	
+	[self showLoading];
+	
+	// Retain the usernames that were selected 
+	// for this Guide to be recommend to
+	[self initRecommendAPI:usernames];
+}
+
 #pragma UIActionSheetDelegate methods 
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -513,7 +524,7 @@
 	
 	NSString *loveStatus = ((isLoved) ? @"Unlove" : @"Love");
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:loveStatus, @"View on map", nil];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:loveStatus, @"View on map", @"Recommend", nil];
 	
 	[actionSheet showInView:[self view]];
 	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
@@ -644,6 +655,74 @@
 	[loveFetcher release];
 	loveFetcher = nil;
     
+}
+
+
+- (void)initRecommendAPI:(NSMutableArray *)usernames {
+	
+	NSString *usernamesStr = [NSString stringWithFormat:@"%@", [usernames componentsJoinedByString:@","]];
+	
+	NSString *postString = [NSString stringWithFormat:@"type=guide&token=%@&username=%@&code=%@&usernames=%@", [[self appDelegate] sessionToken], [self appDelegate].loggedInUsername, self.guideID, usernamesStr];
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Recommend"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	recommendFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													  receiver:self
+														action:@selector(receivedRecommendResponse:)];
+	[recommendFetcher start];
+	
+}
+
+
+// Example fetcher response handling
+- (void)receivedRecommendResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == recommendFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		//NSDictionary *results = [jsonString JSONValue];
+		
+		//if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString RECOMMEND:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	[self hideLoading];
+	
+	[recommendFetcher release];
+	recommendFetcher = nil;
+    
+}
+
+
+- (IBAction)initFollowersList:(id)sender {
+	
+	TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
+	[usersVC setUsersMode:UsersModeRecommendTo];
+	[usersVC setSelectedUsername:[self appDelegate].loggedInUsername];
+	[usersVC setDelegate:self];
+	
+	[self.navigationController pushViewController:usersVC animated:YES];
+	[usersVC release];
 }
 
 

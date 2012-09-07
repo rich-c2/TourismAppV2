@@ -25,6 +25,9 @@
 @interface TAPlacesVC : UIViewController {
 	
 	id <PlacesDelegate> delegate;
+	
+	BOOL loading;
+	BOOL venuesLoaded;
 
 	JSONFetcher *venuesFetcher;
 	

@@ -433,6 +433,14 @@
 					<int key="connectionID">40</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">guidesBtn</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="1032638701"/>
+					</object>
+					<int key="connectionID">42</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">followersButtonTapped:</string>
 						<reference key="source" ref="39599856"/>
@@ -630,7 +638,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">41</int>
+			<int key="maxID">42</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -684,6 +692,7 @@
 						<string key="followersBtn">UIButton</string>
 						<string key="followingBtn">UIButton</string>
 						<string key="followingUserBtn">UIButton</string>
+						<string key="guidesBtn">UIButton</string>
 						<string key="myContentBtn">UIButton</string>
 						<string key="nameLabel">UILabel</string>
 						<string key="photosBtn">UIButton</string>
@@ -716,6 +725,10 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="followingUserBtn">
 							<string key="name">followingUserBtn</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="guidesBtn">
+							<string key="name">guidesBtn</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="myContentBtn">

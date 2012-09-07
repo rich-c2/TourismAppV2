@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "GridImage.h"
+#import "TAUsersVC.h"
 
 @class JSONFetcher;
 
@@ -16,13 +17,14 @@ typedef enum  {
 	GuideModeViewing = 1
 } GuideMode;
 
-@interface TAGuideDetailsVC : UIViewController <GridImageDelegate, UIActionSheetDelegate> {
+@interface TAGuideDetailsVC : UIViewController <GridImageDelegate, UIActionSheetDelegate, RecommendsDelegate> {
 
 	GuideMode guideMode;
 	
 	JSONFetcher *guideFetcher;
 	JSONFetcher *isLovedFetcher;
 	JSONFetcher *loveFetcher;
+	JSONFetcher *recommendFetcher;
 	
 	NSDictionary *guideData;
 	NSMutableArray *images;
@@ -53,5 +55,6 @@ typedef enum  {
 
 - (IBAction)authorButtonTapped:(id)sender;
 - (IBAction)optionsButtonTapped:(id)sender;
+- (IBAction)initFollowersList:(id)sender;
 
 @end

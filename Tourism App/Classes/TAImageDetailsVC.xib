@@ -216,7 +216,7 @@
 								<reference key="IBUINormalTitleColor" ref="871696947"/>
 								<object class="NSColor" key="IBUINormalTitleShadowColor">
 									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC4zMTE4NzQ4NzU1IDAuNjk4MjYzNDE3MSAwLjM2NzY0MjM4NjkAA</bytes>
+									<bytes key="NSRGB">MCAxIDAAA</bytes>
 								</object>
 								<reference key="IBUIFontDescription" ref="1043831415"/>
 								<reference key="IBUIFont" ref="272486303"/>

@@ -62,6 +62,7 @@
 		9B48E96C15EEF7E700919F3A /* TACitiesListVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B48E96A15EEF7E700919F3A /* TACitiesListVC.xib */; };
 		9B48E97115EF0C6000919F3A /* TAMediaResultsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B48E96F15EF0C6000919F3A /* TAMediaResultsVC.m */; };
 		9B48E97215EF0C6000919F3A /* TAMediaResultsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B48E97015EF0C6000919F3A /* TAMediaResultsVC.xib */; };
+		9B6AD61815F9BA42006ED60F /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B6AD61715F9BA42006ED60F /* Photo.m */; };
 		9B6BE5E915EEDF0B00635C30 /* Guide.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B6BE5E815EEDF0B00635C30 /* Guide.m */; };
 		9B726F8F15F5C320008ED4BB /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B726F8E15F5C320008ED4BB /* SBJsonBase.m */; };
 		9B7B0A0B15EB49AB001C2E3E /* TASimpleListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0915EB49AB001C2E3E /* TASimpleListVC.m */; };
@@ -71,7 +72,6 @@
 		9BB3439615F096DB006BD1FD /* TACameraVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB3439415F096DB006BD1FD /* TACameraVC.m */; };
 		9BB3439715F096DB006BD1FD /* TACameraVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BB3439515F096DB006BD1FD /* TACameraVC.xib */; };
 		9BB4045115ECA3900080E00E /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045015ECA3900080E00E /* User.m */; };
-		9BB4045415ECA3910080E00E /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045315ECA3910080E00E /* Photo.m */; };
 		9BB4045715ECA3910080E00E /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045615ECA3910080E00E /* Tag.m */; };
 		9BB4045A15ECA3920080E00E /* City.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045915ECA3920080E00E /* City.m */; };
 		9BD79FEB15EDAAE50033EB64 /* TAMapVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FE915EDAAE40033EB64 /* TAMapVC.m */; };
@@ -240,6 +240,8 @@
 		9B48E96F15EF0C6000919F3A /* TAMediaResultsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAMediaResultsVC.m; path = Classes/TAMediaResultsVC.m; sourceTree = "<group>"; };
 		9B48E97015EF0C6000919F3A /* TAMediaResultsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAMediaResultsVC.xib; path = Classes/TAMediaResultsVC.xib; sourceTree = "<group>"; };
 		9B69152715F6E09400964273 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		9B6AD61615F9BA42006ED60F /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = Classes/Photo.h; sourceTree = "<group>"; };
+		9B6AD61715F9BA42006ED60F /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = Classes/Photo.m; sourceTree = "<group>"; };
 		9B6BE5E715EEDF0B00635C30 /* Guide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Guide.h; path = Classes/Guide.h; sourceTree = "<group>"; };
 		9B6BE5E815EEDF0B00635C30 /* Guide.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Guide.m; path = Classes/Guide.m; sourceTree = "<group>"; };
 		9B726F8915F5C2F6008ED4BB /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -257,8 +259,6 @@
 		9BB3439515F096DB006BD1FD /* TACameraVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACameraVC.xib; path = Classes/TACameraVC.xib; sourceTree = "<group>"; };
 		9BB4044F15ECA3900080E00E /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = Classes/User.h; sourceTree = "<group>"; };
 		9BB4045015ECA3900080E00E /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = Classes/User.m; sourceTree = "<group>"; };
-		9BB4045215ECA3910080E00E /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = Classes/Photo.h; sourceTree = "<group>"; };
-		9BB4045315ECA3910080E00E /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = Classes/Photo.m; sourceTree = "<group>"; };
 		9BB4045515ECA3910080E00E /* Tag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tag.h; path = Classes/Tag.h; sourceTree = "<group>"; };
 		9BB4045615ECA3910080E00E /* Tag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Tag.m; path = Classes/Tag.m; sourceTree = "<group>"; };
 		9BB4045815ECA3920080E00E /* City.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = City.h; path = Classes/City.h; sourceTree = "<group>"; };
@@ -638,12 +638,12 @@
 				9BB4045915ECA3920080E00E /* City.m */,
 				9BB4045515ECA3910080E00E /* Tag.h */,
 				9BB4045615ECA3910080E00E /* Tag.m */,
-				9BB4045215ECA3910080E00E /* Photo.h */,
-				9BB4045315ECA3910080E00E /* Photo.m */,
 				9BB4044F15ECA3900080E00E /* User.h */,
 				9BB4045015ECA3900080E00E /* User.m */,
 				9BDF043D15EAEC42008AFBE2 /* Notification.h */,
 				9BDF043E15EAEC42008AFBE2 /* Notification.m */,
+				9B6AD61615F9BA42006ED60F /* Photo.h */,
+				9B6AD61715F9BA42006ED60F /* Photo.m */,
 				9B6BE5E715EEDF0B00635C30 /* Guide.h */,
 				9B6BE5E815EEDF0B00635C30 /* Guide.m */,
 			);
@@ -1052,7 +1052,6 @@
 				9BDEAA1215EC8899000EF65F /* TAShareVC.m in Sources */,
 				9BDEAA1715EC8FEA000EF65F /* TAMyContentVC.m in Sources */,
 				9BB4045115ECA3900080E00E /* User.m in Sources */,
-				9BB4045415ECA3910080E00E /* Photo.m in Sources */,
 				9BB4045715ECA3910080E00E /* Tag.m in Sources */,
 				9BB4045A15ECA3920080E00E /* City.m in Sources */,
 				9BD79FEB15EDAAE50033EB64 /* TAMapVC.m in Sources */,
@@ -1073,6 +1072,7 @@
 				9BE0FE3F15F6C1A400E19851 /* ImageView.m in Sources */,
 				9BE0FE4415F6C22500E19851 /* TATimelineVC.m in Sources */,
 				9BE0FE4915F6D9AF00E19851 /* EditProfileVC.m in Sources */,
+				9B6AD61815F9BA42006ED60F /* Photo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

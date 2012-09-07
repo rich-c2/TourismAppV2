@@ -72,7 +72,12 @@
 #pragma mark Search Bar Delegate methods
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
 	
-	[self initCitySearchAPI];
+	if (!loading) {
+		
+		[self showLoading];
+		
+		[self initCitySearchAPI];
+	}
 }
 
 

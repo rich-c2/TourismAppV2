@@ -8,15 +8,20 @@
 
 #import <UIKit/UIKit.h>
 #import "ImageView.h"
+#import <Twitter/Twitter.h>
+#import <Accounts/Accounts.h>
+#import "TAUsersVC.h"
 
 @class JSONFetcher;
 
-@interface TATimelineVC : UIViewController <ImageViewDelegate> {
+@interface TATimelineVC : UIViewController <ImageViewDelegate, UIActionSheetDelegate, RecommendsDelegate> {
 
 	NSManagedObjectContext *managedObjectContext;
 	
 	// love fetcher
 	JSONFetcher *loveFetcher;
+	JSONFetcher *vouchFetcher;
+	JSONFetcher	*recommendFetcher;
 	
 	IBOutlet UIScrollView *timelineScrollView;
 	NSInteger scrollIndex;

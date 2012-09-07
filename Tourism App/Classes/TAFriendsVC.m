@@ -21,6 +21,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
         // Custom initialization
     }
@@ -31,7 +32,10 @@
 	
     [super viewDidLoad];
     
-	self.tableContent = [NSArray arrayWithObjects:@"Find friends via Twitter", @"Find friends via FB", @"Invite friends", @"Search users", nil];
+	//self.tableContent = [NSArray arrayWithObjects:@"Find friends via Twitter", @"Find friends via FB", @"Invite friends", @"Search users", nil];
+	
+	self.tableContent = [NSArray arrayWithObjects:@"Invite friends", @"Search users", nil];
+
 }
 
 - (void)viewDidUnload {
@@ -128,9 +132,6 @@
 		[usersVC release];
 	}
 }
-
-
-
 
 
 

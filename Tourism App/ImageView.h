@@ -17,6 +17,8 @@
 - (void)loveButtonClicked:(NSString *)imageID isLoved:(BOOL)loved;
 - (void)commentButtonClicked:(NSString *)imageID;
 - (void)cityTagButtonClicked:(NSString *)imageID;
+- (void)optionsButtonClicked:(NSString *)imageID;
+- (void)recommendButtonClicked:(NSString *)imageID;
 
 @optional
 - (void)mapButtonClicked:(NSString *)imageID location:(NSDictionary *)locationData;

@@ -11,6 +11,7 @@
 #import "JSONFetcher.h"
 #import "SBJson.h"
 #import "TAMapItVC.h"
+#import "SVProgressHUD.h"
 
 NSString* const CLIENT_ID = @"DKN1SLXTCU0PUYUXXLNQDO1DYBNX2WZ3GJCXU0FMSZSYMQSK";
 NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZKV";
@@ -72,10 +73,19 @@ NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZ
 
 - (void)viewWillAppear:(BOOL)animated {
 	
-	// Start the location managing - tell it to start updating, 
-	// if it's not already doing so
-	[self searchVenues];
 	
+	if (!loading && !venuesLoaded) {
+		
+		[self showLoading];
+		
+		loading = YES;
+	
+		// Start the location managing - tell it to start updating, 
+		// if it's not already doing so
+		[self searchVenues];
+	
+	}
+		
     [super viewWillAppear:animated];
 }
 
@@ -191,8 +201,14 @@ NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZ
 	NSLog(@"PRINTING VENUES DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
 	//[self.loadingSpinner stopAnimating];
+	
+	loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
     
-    if ([theJSONFetcher.data length] > 0) {
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		venuesLoaded = YES;
         
         // Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -210,6 +226,8 @@ NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZ
 		NSLog(@"venues:%@", self.places);
     }
 	
+	[self hideLoading];
+	
 	// Reload table
 	[self.placesTable reloadData];
     
@@ -217,6 +235,17 @@ NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZ
     venuesFetcher = nil;
 }
 
+
+- (void)showLoading {
+	
+	[SVProgressHUD showInView:self.view status:nil networkIndicator:YES posY:-1 maskType:SVProgressHUDMaskTypeClear];
+}
+
+
+- (void)hideLoading {
+	
+	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
+}
 
 
 @end

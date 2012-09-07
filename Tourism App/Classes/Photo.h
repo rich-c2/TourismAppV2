@@ -2,14 +2,14 @@
 //  Photo.h
 //  Tourism App
 //
-//  Created by Richard Lee on 28/08/12.
+//  Created by Richard Lee on 7/09/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Guide;
+@class City, Guide, Tag;
 
 @interface Photo : NSManagedObject
 
@@ -20,14 +20,19 @@
 @property (nonatomic, retain) NSString * thumbURL;
 @property (nonatomic, retain) NSString * url;
 @property (nonatomic, retain) NSNumber * vouchesCount;
-@property (nonatomic, retain) NSManagedObject *city;
+@property (nonatomic, retain) NSNumber * latitude;
+@property (nonatomic, retain) NSNumber * longitude;
+@property (nonatomic, retain) NSString * username;
+@property (nonatomic, retain) City *city;
 @property (nonatomic, retain) NSSet *comments;
 @property (nonatomic, retain) NSSet *inGuides;
-@property (nonatomic, retain) NSManagedObject *tag;
+@property (nonatomic, retain) Tag *tag;
 @property (nonatomic, retain) NSManagedObject *venue;
 @end
 
 @interface Photo (CoreDataGeneratedAccessors)
+
++ (Photo *)photoWithPhotoData:(NSDictionary *)photoData inManagedObjectContext:(NSManagedObjectContext *)context;
 
 - (void)addCommentsObject:(NSManagedObject *)value;
 - (void)removeCommentsObject:(NSManagedObject *)value;

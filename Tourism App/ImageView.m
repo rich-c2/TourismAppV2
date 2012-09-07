@@ -61,7 +61,7 @@
 		
 		
 		// Verified
-		UIView *verifiedView = [[UIView alloc] initWithFrame:CGRectMake(213.0, 0.0, 25.0, 25.0)];
+		UIView *verifiedView = [[UIView alloc] initWithFrame:CGRectMake(243.0, 0.0, 25.0, 25.0)];
 		
 		UIColor *bgColor;
 		bgColor = ((verified) ? [UIColor greenColor] : [UIColor redColor]);		
@@ -72,13 +72,20 @@
 		
 		
 		// Date label
-		UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 0.0, 50.0, 25.0)];
+		/*UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 0.0, 50.0, 25.0)];
 		[dateLabel setBackgroundColor:[UIColor clearColor]];
 		[dateLabel setText:dateText];
 		[dateLabel setFont:[UIFont boldSystemFontOfSize:13.0]];
 		[dateLabel setTextAlignment:UITextAlignmentRight];		
 		[self addSubview:dateLabel];
-		[dateLabel release];
+		[dateLabel release];*/
+		
+		
+		// "+" button
+		UIButton *plsBtn = [UIButton buttonWithType:UIButtonTypeContactAdd];
+		[plsBtn setFrame:CGRectMake(271.0, 0.0, 29.0, 29.0)];
+		[plsBtn addTarget:self action:@selector(optionsButtonClicked:) forControlEvents:UIControlEventTouchUpInside];		
+		[self addSubview:plsBtn];
 		
 
 		// Main image view
@@ -131,6 +138,17 @@
 		[mapBtn addTarget:self action:@selector(mapButtonClicked:) forControlEvents:UIControlEventTouchUpInside];		
 		[mapBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:15.0]];	
 		[self addSubview:mapBtn];
+		
+		
+		// Recommend button
+		UIButton *recBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+		[recBtn setFrame:CGRectMake(0.0, 425.0, 275.0, 42.0)];
+		[recBtn setBackgroundColor:[UIColor greenColor]];
+		[recBtn setTitle:@"Recommend" forState:UIControlStateNormal];
+		[recBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[recBtn addTarget:self action:@selector(recommendButtonClicked:) forControlEvents:UIControlEventTouchUpInside];		
+		[recBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:15.0]];	
+		[self addSubview:recBtn];
 		
 		
 		// PROGRESS INDICATOR
@@ -240,6 +258,19 @@
 
 	// pass info on to delegate
 	[self.delegate cityTagButtonClicked:self.imageID];
+}
+
+
+- (void)optionsButtonClicked:(id)sender {
+
+	// pass info on to delegate
+	[self.delegate optionsButtonClicked:self.imageID];
+}
+
+
+- (void)recommendButtonClicked:(id)sender {
+
+	[self.delegate recommendButtonClicked:self.imageID];
 }
 
 

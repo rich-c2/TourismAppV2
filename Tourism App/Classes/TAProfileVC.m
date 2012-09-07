@@ -32,7 +32,7 @@
 
 @synthesize username, avatarURL, usernameLabel, photosBtn, nameLabel, avatarView;
 @synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn, myContentBtn;
-@synthesize findFriendsBtn, contentScrollView;
+@synthesize findFriendsBtn, contentScrollView, guidesBtn;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil observeLogin:(BOOL)observe {
@@ -99,6 +99,8 @@
 	[contentScrollView release];
 	self.contentScrollView = nil;
 	
+	[guidesBtn release];
+	self.guidesBtn = nil;
     [super viewDidUnload];
 }
 
@@ -138,6 +140,10 @@
 		// if this is a guide NOT created by the logged-in user
 		if ([self.username isEqualToString:[self appDelegate].loggedInUsername]) {
 			
+			
+			[self.photosBtn setHidden:YES];
+			[self.guidesBtn setHidden:YES];
+			
 			[self setupNavBar];
 		}
 		
@@ -168,6 +174,7 @@
 	[myContentBtn release];
     [findFriendsBtn release];
 	[contentScrollView release];
+	[guidesBtn release];
     [super dealloc];
 }
 
@@ -214,6 +221,9 @@
 		[self showLoading];
 		
 		[self loadUserDetails];
+		
+		[self.photosBtn setHidden:YES];
+		[self.guidesBtn setHidden:YES];
 		
 		
 		// Get an iVar of TAAppDelegate

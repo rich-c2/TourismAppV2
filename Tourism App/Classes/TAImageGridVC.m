@@ -13,7 +13,9 @@
 #import "SBJson.h"
 #import "TAAppDelegate.h"
 #import "GridImage.h"
-#import "TAImageDetailsVC.h"
+//#import "TAImageDetailsVC.h"
+#import "TATimelineVC.h"
+#import "TAExploreVC.h"
 
 #define IMAGE_VIEW_TAG 7000
 #define GRID_IMAGE_WIDTH 75.0
@@ -103,10 +105,12 @@
 		switch (self.imagesMode) {
 				
 			case ImagesModeMyPhotos:
+				//[self setupNavBar];
 				[self initUploadsAPI];
 				break;
 				
 			case ImagesModeLikedPhotos:
+				//[self setupNavBar];
 				[self initLovedAPI];
 				break;
 				
@@ -118,6 +122,14 @@
 				break;
 		}
 	}
+}
+
+
+#pragma ExploreDelegate methods 
+
+- (void)finishedFilteringWithPhotos:(NSArray *)photos {
+
+	
 }
 
 
@@ -181,14 +193,27 @@
 
 - (void)gridImageButtonClicked:(NSInteger)viewTag {
 	
-	NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
+	/*NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
 	
 	// Push the Image Details VC onto the stack
 	TAImageDetailsVC *imageDetailsVC = [[TAImageDetailsVC alloc] initWithNibName:@"TAImageDetailsVC" bundle:nil];
 	[imageDetailsVC setImageCode:[image objectForKey:@"code"]];
 	 
 	[self.navigationController pushViewController:imageDetailsVC animated:YES];
-	[imageDetailsVC release];
+	[imageDetailsVC release];*/
+	
+	
+	NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
+	NSString *imageID = [image objectForKey:@"code"];
+	
+	// Push the Image Details VC onto the stack
+	TATimelineVC *timelineVC = [[TATimelineVC alloc] initWithNibName:@"TATimelineVC" bundle:nil];
+	[timelineVC setImages:self.images];
+	[timelineVC setSelectedImageID:imageID];
+	
+	[self.navigationController pushViewController:timelineVC animated:YES];
+	[timelineVC release];
+	
 }
 
 
@@ -504,6 +529,28 @@
 - (void)hideLoading {
 	
 	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
+}
+
+
+- (void)setupNavBar {
+
+	// view mode options
+	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"filter" style:UIBarButtonItemStyleDone target:self action:@selector(filterButtonTapped:)];
+	buttonItem.target = self;
+	self.navigationItem.rightBarButtonItem = buttonItem;
+	[buttonItem release];
+}
+
+
+- (void)filterButtonTapped:(id)sender {
+
+	TAExploreVC *exploreVC = [[TAExploreVC alloc] initWithNibName:@"TAExploreVC" bundle:nil];
+	[exploreVC setExploreMode:ExploreModeSubset];
+	[exploreVC setImages:self.images];
+	[exploreVC setDelegate:self];
+
+	[self.navigationController pushViewController:exploreVC animated:NO];
+	[exploreVC release];
 }
 
 

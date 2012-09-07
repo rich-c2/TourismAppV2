@@ -31,12 +31,14 @@
 	IBOutlet UILabel *usernameLabel;
 	IBOutlet UILabel *nameLabel;
 	IBOutlet UIButton *photosBtn;
+	IBOutlet UIButton *guidesBtn;
 	
 	IBOutlet UIButton *followUserBtn;
 	IBOutlet UIButton *followingUserBtn;
 	
 	IBOutlet UIButton *followingBtn;
 	IBOutlet UIButton *followersBtn;
+	
 	
 	// MY CONTENT
 	IBOutlet UIButton *myContentBtn;
@@ -51,6 +53,7 @@
 @property (nonatomic, retain) IBOutlet UILabel *usernameLabel;
 @property (nonatomic, retain) IBOutlet UILabel *nameLabel;
 @property (nonatomic, retain) IBOutlet UIButton *photosBtn;
+@property (nonatomic, retain) IBOutlet UIButton *guidesBtn;
 
 @property (nonatomic, retain) IBOutlet UIButton *followUserBtn;
 @property (nonatomic, retain) IBOutlet UIButton *followingUserBtn;

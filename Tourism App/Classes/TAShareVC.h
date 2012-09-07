@@ -18,7 +18,7 @@
 @class JSONFetcher;
 @class XMLFetcher;
 
-@interface TAShareVC : UIViewController <TagsDelegate, RecommendsDelegate, PlacesDelegate> {
+@interface TAShareVC : UIViewController <TagsDelegate, RecommendsDelegate, PlacesDelegate, UIActionSheetDelegate> {
 	
 	// Was the submission of the photo successful?
 	BOOL submissionSuccess;
@@ -46,6 +46,8 @@
 	IBOutlet UILabel *placeAddressLabel;
 	IBOutlet UIScrollView *scrollView;
 	
+	NSArray *twitterAccounts;
+	
 }
 
 @property (nonatomic, retain) IBOutlet UITextField *captionField;
@@ -67,5 +69,8 @@
 @property (nonatomic, retain) IBOutlet UILabel *placeAddressLabel;
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 
+@property (nonatomic, retain) IBOutlet NSArray *twitterAccounts;
+
+- (IBAction)shareButtonTapped:(id)sender;
 
 @end

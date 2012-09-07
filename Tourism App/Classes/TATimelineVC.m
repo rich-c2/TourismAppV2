@@ -19,8 +19,9 @@
 #import "TAGuidesListVC.h"
 #import "TAImageGridVC.h"
 #import "Tag.h"
+#import "TAUsersVC.h"
 
-#define IMAGE_HEIGHT 415
+#define IMAGE_HEIGHT 480
 #define IMAGE_PADDING 30
 #define IMAGE_VIEW_TAG 7000
 #define SCREEN_WIDTH 320
@@ -109,6 +110,18 @@
 }
 
 
+#pragma RecommendsDelegate methods
+
+- (void)recommendToUsernames:(NSMutableArray *)usernames {
+	
+	[self showLoading];
+	
+	// Retain the usernames that were selected 
+	// for this Guide to be recommend to
+	[self initRecommendAPI:usernames forImage:self.selectedImageID];
+}
+
+
 # pragma UIScrollViewDelegate methods 
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -140,6 +153,9 @@
 		NSInteger imageViewTag = IMAGE_VIEW_TAG + scrollIndex;
 		ImageView *imageView = (ImageView *)[self.timelineScrollView viewWithTag:imageViewTag];
 		[imageView initImage];
+		
+		// Update the selectedImageID
+		self.selectedImageID = [imageView imageID];
 	}
 }
 
@@ -147,6 +163,100 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	
 	self.navigationItem.rightBarButtonItem = self.addToGuideBtn;
+}
+
+
+#pragma UIActionSheetDelegate methods 
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	
+	// Share on Twitter
+	if (buttonIndex == 0) [self showTweetSheet:nil];
+	
+	// Vouch
+	else if (buttonIndex == 1) {
+		
+		NSDictionary *image = [self.imagesDictionary objectForKey:self.selectedImageID];
+		NSString *vouched = [image objectForKey:@"isVouched"];
+		
+		BOOL isVouched = ([vouched isEqualToString:@"true"] ? YES : NO);
+		
+		[self showLoading];
+		
+		if (isVouched)[self initUnvouchAPI];
+		else [self initVouchAPI];
+	}
+}
+
+
+#pragma Twitter Framework methods
+
+- (IBAction)showTweetSheet:(id)sender {
+	
+    //  Create an instance of the Tweet Sheet
+    TWTweetComposeViewController *tweetSheet = [[TWTweetComposeViewController alloc] init];
+	
+    // Sets the completion handler.  Note that we don't know which thread the
+    // block will be called on, so we need to ensure that any UI updates occur
+    // on the main queue
+    tweetSheet.completionHandler = ^(TWTweetComposeViewControllerResult result) {
+		
+		NSString *resultOutput;
+		
+        switch(result) {
+				
+            case TWTweetComposeViewControllerResultCancelled:
+				
+                //  This means the user cancelled without sending the Tweet
+				resultOutput = @"Tweet cancelled.";
+                break;
+				
+            case TWTweetComposeViewControllerResultDone:
+				
+                //  This means the user hit 'Send'
+				resultOutput = @"You successfully shared this photo on Twitter.";
+                break;
+        }
+		
+		[self performSelectorOnMainThread:@selector(displayTweetResult:) withObject:resultOutput waitUntilDone:NO];
+		
+        //  dismiss the Tweet Sheet 
+        dispatch_async(dispatch_get_main_queue(), ^{            
+            [self dismissViewControllerAnimated:YES completion:^{
+                NSLog(@"Tweet Sheet has been dismissed."); 
+            }];
+        });
+    };
+	
+    //  Set the initial body of the Tweet
+    [tweetSheet setInitialText:@"Check out the photo I took on Tourism App:"]; 
+	
+	
+	NSInteger imageViewTag = IMAGE_VIEW_TAG + scrollIndex;
+	ImageView *imageView = (ImageView *)[self.timelineScrollView viewWithTag:imageViewTag];
+	
+    //  Adds an image to the Tweet
+    if (![tweetSheet addImage:[imageView.imageView image]]) {
+        NSLog(@"Unable to add the image!");
+    }
+	
+    //  Add an URL to the Tweet. You can add multiple URLs.
+    /*if (![tweetSheet addURL:[NSURL URLWithString:@"http://twitter.com/"]]){
+	 NSLog(@"Unable to add the URL!");
+	 }*/
+	
+    //  Presents the Tweet Sheet to the user
+    [self presentViewController:tweetSheet animated:NO completion:^{
+        NSLog(@"Tweet sheet has been presented.");
+    }];
+}
+
+
+- (void)displayTweetResult:(NSString *)output {
+	
+	UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Twitter" message:output delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+	[av show];
+	[av release];
 }
 
 
@@ -240,6 +350,32 @@
 }
 
 
+- (void)optionsButtonClicked:(NSString *)imageID {
+	
+	NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
+	
+	NSString *vouchStatus = (([[image objectForKey:@"isVouched"] isEqualToString:@"true"]) ? @"Unvouch" : @"Vouch");
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Share on Twitter", vouchStatus, nil];
+	
+	[actionSheet showInView:[self view]];
+	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
+    [actionSheet release];
+}
+
+
+- (void)recommendButtonClicked:(NSString *)imageID {
+	
+	TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
+	[usersVC setUsersMode:UsersModeRecommendTo];
+	[usersVC setSelectedUsername:[self appDelegate].loggedInUsername];
+	[usersVC setDelegate:self];
+	
+	[self.navigationController pushViewController:usersVC animated:YES];
+	[usersVC release];
+}
+
+
 /*
 	This function is responsible for 
 	iterating through the self.images on hand, creating
@@ -287,6 +423,8 @@
 		NSString *username = [userDict objectForKey:@"username"];
 		NSString *avatarURL = avatarURLString;
 		
+		BOOL isLoved = (([[image objectForKey:@"isLoved"] isEqualToString:@"true"]) ? YES : NO);
+		
 		NSString *timeElapsed = [image objectForKey:@"elapsed"];
 		
 		BOOL verified = (([[image objectForKey:@"verified"] intValue] == 1) ? YES : NO);
@@ -300,6 +438,7 @@
 		[aView setImageID:imageID];
 		[aView setUsername:username];
 		[aView setDelegate:self];
+		[aView isLoved:isLoved];
 		
 		[aView setTag:(IMAGE_VIEW_TAG + i)];
 		
@@ -404,6 +543,7 @@
 	
 	BOOL success;
 	NSString *imageID;
+	NSString *newLovesCount;
 	
 	if ([theJSONFetcher.data length] > 0) {
 		
@@ -418,16 +558,27 @@
 		if ([[results allKeys] containsObject:@"code"])
 			imageID = [results objectForKey:@"code"];
 		
-		NSLog(@"jsonString:%@", jsonString);
+		if ([[results allKeys] containsObject:@"count"])
+			newLovesCount = [results objectForKey:@"count"];
+		
+		NSLog(@"receivedLoveResponse:%@", jsonString);
 		
 		[jsonString release];
 	}
 	
-	if (success) [self updateImageViewWithImageID:imageID loveStatus:YES];
+	if (success) {
+		
+		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
+		[image setValue:@"true" forKey:@"isLoved"];
+		
+		NSDictionary *countDict = [image objectForKey:@"count"];
+		[countDict setValue:newLovesCount forKey:@"loves"];
+		
+		[self updateImageViewWithImageID:imageID loveStatus:YES];
+	}
 	
 	[loveFetcher release];
 	loveFetcher = nil;
-    
 }
 
 
@@ -440,6 +591,7 @@
 	
 	BOOL success;
 	NSString *imageID;
+	NSString *newLovesCount;
 	
 	if ([theJSONFetcher.data length] > 0) {
 		
@@ -454,16 +606,27 @@
 		if ([[results allKeys] containsObject:@"code"])
 			imageID = [results objectForKey:@"code"];
 		
-		NSLog(@"jsonString:%@", jsonString);
+		if ([[results allKeys] containsObject:@"count"])
+			newLovesCount = [results objectForKey:@"count"];
+		
+		NSLog(@"receivedUnLoveResponse:%@", jsonString);
 		
 		[jsonString release];
 	}
 	
-	if (success) [self updateImageViewWithImageID:imageID loveStatus:NO];
+	if (success) {
+		
+		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
+		[image setValue:@"false" forKey:@"isLoved"];
+		
+		NSDictionary *countDict = [image objectForKey:@"count"];
+		[countDict setValue:newLovesCount forKey:@"loves"];
+		
+		[self updateImageViewWithImageID:imageID loveStatus:NO];
+	}
 	
 	[loveFetcher release];
 	loveFetcher = nil;
-    
 }
 
 
@@ -542,6 +705,183 @@
 		[self.imagesDictionary setObject:image forKey:key];
 	}
 
+}
+
+
+// TESTED!
+- (void)initVouchAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, self.selectedImageID, [[self appDelegate] sessionToken]];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Vouch"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	vouchFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self action:@selector(receivedVouchResponse:)];
+	[vouchFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedVouchResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == vouchFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	NSString *imageID;
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		imageID = [results objectForKey:@"code"];
+		
+		NSLog(@"VOUCH jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	if (success) {
+		
+		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
+		[image setValue:@"true" forKey:@"isVouched"];
+	}
+	
+	[self hideLoading];
+	
+	[vouchFetcher release];
+	vouchFetcher = nil;
+    
+}
+
+
+// TESTED!
+- (void)initUnvouchAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, self.selectedImageID, [[self appDelegate] sessionToken]];	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Unvouch"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	vouchFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self action:@selector(receivedUnvouchResponse:)];
+	[vouchFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedUnvouchResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == vouchFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	NSString *imageID;
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		imageID = [results objectForKey:@"code"];
+		
+		NSLog(@"UNVOUCH jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	if (success) {
+		
+		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
+		[image setValue:@"false" forKey:@"isVouched"];
+	}
+	
+	[self hideLoading];
+	
+	[vouchFetcher release];
+	vouchFetcher = nil;
+}
+
+
+- (void)initRecommendAPI:(NSMutableArray *)usernames forImage:(NSString *)imageID {
+	
+	NSString *usernamesStr = [NSString stringWithFormat:@"%@", [usernames componentsJoinedByString:@","]];
+	
+	NSString *postString = [NSString stringWithFormat:@"token=%@&username=%@&code=%@&usernames=%@", [[self appDelegate] sessionToken], [self appDelegate].loggedInUsername, imageID, usernamesStr];
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Recommend"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	recommendFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													  receiver:self
+														action:@selector(receivedRecommendResponse:)];
+	[recommendFetcher start];
+	
+}
+
+
+// Example fetcher response handling
+- (void)receivedRecommendResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == recommendFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		//NSDictionary *results = [jsonString JSONValue];
+		
+		//if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString RECOMMEND:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	[self hideLoading];
+	
+	[recommendFetcher release];
+	recommendFetcher = nil;
+    
 }
 
 

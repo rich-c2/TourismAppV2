@@ -13,12 +13,34 @@
 
 @class Tag;
 @class MyCoreLocation;
+@class XMLFetcher;
+
+typedef enum {
+	ExploreModeRegular = 0,
+	ExploreModeSubset = 1
+} ExploreMode;
+
+
+@protocol ExploreDelegate
+
+- (void)finishedFilteringWithPhotos:(NSArray *)results;
+
+@end
+
 
 @interface TAExploreVC : UIViewController <TagsDelegate, CitiesDelegate> {
 	
+	id <ExploreDelegate> delegate;
+	
+	XMLFetcher *cityFetcher;
+	
+	ExploreMode exploreMode;
+	NSMutableArray *images;
+	NSMutableArray *photos;
+	
 	Tag *selectedTag;
 	IBOutlet UIButton *tagBtn;
-	NSDictionary *selectedCity;
+	NSString *selectedCity;
 	IBOutlet UIButton *cityBtn;
 	
 	IBOutlet UIButton *nearbyBtn;
@@ -28,8 +50,14 @@
 	BOOL useCurrentLocation;
 }
 
+@property (nonatomic, retain) id <ExploreDelegate> delegate;
+
+@property ExploreMode exploreMode;
+@property (nonatomic, retain) NSMutableArray *images;
+@property (nonatomic, retain) NSMutableArray *photos;
+
 @property (nonatomic, retain) Tag *selectedTag;
-@property (nonatomic, retain) NSDictionary *selectedCity;
+@property (nonatomic, retain) NSString *selectedCity;
 @property (nonatomic, retain) IBOutlet UIButton *tagBtn;
 @property (nonatomic, retain) IBOutlet UIButton *cityBtn;
 
