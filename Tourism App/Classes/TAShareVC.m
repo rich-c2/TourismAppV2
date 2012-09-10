@@ -232,19 +232,46 @@
 }
 
 
-- (void)locationMapped:(CLLocation *)newLocation {
+- (void)locationMapped:(NSMutableDictionary *)newPlaceData {
+	
+	self.placeData = newPlaceData;
 
-	NSLog(@"NEW LOCATION:%f\%f", newLocation.coordinate.latitude, newLocation.coordinate.longitude);
+	NSLog(@"RECEIVED PLACE DATA:%@", self.placeData);
 	
-	self.currentLocation = newLocation;
-	
-	// Retrieve the lat/lng data from the CLLocation and
+	// Retrieve the lat/lng data from the dictionary and
 	// update the map marker, and make the map focus on the new coord
+	NSDictionary *locationData = [self.placeData objectForKey:@"location"];
 	CLLocationCoordinate2D newCoord;
-	newCoord.latitude = self.currentLocation.coordinate.latitude;
-	newCoord.longitude = self.currentLocation.coordinate.longitude;
+	newCoord.latitude = [[locationData objectForKey:@"lat"] doubleValue];
+	newCoord.longitude = [[locationData objectForKey:@"lng"] doubleValue];
 	
 	[self updateMap:newCoord];
+	
+	// Update the 'currentLocation' property to reflect the lat/lng values
+	// that were part of the place that was selected
+	CLLocation *newLocation = [[CLLocation alloc] initWithLatitude:newCoord.latitude longitude:newCoord.longitude];
+	self.currentLocation = newLocation;
+	[newLocation release];
+	
+	// Update place title and place address
+	self.placeTitleLabel.text = [self.placeData objectForKey:@"name"];
+	
+	NSArray *locationKeys = [locationData allKeys];
+	NSMutableString *formattedAddress = [NSMutableString string];
+	
+	if ([locationKeys containsObject:@"address"])
+		[formattedAddress appendString:[locationData objectForKey:@"address"]];
+	
+	if ([locationKeys containsObject:@"city"])
+		[formattedAddress appendFormat:@" %@", [locationData objectForKey:@"city"]];
+	
+	if ([locationKeys containsObject:@"state"])
+		[formattedAddress appendFormat:@" %@", [locationData objectForKey:@"state"]];
+	
+	if ([locationKeys containsObject:@"postalCode"])
+		[formattedAddress appendFormat:@" %@", [locationData objectForKey:@"postalCode"]];
+	
+	self.placeAddressLabel.text = formattedAddress;
 }
 
 

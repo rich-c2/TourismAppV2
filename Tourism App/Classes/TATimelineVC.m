@@ -20,6 +20,9 @@
 #import "TAImageGridVC.h"
 #import "Tag.h"
 #import "TAUsersVC.h"
+#import "Photo.h"
+#import "City.h"
+#import "User.h"
 
 #define IMAGE_HEIGHT 480
 #define IMAGE_PADDING 30
@@ -33,7 +36,7 @@
 @implementation TATimelineVC
 
 @synthesize timelineScrollView, selectedImageID, managedObjectContext;
-@synthesize images, addToGuideBtn, imagesDictionary;
+@synthesize images, addToGuideBtn, imagesDictionary, photos;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -46,8 +49,8 @@
 }
 
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+	
     [super viewDidLoad];
     
 	self.managedObjectContext = [self appDelegate].managedObjectContext;
@@ -67,6 +70,7 @@
 	
 	self.selectedImageID = nil;
 	self.images = nil;
+	self.photos = nil;
 	self.addToGuideBtn = nil;
 	self.imagesDictionary = nil;
 	
@@ -82,6 +86,7 @@
 
 - (void)dealloc {
 	
+	[photos release];
 	[imagesDictionary release];
 	[addToGuideBtn release];
 	[selectedImageID release];
@@ -176,10 +181,8 @@
 	// Vouch
 	else if (buttonIndex == 1) {
 		
-		NSDictionary *image = [self.imagesDictionary objectForKey:self.selectedImageID];
-		NSString *vouched = [image objectForKey:@"isVouched"];
-		
-		BOOL isVouched = ([vouched isEqualToString:@"true"] ? YES : NO);
+		Photo *photo = [self.imagesDictionary objectForKey:self.selectedImageID];
+		BOOL isVouched = (([photo.isVouched intValue] == 1) ? YES : NO);
 		
 		[self showLoading];
 		
@@ -323,8 +326,11 @@
 }
 
 
-- (void)mapButtonClicked:(NSString *)imageID location:(NSDictionary *)locationData {
+- (void)mapButtonClicked:(NSString *)imageID {
 
+	Photo *photo = [self.imagesDictionary objectForKey:imageID];
+	NSDictionary *locationData = [NSDictionary dictionaryWithObjectsAndKeys:[photo latitude], @"latitude", [photo longitude], @"longitude", nil];
+	
 	TAMapVC *mapVC = [[TAMapVC alloc] initWithNibName:@"TAMapVC" bundle:nil];
 	[mapVC setLocationData:locationData];
 	[mapVC setMapMode:MapModeSingle];
@@ -336,9 +342,10 @@
 
 - (void)cityTagButtonClicked:(NSString *)imageID {
 	
-	NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
-	NSNumber *tagID = [NSNumber numberWithInt:[[image objectForKey:@"tag"] intValue]];
-	NSString *city = [image objectForKey:@"city"];
+	Photo *photo = [self.imagesDictionary objectForKey:imageID];
+	
+	NSNumber *tagID = [photo.tag tagID];
+	NSString *city = [[photo city] title];
 
 	TAImageGridVC *imageGridVC = [[TAImageGridVC alloc] initWithNibName:@"TAImageGridVC" bundle:nil];
 	[imageGridVC setImagesMode:ImagesModeCityTag];
@@ -352,9 +359,9 @@
 
 - (void)optionsButtonClicked:(NSString *)imageID {
 	
-	NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
+	Photo *photo = [self.imagesDictionary objectForKey:imageID];
 	
-	NSString *vouchStatus = (([[image objectForKey:@"isVouched"] isEqualToString:@"true"]) ? @"Unvouch" : @"Vouch");
+	NSString *vouchStatus = (([[photo isVouched] intValue] == 1) ? @"Unvouch" : @"Vouch");
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Share on Twitter", vouchStatus, nil];
 	
@@ -364,7 +371,7 @@
 }
 
 
-- (void)recommendButtonClicked:(NSString *)imageID {
+- (void)recommendButtonClicked {
 	
 	TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
 	[usersVC setUsersMode:UsersModeRecommendTo];
@@ -398,42 +405,34 @@
 		[self.timelineScrollView setContentOffset:CGPointMake(0.0, 0.0)];
 	}
 	
-	for (int i = 0; i < [self.images count]; i++) {
+	for (int i = 0; i < [self.photos count]; i++) {
 		
-		NSDictionary *image = [self.images objectAtIndex:i];
-		NSString *imageID = [image objectForKey:@"code"];		
+		Photo *photo = [self.photos objectAtIndex:i];
+		User *user = (User *)photo.whoTook; 
+		NSString *imageID = [photo photoID];		
 		
-		NSDictionary *countDict = [image objectForKey:@"count"];
-		NSInteger lovesCount = [[countDict objectForKey:@"loves"] intValue];
+		NSInteger lovesCount = [[photo lovesCount] intValue];
+		NSString *avatarURLString = user.avatarURL;
+		NSLog(@"avatarURLString:%@", avatarURLString);
 		
-		NSDictionary *userDict = [image objectForKey:@"user"];		
-		NSString *avatarURLString = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userDict objectForKey:@"avatar"]];
+		NSString *city = [[photo city] title];
+		Tag *tag = [photo tag];
 		
-		NSString *city = [image objectForKey:@"city"];
-		Tag *tag = [Tag tagWithID:[[image objectForKey:@"tag"] intValue] inManagedObjectContext:self.managedObjectContext];
-		
-		
-		if ([[image objectForKey:@"code"] isEqualToString:self.selectedImageID]) {
+		if ([imageID isEqualToString:self.selectedImageID]) {
 			
 			selectedYPos = yPos;
 		}
 		
-		NSDictionary *pathsDict = [image objectForKey:@"paths"];
-		NSString *imageURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [pathsDict objectForKey:@"zoom"]];
-		NSString *username = [userDict objectForKey:@"username"];
+		NSString *imageURL = [photo url];
+		NSString *username = [photo username];
 		NSString *avatarURL = avatarURLString;
 		
-		BOOL isLoved = (([[image objectForKey:@"isLoved"] isEqualToString:@"true"]) ? YES : NO);
-		
-		NSString *timeElapsed = [image objectForKey:@"elapsed"];
-		
-		BOOL verified = (([[image objectForKey:@"verified"] intValue] == 1) ? YES : NO);
+		BOOL isLoved = [photo.isLoved intValue];
+		NSString *timeElapsed = photo.timeElapsed;		
+		BOOL verified = [photo.verified intValue];
 		
 		CGRect viewFrame = CGRectMake(xPos, yPos, 300.0, aViewHeight);
 		ImageView *aView = [[ImageView alloc] initWithFrame:viewFrame imageURL:imageURL username:username avatarURL:avatarURL loves:lovesCount dateText:timeElapsed cityText:city tagText:tag.title verified:verified];
-		
-		// FOR NOW pass the location data to the image view
-		[aView setLocationData:[image objectForKey:@"location"]];
 		
 		[aView setImageID:imageID];
 		[aView setUsername:username];
@@ -568,11 +567,10 @@
 	
 	if (success) {
 		
-		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
-		[image setValue:@"true" forKey:@"isLoved"];
+		Photo *photo = [self.imagesDictionary objectForKey:imageID];
 		
-		NSDictionary *countDict = [image objectForKey:@"count"];
-		[countDict setValue:newLovesCount forKey:@"loves"];
+		[photo setIsLoved:[NSNumber numberWithInt:1]];
+		[photo setLovesCount:[NSNumber numberWithInt:[newLovesCount intValue]]];
 		
 		[self updateImageViewWithImageID:imageID loveStatus:YES];
 	}
@@ -616,13 +614,13 @@
 	
 	if (success) {
 		
-		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
-		[image setValue:@"false" forKey:@"isLoved"];
+		Photo *photo = [self.imagesDictionary objectForKey:imageID];
 		
-		NSDictionary *countDict = [image objectForKey:@"count"];
-		[countDict setValue:newLovesCount forKey:@"loves"];
+		[photo setIsLoved:[NSNumber numberWithInt:0]];
+		[photo setLovesCount:[NSNumber numberWithInt:[newLovesCount intValue]]];
 		
 		[self updateImageViewWithImageID:imageID loveStatus:NO];
+		
 	}
 	
 	[loveFetcher release];
@@ -678,16 +676,15 @@
 	NSInteger imageViewTag = IMAGE_VIEW_TAG + scrollIndex;
 	ImageView *imageView = (ImageView *)[self.timelineScrollView viewWithTag:imageViewTag];
 	
-	NSDictionary *imageData = [self.imagesDictionary objectForKey:[imageView imageID]];
-	
-	NSNumber *tagID = [NSNumber numberWithInt:[[imageData objectForKey:@"tag"] intValue]];
-	
+	Photo *photo = [self.imagesDictionary objectForKey:[imageView imageID]];
+	//NSDictionary *imageData = [self.imagesDictionary objectForKey:[imageView imageID]];
+		
 	TAGuidesListVC *guidesVC = [[TAGuidesListVC alloc] initWithNibName:@"TAGuidesListVC" bundle:nil];
 	[guidesVC setUsername:[self appDelegate].loggedInUsername];
 	[guidesVC setGuidesMode:GuidesModeAddTo];
-	[guidesVC setSelectedTagID:tagID];
-	[guidesVC setSelectedCity:[imageData objectForKey:@"city"]];
-	[guidesVC setSelectedPhotoID:[imageData objectForKey:@"code"]];
+	[guidesVC setSelectedTagID:[photo.tag tagID]];
+	[guidesVC setSelectedCity:[photo.city title]];
+	[guidesVC setSelectedPhotoID:[photo photoID]];
 	
 	[self.navigationController pushViewController:guidesVC animated:YES];
 	[guidesVC release];
@@ -698,13 +695,12 @@
 
 	self.imagesDictionary = [NSMutableDictionary dictionary];
 	
-	for (NSDictionary *image in self.images) {
+	for (Photo *photo in self.photos) {
 	
-		NSString *key = [image objectForKey:@"code"];
+		NSString *key = [photo photoID];
 	
-		[self.imagesDictionary setObject:image forKey:key];
+		[self.imagesDictionary setObject:photo forKey:key];
 	}
-
 }
 
 
@@ -756,9 +752,9 @@
 	}
 	
 	if (success) {
-		
-		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
-		[image setValue:@"true" forKey:@"isVouched"];
+				
+		Photo *photo = [self.imagesDictionary objectForKey:imageID];
+		[photo setIsVouched:[NSNumber numberWithInt:1]];
 	}
 	
 	[self hideLoading];
@@ -818,8 +814,8 @@
 	
 	if (success) {
 		
-		NSDictionary *image = [self.imagesDictionary objectForKey:imageID];
-		[image setValue:@"false" forKey:@"isVouched"];
+		Photo *photo = [self.imagesDictionary objectForKey:imageID];
+		[photo setIsVouched:[NSNumber numberWithInt:0]];
 	}
 	
 	[self hideLoading];

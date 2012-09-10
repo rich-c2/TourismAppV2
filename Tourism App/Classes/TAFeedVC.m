@@ -14,6 +14,7 @@
 #import "SVProgressHUD.h"
 #import "TAImageDetailsVC.h"
 #import "TATimelineVC.h"
+#import "Photo.h"
 
 
 #define IMAGE_VIEW_TAG 7000
@@ -31,7 +32,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 @implementation TAFeedVC
 
 @synthesize imagesView, gridScrollView;
-@synthesize images, feedMode;
+@synthesize images, feedMode, photos;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -54,6 +55,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
     [super viewDidLoad];
     
 	self.images = [NSMutableArray array];
+	self.photos = [NSMutableArray array];
 	
 	// The fetch size for each API call
     fetchSize = 20;
@@ -78,6 +80,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)viewDidUnload {
 	
 	self.images = nil;
+	self.photos = nil;
 	
     [gridScrollView release];
     self.gridScrollView = nil;
@@ -97,35 +100,6 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)viewWillAppear:(BOOL)animated {
 	
 	[super viewWillAppear:animated];
-	
-	/*
-	if (!loading && !imagesLoaded) {
-		
-		[self showLoading];
-
-		switch (self.feedMode) {
-				
-			case FeedModeFeed:
-				[self initFeedAPI];
-				break;
-				
-			case FeedModeLatest:
-				[self initLatestAPI];
-				break;
-				
-			case FeedModePopular:
-				[self initPopularAPI];
-				break;
-				
-			// NOT YET IMPLEMENTED
-			case FeedModeCity:
-				//[self initDefaultCityAPI];
-				break;
-				
-			default:
-				break;
-		}
-	}*/
 }
 
 
@@ -188,34 +162,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		}
 	}
 	
-	// Latest
-	else if (buttonIndex == 1) {
-		
-		// Check that we're not already in "latest mode" before updating
-		if (self.feedMode != FeedModeLatest) {
-		
-			[self showLoading];
-			
-			self.feedMode = FeedModeLatest;
-			[self refreshButtonClicked:nil];
-		}
-	}
-	
-	// Popular
-	else if (buttonIndex == 2) {
-		
-		// Check that we're not already in "popular mode" before updating
-		if (self.feedMode != FeedModePopular) {
-			
-			[self showLoading];
-			
-			self.feedMode = FeedModePopular;
-			[self refreshButtonClicked:nil];
-		}
-	}
-	
 	// Default city
-	else if (buttonIndex == 3) { 
+	else if (buttonIndex == 1) { 
 		
 		// Check that we're not already in "default city mode" before updating
 		if (self.feedMode != FeedModeCity) {
@@ -228,7 +176,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	}
 	
 	// Refresh
-	else if (buttonIndex == 4) { 
+	else if (buttonIndex == 2) { 
 	
 		[self showLoading];
 		[self refreshButtonClicked:nil];
@@ -240,13 +188,13 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)gridImageButtonClicked:(NSInteger)viewTag {
 	
-	NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
-	NSString *imageID = [image objectForKey:@"code"];
+	//NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
+	Photo *photo = [self.photos objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
 	
-	// Push the Image Details VC onto the stack
+	// Push the TATimelineVC onto the stack
 	TATimelineVC *timelineVC = [[TATimelineVC alloc] initWithNibName:@"TATimelineVC" bundle:nil];
-	[timelineVC setImages:self.images];
-	[timelineVC setSelectedImageID:imageID];
+	[timelineVC setPhotos:self.photos];
+	[timelineVC setSelectedImageID:[photo photoID]];
 	
 	[self.navigationController pushViewController:timelineVC animated:YES];
 	[timelineVC release];
@@ -336,7 +284,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)viewModeButtonTapped:(id)sender {
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Feed", @"Latest", @"Popular", @"Default city", @"Refresh", nil];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Feed", @"Default city", @"Refresh", nil];
 	
 	[actionSheet showInView:[self view]];
 	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
@@ -372,13 +320,12 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		yPos = (rowCount * (GRID_IMAGE_HEIGHT + IMAGE_PADDING));
 	}
 	
-	for (int i = subviewsCount; i < [self.images count]; i++) {
+	for (int i = subviewsCount; i < [self.photos count]; i++) {
 		
-		// Retrieve Image object from array, and construct
+		// Retrieve Photo object from array, and construct
 		// a URL string for the thumbnail image
-		NSDictionary *image = [self.images objectAtIndex:i];
-		NSDictionary *paths = [image objectForKey:@"paths"];
-		NSString *thumbURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [paths objectForKey:@"thumb"]];
+		Photo *photo = [self.photos objectAtIndex:i];
+		NSString *thumbURL = [photo thumbURL];
 		
 		// Create GridImage, set its Tag and Delegate, and add it 
 		// to the imagesView
@@ -678,7 +625,12 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		[jsonString release];
 		
 		NSArray *imagesArray = [results objectForKey:@"media"];
-		[self.images addObjectsFromArray:imagesArray];
+		//[self.images addObjectsFromArray:imagesArray];
+		
+		// Take the data from the API, convert it 
+		// to Photos objects and store them in 
+		// self.photos array
+		[self updatePhotosArray:imagesArray];
 		
 		//NSLog(@"IMAGES:%@", self.images);
 		
@@ -703,14 +655,6 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 			
 		case FeedModeFeed:
 			[self initFeedAPI];
-			break;
-			
-		case FeedModeLatest:
-			[self initLatestAPI];
-			break;
-			
-		case FeedModePopular:
-			[self initPopularAPI];
 			break;
 			
 		case FeedModeCity:
@@ -763,14 +707,6 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 				[self initFeedAPI];
 				break;
 				
-			case FeedModeLatest:
-				[self initLatestAPI];
-				break;
-				
-			case FeedModePopular:
-				[self initPopularAPI];
-				break;
-				
 			case FeedModeCity:
 				[self initFindMediaAPI];
 				break;
@@ -788,6 +724,26 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	NSString *defaultCity = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultCityKey];
 	
 	return defaultCity;
+}
+
+
+/*
+ Iterates through the self.images array,  
+ converts all the Dictionary values to
+ Photos (NSManagedObjects) and stores
+ them in self.photos array
+ */
+- (void)updatePhotosArray:(NSArray *)imagesArray {
+	
+	NSManagedObjectContext *context = [self appDelegate].managedObjectContext;
+	
+	for (NSDictionary *image in imagesArray) {
+		
+		Photo *photo = [Photo photoWithPhotoData:image inManagedObjectContext:context];
+		if (photo) [self.photos addObject:photo];
+	}
+	
+	NSLog(@"PHOTOS:\n%@", self.photos);
 }
 
 

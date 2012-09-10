@@ -17,6 +17,8 @@
 #import "TACameraVC.h"
 #import "TAProfileVC.h"
 #import "TANotificationsVC.h"
+#import "TAForgottenPasswordVC.h"
+#import "TALoginLandingVC.h"
 
 static NSString *kAccountUsernameSavedKey = @"accountUsernameSavedKey";
 static NSString *kSavedUsernameKey = @"savedUsernameKey";
@@ -195,9 +197,9 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		// We are now logged-in: update the iVar
 		[appDelegate setUserLoggedIn:YES];
 		
-		// Show tab bar view controllers
-        appDelegate.window.rootViewController = appDelegate.tabBarController;
-        appDelegate.tabBarController.selectedIndex = 0;
+		TALoginLandingVC *loginLandingVC = [[TALoginLandingVC alloc] initWithNibName:@"TALoginLandingVC" bundle:nil];
+		[self.navigationController pushViewController:loginLandingVC animated:YES];
+		[loginLandingVC release];
 		
 		// Tell the delegate that we're logged-in now
 		//[self.delegate loginSuccessful:nil];
@@ -286,6 +288,15 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
     // Reset Window to display Login form
     appDelegate.window.rootViewController = self;
 	
+}
+
+
+- (IBAction)forgottenPasswordButtonTapped:(id)sender { 
+
+	TAForgottenPasswordVC *pswdVC = [[TAForgottenPasswordVC alloc] initWithNibName:@"TAForgottenPasswordVC" bundle:nil];
+	
+	[self.navigationController pushViewController:pswdVC animated:YES];
+	[pswdVC release];
 }
 
 

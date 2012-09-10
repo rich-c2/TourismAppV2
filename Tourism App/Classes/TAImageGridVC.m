@@ -13,7 +13,7 @@
 #import "SBJson.h"
 #import "TAAppDelegate.h"
 #import "GridImage.h"
-//#import "TAImageDetailsVC.h"
+#import "Photo.h"
 #import "TATimelineVC.h"
 #import "TAExploreVC.h"
 
@@ -30,9 +30,9 @@
 
 @implementation TAImageGridVC
 
-@synthesize tagID, tag, city;
+@synthesize tagID, tag, city, resetButton, filterButton;
 @synthesize imagesView, gridScrollView;
-@synthesize images, username, imagesMode;
+@synthesize masterArray, username, imagesMode, photos, filteredPhotos;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -49,6 +49,19 @@
 	
 	// The fetch size for each API call
     fetchSize = 20;
+	
+	// view mode options
+	UIBarButtonItem *filterButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"filter" style:UIBarButtonItemStyleDone target:self action:@selector(filterButtonTapped:)];
+	filterButtonItem.target = self;
+	
+	self.filterButton = filterButtonItem;
+	[filterButtonItem release];
+	
+	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"reset" style:UIBarButtonItemStyleDone target:self action:@selector(resetPhotoFilters:)];
+	buttonItem.target = self;
+	
+	self.resetButton = buttonItem;
+	[buttonItem release];
 }
 
 
@@ -64,7 +77,12 @@
 	self.tag = nil; 
 	self.city = nil;
 	
-	self.images = nil;
+	self.resetButton = nil;
+	self.filterButton = nil;
+	
+	self.filteredPhotos = nil;
+	self.photos = nil;
+	self.masterArray = nil;
 	self.username = nil;
 	
     [gridScrollView release];
@@ -82,12 +100,17 @@
 
 - (void)dealloc {
 	
+	[resetButton release];
+	[filterButton release];
+	
 	[tagID release]; 
 	[tag release]; 
 	[city release];
+	[photos release];
+	[masterArray release];
 	
 	[username release];
-	[images release];
+	[filteredPhotos release];
     [gridScrollView release];
     [imagesView release];
     [super dealloc];
@@ -100,21 +123,26 @@
 	if (!loading && !imagesLoaded) {
 		
 		// Init array
-		if (!self.images) self.images = [NSMutableArray array];
+		if (!self.filteredPhotos) self.filteredPhotos = [NSMutableArray array];
+		if (!self.photos) self.photos = [NSMutableArray array];
+		if (!self.masterArray) self.masterArray = [NSMutableArray array];
 		
 		switch (self.imagesMode) {
 				
 			case ImagesModeMyPhotos:
-				//[self setupNavBar];
+				self.masterArray = self.photos;
+				[self setupNavBar];
 				[self initUploadsAPI];
 				break;
 				
 			case ImagesModeLikedPhotos:
-				//[self setupNavBar];
+				self.masterArray = self.photos;
+				[self setupNavBar];
 				[self initLovedAPI];
 				break;
 				
 			case ImagesModeCityTag:
+				self.masterArray = self.photos;
 				[self initFindMediaAPI];
 				break;
 				
@@ -127,9 +155,20 @@
 
 #pragma ExploreDelegate methods 
 
-- (void)finishedFilteringWithPhotos:(NSArray *)photos {
-
+- (void)finishedFilteringWithPhotos:(NSArray *)newPhotos {
 	
+	filterMode = YES;
+	[self setupNavBar];
+
+	NSMutableArray *mutablePhotos = [newPhotos mutableCopy];
+	self.filteredPhotos = mutablePhotos;
+	[mutablePhotos release];
+	
+	self.masterArray = self.filteredPhotos;
+	
+	
+	
+	[self refreshImageGrid];
 }
 
 
@@ -193,27 +232,15 @@
 
 - (void)gridImageButtonClicked:(NSInteger)viewTag {
 	
-	/*NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
-	
-	// Push the Image Details VC onto the stack
-	TAImageDetailsVC *imageDetailsVC = [[TAImageDetailsVC alloc] initWithNibName:@"TAImageDetailsVC" bundle:nil];
-	[imageDetailsVC setImageCode:[image objectForKey:@"code"]];
-	 
-	[self.navigationController pushViewController:imageDetailsVC animated:YES];
-	[imageDetailsVC release];*/
-	
-	
-	NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
-	NSString *imageID = [image objectForKey:@"code"];
+	Photo *photo = [self.masterArray objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
 	
 	// Push the Image Details VC onto the stack
 	TATimelineVC *timelineVC = [[TATimelineVC alloc] initWithNibName:@"TATimelineVC" bundle:nil];
-	[timelineVC setImages:self.images];
-	[timelineVC setSelectedImageID:imageID];
+	[timelineVC setPhotos:self.masterArray];
+	[timelineVC setSelectedImageID:[photo photoID]];
 	
 	[self.navigationController pushViewController:timelineVC animated:YES];
 	[timelineVC release];
-	
 }
 
 
@@ -267,9 +294,11 @@
 		[jsonString release];
 		
 		NSArray *imagesArray = [results objectForKey:@"media"];
-		[self.images addObjectsFromArray:imagesArray];
 		
-		//NSLog(@"IMAGES:%@", self.images);
+		// Take the data from the API, convert it 
+		// to Photos objects and store them in 
+		// self.photos array
+		[self updatePhotosArray:imagesArray];
 		
 		[self userUploadsRequestFinished];
     }
@@ -323,13 +352,12 @@
 		yPos = (rowCount * (GRID_IMAGE_HEIGHT + IMAGE_PADDING));
 	}
 	
-	for (int i = subviewsCount; i < [self.images count]; i++) {
+	for (int i = subviewsCount; i < [self.masterArray count]; i++) {
 		
-		// Retrieve Image object from array, and construct
+		// Retrieve Photo object from array, and construct
 		// a URL string for the thumbnail image
-		NSDictionary *image = [self.images objectAtIndex:i];
-		NSDictionary *paths = [image objectForKey:@"paths"];
-		NSString *thumbURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [paths objectForKey:@"thumb"]];
+		Photo *photo = [self.masterArray objectAtIndex:i];
+		NSString *thumbURL = [photo thumbURL];
 		
 		// Create GridImage, set its Tag and Delegate, and add it 
 		// to the imagesView
@@ -423,9 +451,11 @@
 		[jsonString release];
 		
 		NSArray *imagesArray = [results objectForKey:@"media"];
-		[self.images addObjectsFromArray:imagesArray];
 		
-		NSLog(@"IMAGES:%@", self.images);
+		// Take the data from the API, convert it 
+		// to Photos objects and store them in 
+		// self.photos array
+		[self updatePhotosArray:imagesArray];
 		
 		[self userUploadsRequestFinished];
 	}
@@ -497,7 +527,12 @@
 		[jsonString release];
 		
 		NSArray *imagesArray = [results objectForKey:@"media"];
-		[self.images addObjectsFromArray:imagesArray];
+		
+		// Take the data from the API, convert it 
+		// to Photos objects and store them in 
+		// self.photos array
+		[self updatePhotosArray:imagesArray];
+		
 		
 		// Request is done. Now update the UI and 
 		// the relevant iVars
@@ -533,12 +568,10 @@
 
 
 - (void)setupNavBar {
-
-	// view mode options
-	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"filter" style:UIBarButtonItemStyleDone target:self action:@selector(filterButtonTapped:)];
-	buttonItem.target = self;
-	self.navigationItem.rightBarButtonItem = buttonItem;
-	[buttonItem release];
+	
+	if (!filterMode) self.navigationItem.rightBarButtonItem = self.filterButton;
+	else self.navigationItem.rightBarButtonItem = self.resetButton;
+	
 }
 
 
@@ -546,7 +579,7 @@
 
 	TAExploreVC *exploreVC = [[TAExploreVC alloc] initWithNibName:@"TAExploreVC" bundle:nil];
 	[exploreVC setExploreMode:ExploreModeSubset];
-	[exploreVC setImages:self.images];
+	[exploreVC setPhotos:self.photos];
 	[exploreVC setDelegate:self];
 
 	[self.navigationController pushViewController:exploreVC animated:NO];
@@ -554,4 +587,93 @@
 }
 
 
+/*
+ Iterates through the self.images array,  
+ converts all the Dictionary values to
+ Photos (NSManagedObjects) and stores
+ them in self.photos array
+ */
+- (void)updatePhotosArray:(NSArray *)imagesArray {
+	
+	NSManagedObjectContext *context = [self appDelegate].managedObjectContext;
+	
+	for (NSDictionary *image in imagesArray) {
+		
+		Photo *photo = [Photo photoWithPhotoData:image inManagedObjectContext:context];
+		if (photo) [self.photos addObject:photo];
+	}
+	
+	NSLog(@"PHOTOS:\n%@", self.photos);
+}
+	 
+	 
+- (void)refreshImageGrid {
+	
+	[self showLoading];
+
+	[self removeThumbnails];
+	
+	if (filterMode) {
+	
+		[self updateImageGrid];
+		
+		[self hideLoading];
+	}
+	
+	else {
+		
+		// Reset page index and call the two
+		// relevant APIs
+		imagesPageIndex = 0;
+		
+		switch (self.imagesMode) {
+				
+			case ImagesModeMyPhotos:
+				[self initUploadsAPI];
+				break;
+				
+			case ImagesModeLikedPhotos:
+				[self initLovedAPI];
+				break;
+				
+			case ImagesModeCityTag:
+				[self initFindMediaAPI];
+				break;
+				
+			default:
+				break;
+		}
+	}
+}
+
+
+- (void)resetPhotoFilters:(id)sender {
+	
+	filterMode = NO;
+
+	[self showLoading];
+	
+	[self setupNavBar];
+	
+	[self removeThumbnails];
+	
+	self.masterArray = self.photos;
+	
+	[self.filteredPhotos removeAllObjects];
+	
+	[self updateImageGrid];
+	
+	[self hideLoading];
+}
+	 
+	 
+- (void)removeThumbnails {
+ 
+	for (GridImage *gImage in self.imagesView.subviews) {
+	 
+		[gImage removeFromSuperview];
+	}
+}
+	 
+	 
 @end

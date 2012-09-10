@@ -32,13 +32,15 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
-@synthesize profileVC, notificationsVC, tabBarController;
-@synthesize sessionToken, loggedInUsername, loginVC;
+@synthesize profileVC, notificationsVC, tabBarController, landingVC;
+@synthesize sessionToken, loggedInUsername, loginVC, landingNav;
 @synthesize feedVC, exploreVC, cameraVC, userLoggedIn;
 
 
 - (void)dealloc {
 	
+	[landingVC release];
+	[landingNav release];
 	[feedVC release]; 
 	[exploreVC release]; 
 	[cameraVC release];

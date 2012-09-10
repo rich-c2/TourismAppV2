@@ -20,6 +20,7 @@ extern NSString* const TEST_API_ADDRESS;
 @class TAFeedVC;
 @class TACameraVC;
 @class TAExploreVC;
+@class TALandingVC;
 
 @interface TAAppDelegate : UIResponder <UIApplicationDelegate> {
 	
@@ -27,6 +28,8 @@ extern NSString* const TEST_API_ADDRESS;
 	BOOL userLoggedIn;
 	
 	IBOutlet TALoginVC *loginVC;
+	IBOutlet TALandingVC *landingVC;
+	IBOutlet UINavigationController *landingNav;
 
 	UITabBarController *tabBarController;
 	
@@ -45,6 +48,8 @@ extern NSString* const TEST_API_ADDRESS;
 @property (strong, nonatomic) IBOutlet UIWindow *window;
 
 @property (nonatomic, retain) IBOutlet TALoginVC *loginVC;
+@property (nonatomic, retain) IBOutlet TALandingVC *landingVC;
+@property (nonatomic, retain) IBOutlet UINavigationController *landingNav;
 
 @property (nonatomic, retain) UITabBarController *tabBarController;
 

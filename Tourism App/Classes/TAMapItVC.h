@@ -15,14 +15,28 @@
 
 	id <PlacesDelegate> delegate;
 	
-	IBOutlet UILabel *address;
+	NSString *address;
+	NSString *city;
+	NSString *state;
+	NSString *postalCode;
+	NSString *country;
+	
+	IBOutlet UITextField *titleField;
+	IBOutlet UILabel *addressLabel;
 	IBOutlet MKMapView *map;
 	CLLocation *currentLocation;
 }
 
 @property (nonatomic, retain) id <PlacesDelegate> delegate;
 
-@property (nonatomic, retain) IBOutlet UILabel *address;
+@property (nonatomic, retain) NSString *address;
+@property (nonatomic, retain) NSString *city;
+@property (nonatomic, retain) NSString *state;
+@property (nonatomic, retain) NSString *postalCode;
+@property (nonatomic, retain) NSString *country;
+
+@property (nonatomic, retain) IBOutlet UITextField *titleField;
+@property (nonatomic, retain) IBOutlet UILabel *addressLabel;
 @property (nonatomic, retain) IBOutlet MKMapView *map;
 @property (nonatomic, retain) CLLocation *currentLocation;
 

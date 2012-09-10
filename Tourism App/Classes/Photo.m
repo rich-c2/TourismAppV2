@@ -2,7 +2,7 @@
 //  Photo.m
 //  Tourism App
 //
-//  Created by Richard Lee on 7/09/12.
+//  Created by Richard Lee on 10/09/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
@@ -10,11 +10,11 @@
 #import "City.h"
 #import "Guide.h"
 #import "Tag.h"
+#import "User.h"
 #import "TAAppDelegate.h"
 
 
 @implementation Photo
-
 
 + (Photo *)photoWithPhotoData:(NSDictionary *)photoData inManagedObjectContext:(NSManagedObjectContext *)context {
 	
@@ -30,9 +30,9 @@
 	
 	if (!error && !photo) {
 		
-		NSLog(@"ADDING IMAGE:%@", [photoData objectForKey:@"code"]);
+		NSLog(@"ADDING PHOTO:%@", [photoData objectForKey:@"code"]);
 		
-		// Create a new Image
+		// Create a new Photo
 		photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:context];
 		photo.photoID = [photoData objectForKey:@"code"];
 		photo.caption = [photoData objectForKey:@"caption"]; 
@@ -45,6 +45,9 @@
 		photo.date = photoDate;
 		[dateFormatter release];
 		
+		// TIME ELAPSED
+		photo.timeElapsed = [photoData objectForKey:@"elapsed"];
+		
 		// PATHS
 		NSDictionary *imagePaths = [photoData objectForKey:@"paths"];
 		photo.thumbURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [imagePaths objectForKey:@"thumb"]];
@@ -53,17 +56,32 @@
 		// USER
 		NSDictionary *userDict = [photoData objectForKey:@"user"];
 		photo.username = [userDict objectForKey:@"username"];
+		photo.whoTook = [User userWithBasicData:userDict inManagedObjectContext:context];
 		
 		// COUNT DATA
 		NSDictionary *countData = [photoData objectForKey:@"count"];
-		photo.lovesCount  = [NSNumber numberWithInt:[[countData objectForKey:@"loves"] intValue]];
+		photo.lovesCount = [NSNumber numberWithInt:[[countData objectForKey:@"loves"] intValue]];
+		
+		// VOUCHES COUNT
+		photo.vouchesCount = [NSNumber numberWithInt:[[countData objectForKey:@"vouches"] intValue]];
+		
+		// isLOVED
+		BOOL isLovedBool = (([[photoData objectForKey:@"isLoved"] isEqualToString:@"true"]) ? YES : NO);
+		photo.isLoved = [NSNumber numberWithBool:isLovedBool];
+		
+		// isVOUCHED
+		BOOL isVouchedBool = (([[photoData objectForKey:@"isVouched"] isEqualToString:@"true"]) ? YES : NO);
+		photo.isVouched = [NSNumber numberWithBool:isVouchedBool];
+		
+		// VERIFIED
+		BOOL isVerified = (([[photoData objectForKey:@"verified"] isEqualToString:@"1"]) ? YES : NO);
+		photo.verified = [NSNumber numberWithBool:isVerified];
 		
 		//CITY
 		photo.city = [City cityWithTitle:[photoData objectForKey:@"city"] inManagedObjectContext:context]; 
 		
 		// TAG			
 		photo.tag = [Tag tagWithID:[[photoData objectForKey:@"tag"] intValue] inManagedObjectContext:context];
-		
 		
 		// LOCATION
 		NSDictionary *locationData = [photoData objectForKey:@"location"];
@@ -73,6 +91,8 @@
 	
 	else if (!error && photo) {
 		
+		// Create a new Photo
+		photo = [NSEntityDescription insertNewObjectForEntityForName:@"Photo" inManagedObjectContext:context];
 		photo.photoID = [photoData objectForKey:@"code"];
 		photo.caption = [photoData objectForKey:@"caption"]; 
 		
@@ -84,6 +104,9 @@
 		photo.date = photoDate;
 		[dateFormatter release];
 		
+		// TIME ELAPSED
+		photo.timeElapsed = [photoData objectForKey:@"elapsed"];
+		
 		// PATHS
 		NSDictionary *imagePaths = [photoData objectForKey:@"paths"];
 		photo.thumbURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [imagePaths objectForKey:@"thumb"]];
@@ -92,10 +115,26 @@
 		// USER
 		NSDictionary *userDict = [photoData objectForKey:@"user"];
 		photo.username = [userDict objectForKey:@"username"];
+		photo.whoTook = [User userWithBasicData:userDict inManagedObjectContext:context];
 		
 		// COUNT DATA
 		NSDictionary *countData = [photoData objectForKey:@"count"];
 		photo.lovesCount  = [NSNumber numberWithInt:[[countData objectForKey:@"loves"] intValue]];
+		
+		// VOUCHES COUNT
+		photo.vouchesCount = [NSNumber numberWithInt:[[countData objectForKey:@"vouches"] intValue]];
+		
+		// isLOVED
+		BOOL isLovedBool = (([[photoData objectForKey:@"isLoved"] isEqualToString:@"true"]) ? YES : NO);
+		photo.isLoved = [NSNumber numberWithBool:isLovedBool];
+		
+		// isVOUCHED
+		BOOL isVouchedBool = (([[photoData objectForKey:@"isVouched"] isEqualToString:@"true"]) ? YES : NO);
+		photo.isVouched = [NSNumber numberWithBool:isVouchedBool];
+		
+		// VERIFIED
+		BOOL isVerified = (([[photoData objectForKey:@"verified"] isEqualToString:@"1"]) ? YES : NO);
+		photo.verified = [NSNumber numberWithBool:isVerified];
 		
 		//CITY
 		photo.city = [City cityWithTitle:[photoData objectForKey:@"city"] inManagedObjectContext:context]; 
@@ -112,21 +151,25 @@
 	return photo;
 }
 
-
 @dynamic caption;
 @dynamic date;
+@dynamic latitude;
+@dynamic longitude;
 @dynamic lovesCount;
 @dynamic photoID;
 @dynamic thumbURL;
 @dynamic url;
-@dynamic vouchesCount;
-@dynamic latitude;
-@dynamic longitude;
 @dynamic username;
+@dynamic vouchesCount;
+@dynamic isVouched;
+@dynamic isLoved;
+@dynamic timeElapsed;
+@dynamic verified;
 @dynamic city;
 @dynamic comments;
 @dynamic inGuides;
 @dynamic tag;
 @dynamic venue;
+@dynamic whoTook;
 
 @end

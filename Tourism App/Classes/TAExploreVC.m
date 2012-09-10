@@ -46,7 +46,7 @@
 		// Hide the nearby btn
 		self.nearbyBtn.hidden = YES;
 		
-		[self serializeImages];
+		//[self serializeImages];
 	}
     
 	else {
@@ -193,6 +193,8 @@
 		NSArray *results = [self.photos filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"city.title = %@ AND tag.tagID = %@", self.selectedCity, self.selectedTag.tagID]];
 		
 		[self.delegate finishedFilteringWithPhotos:results];
+		
+		[self.navigationController popViewControllerAnimated:YES];
 	}
 	
 	else {
@@ -232,6 +234,13 @@
 	}
 }
 
+
+/*
+	Iterates through the self.images array,  
+	converts all the Dictionary values to
+	Photos (NSManagedObjects) and stores
+	them in self.photos array
+*/
 - (void)serializeImages {
 	
 	self.photos = [NSMutableArray array];

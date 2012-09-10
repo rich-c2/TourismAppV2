@@ -31,4 +31,6 @@
 @property (nonatomic, retain) IBOutlet UITextField *passwordField;
 @property (nonatomic, retain) IBOutlet UITextField *usernameField;
 
+- (IBAction)forgottenPasswordButtonTapped:(id)sender;
+
 @end

@@ -250,7 +250,7 @@
 - (void)mapButtonClicked:(id)sender {
 		
 	// pass info on to delegate
-	[self.delegate mapButtonClicked:self.imageID location:self.locationData];
+	[self.delegate mapButtonClicked:self.imageID];
 }
 
 
@@ -270,7 +270,7 @@
 
 - (void)recommendButtonClicked:(id)sender {
 
-	[self.delegate recommendButtonClicked:self.imageID];
+	[self.delegate recommendButtonClicked];
 }
 
 

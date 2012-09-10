@@ -61,8 +61,13 @@
 
 	[super viewWillAppear:animated];
 	
-	if (self.mapMode == MapModeSingle) 
+	if (self.mapMode == MapModeSingle) {
+		
+		NSLog(@"CURRENTLOCATION: %f|%f", [[self.locationData objectForKey:@"latitude"] doubleValue], [[self.locationData objectForKey:@"longitude"] doubleValue]);
+		
 		[self initSingleLocation];
+	}
+		
 	else if (self.mapMode == MapModeMultiple) 
 		[self initMapLocations];
 }

@@ -18,7 +18,7 @@
 
 - (void)placeSelected:(NSMutableDictionary *)placeData;
 
-- (void)locationMapped:(CLLocation *)newLocation;
+- (void)locationMapped:(NSMutableDictionary *)newPlaceData;
 
 @end
 

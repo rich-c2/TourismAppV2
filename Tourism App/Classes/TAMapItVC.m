@@ -15,7 +15,8 @@
 
 @implementation TAMapItVC
 
-@synthesize map, currentLocation, delegate, address;
+@synthesize map, currentLocation, delegate, addressLabel, titleField;
+@synthesize address, city, state, postalCode, country;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -42,15 +43,22 @@
 
 - (void)viewDidUnload {
 	
+	self.address = nil; 
+	self.city = nil; 
+	self.state = nil; 
+	self.postalCode = nil;
+	self.country = nil;
+	
     [map release];
     self.map = nil;
 	self.currentLocation = nil;
+	self.titleField = nil;
 	
-    [address release];
-    self.address = nil;
+    [addressLabel release];
+    self.addressLabel = nil;
 	
     [super viewDidUnload];
-}
+ }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	
@@ -59,10 +67,25 @@
 
 - (void)dealloc {
 	
+	[address release]; 
+	[city release]; 
+	[state release]; 
+	[postalCode release];
+	[titleField release];
 	[currentLocation release];
     [map release];
-    [address release];
+    [addressLabel release];
     [super dealloc];
+}
+
+
+#pragma mark - UITextField delegations
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	
+	// Hide keyboard
+	[textField becomeFirstResponder];
+    
+    return YES;
 }
 
 
@@ -174,15 +197,32 @@ didChangeDragState:(MKAnnotationViewDragState)newState
 
 
 - (void)saveLocation:(id)sender {
+	
+	if ([self.titleField.text length] > 0) {
+		
+		NSNumber *latNum = [NSNumber numberWithDouble:self.currentLocation.coordinate.latitude];
+		NSNumber *lngNum = [NSNumber numberWithDouble:self.currentLocation.coordinate.longitude];
+		
+		NSDictionary *locationData = [NSDictionary dictionaryWithObjectsAndKeys:self.address, @"address", self.city, @"city", self.state, @"state", self.country, @"country", self.postalCode, @"postalCode", latNum, @"lat", lngNum, @"lng", nil];
+		
+		NSMutableDictionary *newPlaceData = [NSMutableDictionary dictionaryWithObjectsAndKeys:self.titleField.text, @"name", locationData, @"location", @"0", @"verified", nil];
 
-	// Pass the location that the user has selected
-	// onto the delegate, and pop back to the share VC
-	[self.delegate locationMapped:self.currentLocation];
+		// Pass the location that the user has selected
+		// onto the delegate, and pop back to the share VC
+		[self.delegate locationMapped:newPlaceData];
+		
+		NSArray *viewControllers = [self.navigationController viewControllers];
+		UIViewController *shareVC = [viewControllers objectAtIndex:([viewControllers count] - 3)];
+		
+		[self.navigationController popToViewController:shareVC animated:YES];
+	}
 	
-	NSArray *viewControllers = [self.navigationController viewControllers];
-	UIViewController *shareVC = [viewControllers objectAtIndex:([viewControllers count] - 3)];
-	
-	[self.navigationController popToViewController:shareVC animated:YES];
+	else {
+		
+		UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"Sorry!" message:@"You must enter a title for the place location you're plotting before proceeding." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+		[av show];
+		[av release];
+	}
 }
 
 
@@ -197,10 +237,16 @@ didChangeDragState:(MKAnnotationViewDragState)newState
 			 NSLog(@"Received placemarks: %@", placemarks);
 			 CLPlacemark *topResult = [placemarks objectAtIndex:0];
 			 
-			 // Update the label at the bottom of the mapContainer to display the latest fetched address
-			 NSString *locationAddress = [NSString stringWithFormat:@"%@ %@, %@ %@ %@", [topResult subThoroughfare],[topResult thoroughfare],[topResult subLocality], [topResult administrativeArea], [topResult postalCode]];
+			 self.address = [NSString stringWithFormat:@"%@ %@", [topResult subThoroughfare], [topResult thoroughfare]];
+			 self.city = [topResult subLocality];
+			 self.state = [topResult administrativeArea];
+			 self.postalCode = [topResult postalCode];
+			 self.country = [topResult country];
 			 
-			 if ([locationAddress length] > 0) self.address.text = locationAddress;
+			 // Update the label at the bottom of the mapContainer to display the latest fetched address
+			 NSString *locationAddress = [NSString stringWithFormat:@"%@, %@ %@ %@", self.address, self.city, self.state, self.postalCode];
+			 
+			 if ([locationAddress length] > 0) self.addressLabel.text = locationAddress;
 		 }
 	 }];
 	

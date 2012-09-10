@@ -36,19 +36,24 @@
     <entity name="Photo" representedClassName="Photo" syncable="YES">
         <attribute name="caption" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="isLoved" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isVouched" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="lovesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="photoID" attributeType="String" syncable="YES"/>
         <attribute name="thumbURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timeElapsed" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="verified" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="vouchesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <relationship name="city" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="City" inverseName="photosTakenHere" inverseEntity="City" syncable="YES"/>
         <relationship name="comments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Comment" inverseName="onPhoto" inverseEntity="Comment" syncable="YES"/>
         <relationship name="inGuides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="photos" inverseEntity="Guide" syncable="YES"/>
         <relationship name="tag" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Tag" inverseName="onPhoto" inverseEntity="Tag" syncable="YES"/>
         <relationship name="venue" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="photosTakenHere" inverseEntity="Venue" syncable="YES"/>
+        <relationship name="whoTook" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="photosTaken" inverseEntity="User" syncable="YES"/>
     </entity>
     <entity name="Tag" representedClassName="Tag" syncable="YES">
         <attribute name="tagID" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -71,6 +76,7 @@
         <relationship name="comments" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Comment" inverseName="author" inverseEntity="Comment" syncable="YES"/>
         <relationship name="followingGuides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="followedBy" inverseEntity="Guide" syncable="YES"/>
         <relationship name="guides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="author" inverseEntity="Guide" syncable="YES"/>
+        <relationship name="photosTaken" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="whoTook" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <entity name="Venue" syncable="YES">
         <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
@@ -87,7 +93,7 @@
         <element name="Notification" positionX="160" positionY="192" width="128" height="135"/>
         <element name="Photo" positionX="160" positionY="192" width="128" height="270"/>
         <element name="Tag" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="User" positionX="160" positionY="192" width="128" height="255"/>
+        <element name="User" positionX="160" positionY="192" width="128" height="270"/>
         <element name="Venue" positionX="160" positionY="192" width="128" height="135"/>
     </elements>
 </model>

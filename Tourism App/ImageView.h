@@ -18,10 +18,10 @@
 - (void)commentButtonClicked:(NSString *)imageID;
 - (void)cityTagButtonClicked:(NSString *)imageID;
 - (void)optionsButtonClicked:(NSString *)imageID;
-- (void)recommendButtonClicked:(NSString *)imageID;
+- (void)recommendButtonClicked;
 
 @optional
-- (void)mapButtonClicked:(NSString *)imageID location:(NSDictionary *)locationData;
+- (void)mapButtonClicked:(NSString *)imageID;
 
 @end
 

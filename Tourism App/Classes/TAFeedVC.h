@@ -13,9 +13,7 @@
 
 typedef enum {
     FeedModeFeed = 0,
-	FeedModeLatest = 1, 
-    FeedModePopular = 2, 
-	FeedModeCity = 3 
+	FeedModeCity = 1 
 } FeedMode;
 
 @interface TAFeedVC : UIViewController <GridImageDelegate, UIActionSheetDelegate> {
@@ -35,6 +33,7 @@ typedef enum {
 	BOOL refresh;
 	
 	NSMutableArray *images;
+	NSMutableArray *photos;
 }
 
 @property FeedMode feedMode;
@@ -42,7 +41,8 @@ typedef enum {
 @property (nonatomic, retain) IBOutlet UIView *imagesView;
 @property (nonatomic, retain) IBOutlet UIScrollView *gridScrollView;
 
-@property (nonatomic, retain) IBOutlet NSMutableArray *images;
+@property (nonatomic, retain) NSMutableArray *images;
+@property (nonatomic, retain) NSMutableArray *photos;
 
 - (void)willLogout;
 

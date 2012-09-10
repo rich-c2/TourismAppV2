@@ -2,14 +2,14 @@
 //  User.h
 //  Tourism App
 //
-//  Created by Richard Lee on 28/08/12.
+//  Created by Richard Lee on 10/09/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Guide;
+@class Guide, Photo;
 
 @interface User : NSManagedObject
 
@@ -27,9 +27,14 @@
 @property (nonatomic, retain) NSSet *comments;
 @property (nonatomic, retain) NSSet *followingGuides;
 @property (nonatomic, retain) NSSet *guides;
+@property (nonatomic, retain) NSSet *photosTaken;
 @end
 
 @interface User (CoreDataGeneratedAccessors)
+
++ (User *)userWithBasicData:(NSDictionary *)basicInfo inManagedObjectContext:(NSManagedObjectContext *)context;
++ (User *)userWithUsername:(NSString *)theUsername 
+	inManagedObjectContext:(NSManagedObjectContext *)context;
 
 - (void)addCommentsObject:(NSManagedObject *)value;
 - (void)removeCommentsObject:(NSManagedObject *)value;
@@ -46,7 +51,9 @@
 - (void)addGuides:(NSSet *)values;
 - (void)removeGuides:(NSSet *)values;
 
-+ (User *)userWithUsername:(NSString *)theUsername 
-	inManagedObjectContext:(NSManagedObjectContext *)context;
+- (void)addPhotosTakenObject:(Photo *)value;
+- (void)removePhotosTakenObject:(Photo *)value;
+- (void)addPhotosTaken:(NSSet *)values;
+- (void)removePhotosTaken:(NSSet *)values;
 
 @end

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "GridImage.h"
+#import "TAExploreVC.h"
 
 @class JSONFetcher;
 
@@ -17,7 +18,7 @@ typedef enum  {
 	ImagesModeCityTag = 2
 } ImagesMode;
 
-@interface TAImageGridVC : UIViewController <GridImageDelegate> {
+@interface TAImageGridVC : UIViewController <GridImageDelegate, ExploreDelegate> {
 	
 	ImagesMode imagesMode;
 	
@@ -37,9 +38,16 @@ typedef enum  {
 	BOOL loading;
 	BOOL imagesLoaded;
 	BOOL refresh;
+	BOOL filterMode;
+	
+	UIBarButtonItem *resetButton;
+	UIBarButtonItem *filterButton;
+	
+	NSMutableArray *masterArray;
+	NSMutableArray *photos;
+	NSMutableArray *filteredPhotos;
 	
 	NSString *username;
-	NSMutableArray *images;
 }
 
 @property ImagesMode imagesMode;
@@ -52,7 +60,13 @@ typedef enum  {
 @property (nonatomic, retain) IBOutlet UIScrollView *gridScrollView;
 
 @property (nonatomic, retain) NSString *username;
-@property (nonatomic, retain) IBOutlet NSMutableArray *images;
+
+@property (nonatomic, retain) UIBarButtonItem *resetButton;
+@property (nonatomic, retain) UIBarButtonItem *filterButton;
+
+@property (nonatomic, retain) NSMutableArray *masterArray;
+@property (nonatomic, retain) NSMutableArray *photos;
+@property (nonatomic, retain) NSMutableArray *filteredPhotos;
 
 - (IBAction)loadMoreButtonClicked:(id)sender;
 

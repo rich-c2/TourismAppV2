@@ -29,6 +29,7 @@
 	NSString *selectedImageID;
 	
 	NSArray *images;
+	NSMutableArray *photos;
 	
 	BOOL imageViewsReady;
 	BOOL loading;
@@ -46,6 +47,7 @@
 @property (nonatomic, retain) NSString *selectedImageID;
 
 @property (nonatomic, retain) NSArray *images;
+@property (nonatomic, retain) NSMutableArray *photos;
 
 @property (nonatomic, retain) NSMutableDictionary *imagesDictionary;
 @property (nonatomic, retain) UIBarButtonItem *addToGuideBtn;
