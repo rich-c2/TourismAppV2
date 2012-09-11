@@ -31,8 +31,8 @@
 @implementation TAProfileVC
 
 @synthesize username, avatarURL, usernameLabel, photosBtn, nameLabel, avatarView;
-@synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn, myContentBtn;
-@synthesize findFriendsBtn, contentScrollView, guidesBtn;
+@synthesize followUserBtn, followingUserBtn, followingBtn, followersBtn, myContentBtn, bioView;
+@synthesize findFriendsBtn, contentScrollView, guidesBtn, cityLabel;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil observeLogin:(BOOL)observe {
@@ -64,6 +64,8 @@
 	// Update username label
 	if ([self.username length] > 0)
 		[self.usernameLabel setText:self.username];
+	
+	[self.contentScrollView setContentSize:CGSizeMake(self.contentScrollView.frame.size.width, (self.contentScrollView.frame.size.height * 1.5))];
 }
 
 
@@ -101,6 +103,10 @@
 	
 	[guidesBtn release];
 	self.guidesBtn = nil;
+    [cityLabel release];
+    cityLabel = nil;
+	[bioView release];
+	bioView = nil;
     [super viewDidUnload];
 }
 
@@ -175,6 +181,10 @@
     [findFriendsBtn release];
 	[contentScrollView release];
 	[guidesBtn release];
+    [cityLabel release];
+    [cityLabel release];
+    [cityLabel release];
+	[bioView release];
     [super dealloc];
 }
 
@@ -478,9 +488,6 @@
 		
 		NSLog(@"new user data:%@", newUserData);
 		
-		// Update the current User object with the details
-		self.avatarURL = @"TEST TEST"; //[NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [newUserData objectForKey:@"avatar"]];
-		
 		// Update name
 		NSString *newFullName = [NSString stringWithFormat:@"%@ %@", [newUserData objectForKey:@"firstName"], [newUserData objectForKey:@"lastName"]]; 
 		[self.nameLabel setText:[newUserData objectForKey:@"username"]];
@@ -498,9 +505,9 @@
 		// Load avatar image
 		self.avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [newUserData objectForKey:@"avatar"]];
 		[self initAvatarImage:self.avatarURL];
-		 
-		// Update guides button - API tweak required
-		
+
+		// CITY LABEL
+		[self.cityLabel setText:[NSString stringWithFormat:@"City: %@", [newUserData objectForKey:@"city"]]];
 	}
 	
 	// Hide loading view

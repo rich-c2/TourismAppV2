@@ -131,8 +131,16 @@
 				[self initFollowersAPI];
 				break;
 				
+			case UsersModeFindViaContacts:
+				[self initAddressBook];
+				break;
+				
+			case UsersModeFindViaTwitter:
+				[self initTwitterFriendsAPI];
+				break;
+				
 			case UsersModeFindViaFB:
-				[self initFBFriendsAPI];
+				//[self initFBFriendsAPI];
 				break;
 				
 			default:
@@ -173,32 +181,41 @@
 	
 	NSString *name;
 	NSString *username;
-	NSString *avatarURL;
-	
-    // Retrieve the Dictionary at the given index that's in self.users
-	NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
-	
+	NSString *avatarURL;	
 	
 	// FOR NOW - account for the fact that FindUser returns
 	// a set of Users in a different format
-	/*if (self.usersMode == UsersModeSearchUsers) {
+	if (self.usersMode == UsersModeFindViaContacts) {
 	
-		NSDictionary *userData = [user objectForKey:@"user"];
+		ABRecordRef *person = (ABRecordRef *)[self.users objectAtIndex:[indexPath row]];
 		
-		name = [NSString stringWithFormat:@"%@ %@", [userData objectForKey:@"firstName"], [userData objectForKey:@"lastName"]];
-		username = [userData objectForKey:@"username"];
-		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userData objectForKey:@"avatar"]];
+		ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
+		NSLog(@"emails:%@", emails);
+		
+		NSString *firstName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
+		NSString *lastName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
+		
+		name = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+		username = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonEmailProperty);
+		avatarURL = @""; //[NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userData objectForKey:@"avatar"]];
 	}
 	
-	else {*/
+	else {
+		
+		// Retrieve the Dictionary at the given index that's in self.users
+		NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
 		
 		name = [user objectForKey:@"name"];
-		
 		username = [user objectForKey:@"username"];
 		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
-	//}
+	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+	
+	
+	NSLog(@"name:%@|username:%@|avatarURL:%@", name, username, avatarURL);
+	
+	if ([name length] == 0) name = @"";
 	
 	[cell updateCellWithUsername:username withName:name imageURL:avatarURL];
 }
@@ -505,6 +522,77 @@
     
     [usersFetcher release];
     usersFetcher = nil;
+}
+
+
+- (void)initAddressBook {
+
+	ABAddressBookRef ab=ABAddressBookCreate();
+	self.users =(NSArray *)ABAddressBookCopyArrayOfAllPeople(ab);
+	
+	NSLog(@"arrTemp:%@", self.users);
+	
+	[self hideLoading];
+}
+
+
+- (void)initTwitterFriendsAPI {
+	
+	ACAccountStore *accountStore = [[[ACAccountStore alloc] init] autorelease];
+	
+	// Create an account type that ensures Twitter accounts are retrieved.
+	ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+	
+	// Request access from the user to use their Twitter accounts.
+	[accountStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
+		
+		if(granted) {
+	
+			NSArray *accounts = [accountStore accountsWithAccountType:accountType];
+			
+			ACAccount *account = [accounts objectAtIndex:2];
+			
+			NSString *userID = [[account accountProperties] objectForKey:@"user_id"]; 
+			NSLog(@"userID:%@", userID);
+			
+			//  Next, we create an URL that points to the target endpoint
+			NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1.1/friends/ids.json?screen_name=richC2&stringify_ids=true"];
+			
+			//  Now we can create our request.  Note that we are performing a GET request.
+			TWRequest *request = [[TWRequest alloc] initWithURL:url 
+													 parameters:nil 
+												  requestMethod:TWRequestMethodGET];
+			
+			// Attach the account object to this request
+			[request setAccount:account];
+			
+			[request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+				
+				[self hideLoading];
+				
+				if (!responseData) {
+					// inspect the contents of error 
+					NSLog(@"%@", error);
+				} 
+				else {
+					
+					NSError *jsonError;
+					NSArray *timeline = [NSJSONSerialization JSONObjectWithData:responseData 
+																		options:NSJSONReadingMutableLeaves 
+																		  error:&jsonError];            
+					if (timeline) {                          
+						// at this point, we have an object that we can parse
+						NSLog(@"TIMELINE:%@", timeline);
+						
+					} 
+					else { 
+						// inspect the contents of jsonError
+						NSLog(@"%@", jsonError);
+					}
+				}
+			}];
+		}
+	}];
 }
 
 

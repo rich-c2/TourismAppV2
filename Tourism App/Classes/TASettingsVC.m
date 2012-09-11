@@ -276,7 +276,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
     NSData *jsonData = [jsonString dataUsingEncoding:NSASCIIStringEncoding];
     
     // Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"Login"];
+	NSString *methodName = [NSString stringWithString:@"UpdateProfile"];
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
     
     // Initialiase the URL Request

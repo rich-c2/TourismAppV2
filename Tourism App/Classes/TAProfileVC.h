@@ -27,6 +27,9 @@
 	BOOL isFollowingLoaded;
 	BOOL viewingCurrentUser;
 
+	
+	IBOutlet UITextView *bioView;
+	IBOutlet UILabel *cityLabel;
 	IBOutlet UIImageView *avatarView;
 	IBOutlet UILabel *usernameLabel;
 	IBOutlet UILabel *nameLabel;
@@ -49,6 +52,8 @@
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarURL;
 
+@property (nonatomic, retain) IBOutlet UITextView *bioView;
+@property (nonatomic, retain) IBOutlet UILabel *cityLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *avatarView;
 @property (nonatomic, retain) IBOutlet UILabel *usernameLabel;
 @property (nonatomic, retain) IBOutlet UILabel *nameLabel;

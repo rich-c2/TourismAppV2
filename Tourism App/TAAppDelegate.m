@@ -114,8 +114,6 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
-    //self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-    //self.window.backgroundColor = [UIColor whiteColor];
 	
 	// Create a tabbar controller and an array to contain the view controllers
 	tabBarController = [[UITabBarController alloc] init];
@@ -144,6 +142,7 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	
     return YES;
 }
+
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -303,8 +302,6 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 	for (int i = 0; i < [newPhotos count]; i++) {
 		
 		NSDictionary *photoDict = [newPhotos objectAtIndex:i];
-		
-		NSLog(@"SAVING Photo:%@", [photoDict objectForKey:@"caption"]);
 		
 		// Add to Core Data DB
 		Photo *photo = [Photo photoWithPhotoData:photoDict inManagedObjectContext:self.managedObjectContext];

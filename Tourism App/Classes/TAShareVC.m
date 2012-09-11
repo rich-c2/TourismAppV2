@@ -31,8 +31,8 @@
 @implementation TAShareVC
 
 @synthesize photo, imageReferenceURL, selectedCity, tagBtn, captionField, map;
-@synthesize currentLocation, selectedTag, cityLabel, recommendToUsernames, placeData;
-@synthesize placeTitleLabel, placeAddressLabel, scrollView, twitterAccounts;
+@synthesize currentLocation, selectedTag, cityLabel, recommendToUsernames, placeData, selectedAccountIdentifier;
+@synthesize placeTitleLabel, placeAddressLabel, scrollView, twitterAccounts, savedAccountStore;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -158,32 +158,12 @@
 	NSLog(@"btnTitle:%i", buttonIndex);
 	NSLog(@"retain count:%i", [self.twitterAccounts count]);
 	
+	
 	// Grab the initial Twitter account to tweet from.
 	//NSLog(@"ACCOUNTS:%@", self.twitterAccounts);
 	ACAccount *twitterAccount = [self.twitterAccounts objectAtIndex:(buttonIndex-1)];
 	
-	//NSString *urlString = @"http://api.twitter.com/1/statuses/update_with_media.json";
-	//NSURL *url = [urlString convertToURL];
-	
-	//NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:@"Check out this photo I took!", @"status", nil]
-	
-	// Build a twitter request
-	TWRequest *postRequest = [[TWRequest alloc] initWithURL:[NSURL URLWithString:@"https://upload.twitter.com/1/statuses/update_with_media.json"] parameters:nil requestMethod:TWRequestMethodPOST];
-	
-	//add text
-	[postRequest addMultiPartData:[@"Check out this photo I took!" dataUsingEncoding:NSUTF8StringEncoding] withName:@"status" type:@"multipart/form-data"];
-	
-	//add image
-	[postRequest addMultiPartData:UIImagePNGRepresentation(self.photo) withName:@"media" type:@"multipart/form-data"];
-	
-	// Set the account used to post the tweet.
-	[postRequest setAccount:twitterAccount];
-	
-	// Block handler to manage the response
-	[postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-		
-		 NSLog(@"Twitter response, HTTP response: %i", [urlResponse statusCode]);
-	 }];
+	self.selectedAccountIdentifier = twitterAccount.identifier;
 }
 
 
@@ -235,8 +215,6 @@
 - (void)locationMapped:(NSMutableDictionary *)newPlaceData {
 	
 	self.placeData = newPlaceData;
-
-	NSLog(@"RECEIVED PLACE DATA:%@", self.placeData);
 	
 	// Retrieve the lat/lng data from the dictionary and
 	// update the map marker, and make the map focus on the new coord
@@ -357,7 +335,7 @@
 		[self showLoading];
 		
 		// Share with TWITTER
-		// [self shareButtonTapped:nil];
+		[self initTwitterRequest];
 		
 		// Set local var
 		submissionSuccess = NO;
@@ -612,30 +590,32 @@
 	*/
 	
 	ACAccountStore *accountStore = [[ACAccountStore alloc] init];
+	self.savedAccountStore = accountStore;
+	[accountStore release];
 	
 	// Create an account type that ensures Twitter accounts are retrieved.
-	ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+	ACAccountType *accountType = [self.savedAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
 	
 	self.twitterAccounts = [NSMutableArray array];
 	
 	// Request access from the user to use their Twitter accounts.
-	[accountStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
+	[self.savedAccountStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
 		if(granted) {
 	
 			// Get the list of Twitter accounts.
-			NSArray *arrayOfAccounts = [accountStore accountsWithAccountType:accountType];
+			//NSArray *arrayOfAccounts = [accountStore accountsWithAccountType:accountType];
+			self.twitterAccounts = [self.savedAccountStore accountsWithAccountType:accountType];
+			[self.twitterAccounts retain];
 			
-			if ([arrayOfAccounts count] > 0) {
+			if ([self.twitterAccounts count] > 0) {
 			
-				//[self presentTwitterAccountsSheet];
+				[self presentTwitterAccountsSheet];
 				
-				ACAccount *twitterAccount = [arrayOfAccounts objectAtIndex:2];
+				//ACAccount *twitterAccount = [arrayOfAccounts objectAtIndex:2];
 				
 			}
 		}	
 	}];
-
-	[accountStore release];
 }
 
 
@@ -870,7 +850,7 @@
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:nil];
 
-	for (ACAccount *account in twitterAccounts) {
+	for (ACAccount *account in self.twitterAccounts) {
 		
 		NSString *accountTitle = account.accountDescription;
 		[actionSheet addButtonWithTitle:accountTitle];
@@ -882,43 +862,61 @@
 }
 
 
-- (void)initTwitterRequest:(ACAccount *)account {
-
-	// Build a twitter request
-	TWRequest *postRequest = [[TWRequest alloc] initWithURL:[NSURL URLWithString:@"https://upload.twitter.com/1/statuses/update_with_media.json"] parameters:nil requestMethod:TWRequestMethodPOST];
-	
-	//add text
-	[postRequest addMultiPartData:[@"Check out this photo I took!" dataUsingEncoding:NSUTF8StringEncoding] withName:@"status" type:@"multipart/form-data"];
-	
-	//add image
-	[postRequest addMultiPartData:UIImageJPEGRepresentation(self.photo, 0.7) withName:@"media" type:@"multipart/form-data"];
-	
-	NSData *val = [[NSString stringWithFormat:@"true"] dataUsingEncoding:NSUTF8StringEncoding];
-	[postRequest addMultiPartData:val withName:@"display_coordinates" type:@"multipart/form-data"];
-	
-	[postRequest addMultiPartData:[[NSString stringWithFormat:@"%f", self.currentLocation.coordinate.latitude] dataUsingEncoding:NSUTF8StringEncoding] withName:@"lat" type:@"multipart/form-data"];
-	
-	[postRequest addMultiPartData:[[NSString stringWithFormat:@"%f", self.currentLocation.coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] withName:@"long" type:@"multipart/form-data"];
+- (void)initTwitterRequest {
 	
 	
-	// Set the account used to post the tweet.
-	[postRequest setAccount:account];
+	// Create an account type that ensures Twitter accounts are retrieved.
+	ACAccountType *accountType = [self.savedAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
 	
-	// Block handler to manage the response
-	[postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-		
-		if ([urlResponse statusCode] == 200) {
+	// Request access from the user to use their Twitter accounts.
+	[self.savedAccountStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
+		if(granted) {
 			
-			// The response from Twitter is in JSON format
-			// Move the response into a dictionary and print
-			NSError *error;        
-			NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
-			NSLog(@"Twitter response: %@", dict);                           
-		}
-		
-		else
-			NSLog(@"Twitter error, HTTP response: %i", [urlResponse statusCode]);
+			// Get the list of Twitter accounts.
+			ACAccount *account = [self.savedAccountStore accountWithIdentifier:self.selectedAccountIdentifier];
+			
+			if (account) {
+				
+				// Build a twitter request
+				TWRequest *postRequest = [[[TWRequest alloc] initWithURL:[NSURL URLWithString:@"https://upload.twitter.com/1/statuses/update_with_media.json"] parameters:nil requestMethod:TWRequestMethodPOST] autorelease];
+				
+				//add text
+				[postRequest addMultiPartData:[@"Check out this photo I took!" dataUsingEncoding:NSUTF8StringEncoding] withName:@"status" type:@"multipart/form-data"];
+				
+				//add image
+				[postRequest addMultiPartData:UIImageJPEGRepresentation(self.photo, 0.7) withName:@"media" type:@"multipart/form-data"];
+				
+				NSData *val = [[NSString stringWithFormat:@"true"] dataUsingEncoding:NSUTF8StringEncoding];
+				[postRequest addMultiPartData:val withName:@"display_coordinates" type:@"multipart/form-data"];
+				
+				[postRequest addMultiPartData:[[NSString stringWithFormat:@"%f", self.currentLocation.coordinate.latitude] dataUsingEncoding:NSUTF8StringEncoding] withName:@"lat" type:@"multipart/form-data"];
+				
+				[postRequest addMultiPartData:[[NSString stringWithFormat:@"%f", self.currentLocation.coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] withName:@"long" type:@"multipart/form-data"];
+				
+				
+				// Set the account used to post the tweet.
+				[postRequest setAccount:account];
+				
+				// Block handler to manage the response
+				[postRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+					
+					if ([urlResponse statusCode] == 200) {
+						
+						// The response from Twitter is in JSON format
+						// Move the response into a dictionary and print
+						NSError *error;        
+						NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+						NSLog(@"Twitter response: %@", dict);                           
+					}
+					
+					else
+						NSLog(@"Twitter error, HTTP response: %i", [urlResponse statusCode]);
+				}];
+			}
+		}	
 	}];
+
+	
 }
 
 

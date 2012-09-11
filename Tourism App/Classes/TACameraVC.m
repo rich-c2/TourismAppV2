@@ -110,6 +110,7 @@
 
 }
 
+
 - (void)startLocationManager:(id)sender {
 	
 	// Retrieve the user's current location
@@ -262,6 +263,7 @@
 - (IBAction)selectPhotoButtonTapped:(id)sender {
 
 	UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+	picker.allowsEditing = YES;
 	picker.delegate = self;
 	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	

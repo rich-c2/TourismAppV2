@@ -23,7 +23,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 	
     if (self) {
-        // Custom initialization
+        self.title = @"Find friends";
     }
     return self;
 }
@@ -34,7 +34,7 @@
     
 	//self.tableContent = [NSArray arrayWithObjects:@"Find friends via Twitter", @"Find friends via FB", @"Invite friends", @"Search users", nil];
 	
-	self.tableContent = [NSArray arrayWithObjects:@"Invite friends", @"Search users", nil];
+	self.tableContent = [NSArray arrayWithObjects:@"From my contacts list", @"Twitter friends", @"Search users", nil];
 
 }
 
@@ -111,10 +111,17 @@
 	
 	NSString *cellTitle = [self.tableContent objectAtIndex:[indexPath row]];
 	
-	self.tableContent = [NSArray arrayWithObjects:@"Find friends via Twitter", @"Find friends via FB", @"Invite friends", @"Search users", nil];
+	// CONTACTS LIST
+	if ([cellTitle isEqualToString:@"From my contacts list"]) {
 	
-	// TWITTER
-	if ([cellTitle isEqualToString:@"Find friends via Twitter"]) {
+		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
+		[usersVC setUsersMode:UsersModeFindViaContacts];
+		
+		[self.navigationController pushViewController:usersVC animated:YES];
+		[usersVC release];
+	}
+	
+	if ([cellTitle isEqualToString:@"Twitter friends"]) { 
 	
 		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
 		[usersVC setUsersMode:UsersModeFindViaTwitter];
@@ -123,6 +130,7 @@
 		[usersVC release];
 	}
 	
+	// SEARCH USERS
 	else if ([cellTitle isEqualToString:@"Search users"]) {
 		
 		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];

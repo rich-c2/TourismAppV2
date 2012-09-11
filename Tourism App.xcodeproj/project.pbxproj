@@ -35,7 +35,6 @@
 		9B09867315D8A0CE006F8B63 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B09867115D8A0CE006F8B63 /* AddressBook.framework */; };
 		9B09867415D8A0CE006F8B63 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B09867215D8A0CE006F8B63 /* AddressBookUI.framework */; };
 		9B09896B15E74869005F53A1 /* TANotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B09896A15E74869005F53A1 /* TANotificationsManager.m */; };
-		9B2737C115FD755900FB487A /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737C015FD755800FB487A /* Photo.m */; };
 		9B2737CB15FD7F5E00FB487A /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737CA15FD7F5E00FB487A /* User.m */; };
 		9B2737CF15FDAE9B00FB487A /* TALandingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737CD15FDAE9A00FB487A /* TALandingVC.m */; };
 		9B2737D015FDAE9B00FB487A /* TALandingVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B2737CE15FDAE9A00FB487A /* TALandingVC.xib */; };
@@ -82,6 +81,8 @@
 		9BB3439715F096DB006BD1FD /* TACameraVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BB3439515F096DB006BD1FD /* TACameraVC.xib */; };
 		9BB4045715ECA3910080E00E /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045615ECA3910080E00E /* Tag.m */; };
 		9BB4045A15ECA3920080E00E /* City.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045915ECA3920080E00E /* City.m */; };
+		9BBC84BD15FF12B10042DEAF /* Venue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBC84BC15FF12B10042DEAF /* Venue.m */; };
+		9BBC84C015FF13130042DEAF /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBC84BF15FF13120042DEAF /* Photo.m */; };
 		9BD79FEB15EDAAE50033EB64 /* TAMapVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FE915EDAAE40033EB64 /* TAMapVC.m */; };
 		9BD79FEC15EDAAE50033EB64 /* TAMapVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BD79FEA15EDAAE40033EB64 /* TAMapVC.xib */; };
 		9BD79FF415EDAF080033EB64 /* MyMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FF315EDAF080033EB64 /* MyMapAnnotation.m */; };
@@ -198,8 +199,6 @@
 		9B09867215D8A0CE006F8B63 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		9B09896915E74869005F53A1 /* TANotificationsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TANotificationsManager.h; path = Classes/TANotificationsManager.h; sourceTree = "<group>"; };
 		9B09896A15E74869005F53A1 /* TANotificationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TANotificationsManager.m; path = Classes/TANotificationsManager.m; sourceTree = "<group>"; };
-		9B2737BF15FD755800FB487A /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = Classes/Photo.h; sourceTree = "<group>"; };
-		9B2737C015FD755800FB487A /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = Classes/Photo.m; sourceTree = "<group>"; };
 		9B2737C915FD7F5E00FB487A /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = Classes/User.h; sourceTree = "<group>"; };
 		9B2737CA15FD7F5E00FB487A /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = Classes/User.m; sourceTree = "<group>"; };
 		9B2737CC15FDAE9A00FB487A /* TALandingVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TALandingVC.h; path = Classes/TALandingVC.h; sourceTree = "<group>"; };
@@ -283,6 +282,10 @@
 		9BB4045615ECA3910080E00E /* Tag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Tag.m; path = Classes/Tag.m; sourceTree = "<group>"; };
 		9BB4045815ECA3920080E00E /* City.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = City.h; path = Classes/City.h; sourceTree = "<group>"; };
 		9BB4045915ECA3920080E00E /* City.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = City.m; path = Classes/City.m; sourceTree = "<group>"; };
+		9BBC84BB15FF12B10042DEAF /* Venue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Venue.h; path = Classes/Venue.h; sourceTree = "<group>"; };
+		9BBC84BC15FF12B10042DEAF /* Venue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Venue.m; path = Classes/Venue.m; sourceTree = "<group>"; };
+		9BBC84BE15FF13120042DEAF /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = Classes/Photo.h; sourceTree = "<group>"; };
+		9BBC84BF15FF13120042DEAF /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = Classes/Photo.m; sourceTree = "<group>"; };
 		9BD79FE815EDAAE40033EB64 /* TAMapVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAMapVC.h; path = Classes/TAMapVC.h; sourceTree = "<group>"; };
 		9BD79FE915EDAAE40033EB64 /* TAMapVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAMapVC.m; path = Classes/TAMapVC.m; sourceTree = "<group>"; };
 		9BD79FEA15EDAAE40033EB64 /* TAMapVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAMapVC.xib; path = Classes/TAMapVC.xib; sourceTree = "<group>"; };
@@ -413,11 +416,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B09867315D8A0CE006F8B63 /* AddressBook.framework in Frameworks */,
+				9B09867415D8A0CE006F8B63 /* AddressBookUI.framework in Frameworks */,
 				9BD9B40915F573CF00179B85 /* MessageUI.framework in Frameworks */,
 				9BD7A00515EDCC260033EB64 /* Accounts.framework in Frameworks */,
 				9BD7A00315EDCC1A0033EB64 /* Twitter.framework in Frameworks */,
-				9B09867315D8A0CE006F8B63 /* AddressBook.framework in Frameworks */,
-				9B09867415D8A0CE006F8B63 /* AddressBookUI.framework in Frameworks */,
 				9B09867015D8A0B8006F8B63 /* AssetsLibrary.framework in Frameworks */,
 				9B09866E15D8A08E006F8B63 /* libxml2.dylib in Frameworks */,
 				9B09866C15D8A082006F8B63 /* MobileCoreServices.framework in Frameworks */,
@@ -650,6 +653,8 @@
 		9BD7A00615EDD39F0033EB64 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				9BBC84BB15FF12B10042DEAF /* Venue.h */,
+				9BBC84BC15FF12B10042DEAF /* Venue.m */,
 				9B2737C915FD7F5E00FB487A /* User.h */,
 				9B2737CA15FD7F5E00FB487A /* User.m */,
 				9BF6242D15F4438500DB6B0B /* MyCoreLocation.h */,
@@ -662,8 +667,8 @@
 				9BB4045615ECA3910080E00E /* Tag.m */,
 				9BDF043D15EAEC42008AFBE2 /* Notification.h */,
 				9BDF043E15EAEC42008AFBE2 /* Notification.m */,
-				9B2737BF15FD755800FB487A /* Photo.h */,
-				9B2737C015FD755800FB487A /* Photo.m */,
+				9BBC84BE15FF13120042DEAF /* Photo.h */,
+				9BBC84BF15FF13120042DEAF /* Photo.m */,
 				9B6BE5E715EEDF0B00635C30 /* Guide.h */,
 				9B6BE5E815EEDF0B00635C30 /* Guide.m */,
 			);
@@ -1107,12 +1112,13 @@
 				9BE0FE3F15F6C1A400E19851 /* ImageView.m in Sources */,
 				9BE0FE4415F6C22500E19851 /* TATimelineVC.m in Sources */,
 				9BE0FE4915F6D9AF00E19851 /* EditProfileVC.m in Sources */,
-				9B2737C115FD755900FB487A /* Photo.m in Sources */,
 				9B2737CB15FD7F5E00FB487A /* User.m in Sources */,
 				9B2737CF15FDAE9B00FB487A /* TALandingVC.m in Sources */,
 				9B2737D415FDB29F00FB487A /* TARegisterVC.m in Sources */,
 				9B2737D915FDBC5F00FB487A /* TAForgottenPasswordVC.m in Sources */,
 				9B2737DE15FDD25E00FB487A /* TALoginLandingVC.m in Sources */,
+				9BBC84BD15FF12B10042DEAF /* Venue.m in Sources */,
+				9BBC84C015FF13130042DEAF /* Photo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

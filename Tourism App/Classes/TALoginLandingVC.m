@@ -9,6 +9,7 @@
 #import "TALoginLandingVC.h"
 #import "TAAppDelegate.h"
 
+static NSString *kSkipLoginLandingKey = @"skipLoginLandingKey";
 
 @interface TALoginLandingVC ()
 
@@ -24,6 +25,7 @@
     }
     return self;
 }
+
 
 - (void)viewDidLoad
 {
@@ -46,6 +48,7 @@
     // e.g. self.myOutlet = nil;
 }
 
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
@@ -53,6 +56,11 @@
 
 
 - (IBAction)findButtonTapped:(id)sender {
+	
+	// The user has now used this screen once
+	// so we need to store the fact that we're
+	// going to skip this on future log-ins.
+	[[NSUserDefaults standardUserDefaults] setBool:YES forKey:kSkipLoginLandingKey];
 
 	TAAppDelegate *appDelegate = [self appDelegate];
 	
@@ -63,6 +71,11 @@
 
 
 - (IBAction)shareButtonTapped:(id)sender {
+	
+	// The user has now used this screen once
+	// so we need to store the fact that we're
+	// going to skip this on future log-ins.
+	[[NSUserDefaults standardUserDefaults] setBool:YES forKey:kSkipLoginLandingKey];
 	
 	TAAppDelegate *appDelegate = [self appDelegate];
 	

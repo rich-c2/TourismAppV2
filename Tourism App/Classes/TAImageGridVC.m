@@ -16,6 +16,7 @@
 #import "Photo.h"
 #import "TATimelineVC.h"
 #import "TAExploreVC.h"
+#import "TAMapVC.h"
 
 #define IMAGE_VIEW_TAG 7000
 #define GRID_IMAGE_WIDTH 75.0
@@ -50,18 +51,30 @@
 	// The fetch size for each API call
     fetchSize = 20;
 	
-	// view mode options
-	UIBarButtonItem *filterButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"filter" style:UIBarButtonItemStyleDone target:self action:@selector(filterButtonTapped:)];
-	filterButtonItem.target = self;
+	if (self.imagesMode == ImagesModeLikedPhotos || self.imagesMode == ImagesModeMyPhotos) {
 	
-	self.filterButton = filterButtonItem;
-	[filterButtonItem release];
+		// view mode options
+		UIBarButtonItem *filterButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"filter" style:UIBarButtonItemStyleDone target:self action:@selector(filterButtonTapped:)];
+		filterButtonItem.target = self;
+		
+		self.filterButton = filterButtonItem;
+		[filterButtonItem release];
+		
+		UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"reset" style:UIBarButtonItemStyleDone target:self action:@selector(resetPhotoFilters:)];
+		buttonItem.target = self;
+		
+		self.resetButton = buttonItem;
+		[buttonItem release];
+	}
 	
-	UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"reset" style:UIBarButtonItemStyleDone target:self action:@selector(resetPhotoFilters:)];
-	buttonItem.target = self;
+	if (self.imagesMode == ImagesModeCityTag) {
 	
-	self.resetButton = buttonItem;
-	[buttonItem release];
+		UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"map" style:UIBarButtonItemStyleDone target:self action:@selector(viewImagesMap:)];
+		buttonItem.target = self;
+		
+		self.navigationItem.rightBarButtonItem = buttonItem;
+		[buttonItem release];
+	}
 }
 
 
@@ -673,6 +686,17 @@
 	 
 		[gImage removeFromSuperview];
 	}
+}
+
+
+- (void)viewImagesMap:(id)sender {
+
+	TAMapVC *mapVC = [[TAMapVC alloc] initWithNibName:@"TAMapVC" bundle:nil];
+	[mapVC setMapMode:MapModeMultiple];
+	[mapVC setPhotos:self.photos];
+	
+	[self.navigationController pushViewController:mapVC animated:YES];
+	[mapVC release];
 }
 	 
 	 

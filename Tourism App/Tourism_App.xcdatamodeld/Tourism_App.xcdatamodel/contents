@@ -78,10 +78,14 @@
         <relationship name="guides" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Guide" inverseName="author" inverseEntity="Guide" syncable="YES"/>
         <relationship name="photosTaken" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="whoTook" inverseEntity="Photo" syncable="YES"/>
     </entity>
-    <entity name="Venue" syncable="YES">
+    <entity name="Venue" representedClassName="Venue" syncable="YES">
         <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="country" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="latitude" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="postcode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
         <attribute name="venueID" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="photosTakenHere" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="venue" inverseEntity="Photo" syncable="YES"/>

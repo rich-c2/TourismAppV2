@@ -24,6 +24,7 @@ static NSString *kAccountUsernameSavedKey = @"accountUsernameSavedKey";
 static NSString *kSavedUsernameKey = @"savedUsernameKey";
 static NSString *kSavedPasswordKey = @"savedPasswordKey";
 static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
+static NSString *kSkipLoginLandingKey = @"skipLoginLandingKey";
 
 @interface TALoginVC ()
 
@@ -104,6 +105,9 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		// Hide the keyboard
         [textField resignFirstResponder];
 		
+		// show loading animation
+		[self showLoading];
+		
         // Login the user
         [self login];
 	}
@@ -148,6 +152,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	NSAssert(aFetcher == loginFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
 	BOOL loginSuccess = NO;
+	BOOL skipLoginLanding;
 	
 	if ([theJSONFetcher.data length] > 0) {
 		
@@ -156,6 +161,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		
 		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
+		
+		NSLog(@"LOGIN RESULTS:%@", results);
 		
 		for (int i = 0; i < [[results allKeys] count]; i++) {
 			
@@ -175,8 +182,12 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 				NSString *city = [userDict objectForKey:@"city"];
 			
 				// A default city has just been selected. Store it.
-				[[NSUserDefaults standardUserDefaults] setObject:city forKey:kUserDefaultCityKey];
-			}
+				NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+				
+				[defaults setObject:city forKey:kUserDefaultCityKey];
+				
+				skipLoginLanding = [defaults boolForKey:kSkipLoginLandingKey];
+			} 
 		}
 		
 		[jsonString release];
@@ -197,12 +208,22 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		// We are now logged-in: update the iVar
 		[appDelegate setUserLoggedIn:YES];
 		
-		TALoginLandingVC *loginLandingVC = [[TALoginLandingVC alloc] initWithNibName:@"TALoginLandingVC" bundle:nil];
-		[self.navigationController pushViewController:loginLandingVC animated:YES];
-		[loginLandingVC release];
 		
-		// Tell the delegate that we're logged-in now
-		//[self.delegate loginSuccessful:nil];
+		// Determine whether we're going to skip the landing page
+		// that would appear after the Login form. If so, 
+		// go straight to the first section of the app.
+		if (skipLoginLanding) { 
+		
+			appDelegate.window.rootViewController = appDelegate.tabBarController;
+			appDelegate.tabBarController.selectedIndex = 0;
+		}
+		
+		else {
+			
+			TALoginLandingVC *loginLandingVC = [[TALoginLandingVC alloc] initWithNibName:@"TALoginLandingVC" bundle:nil];
+			[self.navigationController pushViewController:loginLandingVC animated:YES];
+			[loginLandingVC release];
+		}
 	}
 	
 	else {
@@ -218,7 +239,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	}
 	
 	// Hide loading animation
-	//[self hideLoading];
+	[self hideLoading];
 	
 	[loginFetcher release];
 	loginFetcher = nil;
@@ -297,6 +318,18 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
 	[self.navigationController pushViewController:pswdVC animated:YES];
 	[pswdVC release];
+}
+
+
+- (void)showLoading {
+	
+	[SVProgressHUD showInView:self.view status:nil networkIndicator:YES posY:-1 maskType:SVProgressHUDMaskTypeClear];
+}
+
+
+- (void)hideLoading {
+	
+	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
 }
 
 

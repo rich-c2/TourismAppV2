@@ -2,7 +2,7 @@
 //  Photo.m
 //  Tourism App
 //
-//  Created by Richard Lee on 10/09/12.
+//  Created by Richard Lee on 11/09/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
@@ -11,8 +11,8 @@
 #import "Guide.h"
 #import "Tag.h"
 #import "User.h"
+#import "Venue.h"
 #import "TAAppDelegate.h"
-
 
 @implementation Photo
 
@@ -83,10 +83,18 @@
 		// TAG			
 		photo.tag = [Tag tagWithID:[[photoData objectForKey:@"tag"] intValue] inManagedObjectContext:context];
 		
-		// LOCATION
+		/* 
+		 VENUE & LOCATION
+		 */
+		
 		NSDictionary *locationData = [photoData objectForKey:@"location"];
+		NSDictionary *venueData = [photoData objectForKey:@"address"];
+		photo.venue = [Venue venueWithData:venueData location:locationData inManagedObjectContext:context];
+		
 		photo.latitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"latitude"] doubleValue]];
 		photo.longitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"longitude"] doubleValue]];
+		
+		////////////////////////////////////////////////////////////
 	}
 	
 	else if (!error && photo) {
@@ -142,29 +150,39 @@
 		// TAG			
 		photo.tag = [Tag tagWithID:[[photoData objectForKey:@"tag"] intValue] inManagedObjectContext:context];
 		
-		// LOCATION
+		
+		/* 
+			VENUE & LOCATION
+		*/
+		
 		NSDictionary *locationData = [photoData objectForKey:@"location"];
+		NSDictionary *venueData = [photoData objectForKey:@"address"];
+		photo.venue = [Venue venueWithData:venueData location:locationData inManagedObjectContext:context];
+		
 		photo.latitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"latitude"] doubleValue]];
 		photo.longitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"longitude"] doubleValue]];
+		
+		////////////////////////////////////////////////////////////
 	}
 	
 	return photo;
 }
 
+
 @dynamic caption;
 @dynamic date;
+@dynamic isLoved;
+@dynamic isVouched;
 @dynamic latitude;
 @dynamic longitude;
 @dynamic lovesCount;
 @dynamic photoID;
 @dynamic thumbURL;
+@dynamic timeElapsed;
 @dynamic url;
 @dynamic username;
-@dynamic vouchesCount;
-@dynamic isVouched;
-@dynamic isLoved;
-@dynamic timeElapsed;
 @dynamic verified;
+@dynamic vouchesCount;
 @dynamic city;
 @dynamic comments;
 @dynamic inGuides;

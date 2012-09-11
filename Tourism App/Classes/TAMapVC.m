@@ -8,6 +8,8 @@
 
 #import "TAMapVC.h"
 #import "MyMapAnnotation.h"
+#import "Photo.h"
+#import "Venue.h"
 
 @interface TAMapVC ()
 
@@ -96,7 +98,7 @@
 			pinView = [[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kPinAnnotationIdentifier] autorelease];
 			
 			[pinView setUserInteractionEnabled:YES];
-			[pinView setCanShowCallout:NO];
+			[pinView setCanShowCallout:YES];
 		}
 	}
 	
@@ -147,12 +149,18 @@
 
 	for (int i = 0; i < [self.photos count]; i++) {
 		
-		NSDictionary *photoDict = [self.photos objectAtIndex:i];
-		NSDictionary *locationDict = [photoDict objectForKey:@"location"];
+		//NSDictionary *photoDict = [self.photos objectAtIndex:i];
+		
+		Photo *photo = [self.photos objectAtIndex:i];
+		
+		//NSDictionary *locationDict = [photoDict objectForKey:@"location"];
 		
 		CLLocationCoordinate2D coordLocation;
-		coordLocation.latitude = [[locationDict objectForKey:@"latitude"] doubleValue];
-		coordLocation.longitude = [[locationDict objectForKey:@"longitude"] doubleValue];
+		coordLocation.latitude = [photo.latitude doubleValue];
+		coordLocation.longitude = [photo.longitude doubleValue];
+		
+		//coordLocation.latitude = [[locationDict objectForKey:@"latitude"] doubleValue];
+		//coordLocation.longitude = [[locationDict objectForKey:@"longitude"] doubleValue];
 		
 		if (i == 0) {
 		
@@ -163,7 +171,8 @@
 			[self.map regionThatFits:region];
 		}
 	
-		NSString *title = @"Test pin";
+		NSString *title = photo.venue.title;
+		if ([title length] == 0) title = @"[untitled]";
 		
 		MyMapAnnotation *mapAnnotation = [[MyMapAnnotation alloc] initWithCoordinate:coordLocation title:title];
 		[self.map addAnnotation:mapAnnotation];

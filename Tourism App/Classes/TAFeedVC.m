@@ -456,9 +456,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	NSString *defaultCity = [self getUsersDefaultCity];
 	
 	// Convert string to data for transmission
-	NSString *jsonString = [NSString stringWithFormat:@"username=%@&city=%@&pg=%i&sz=%i&token=%@", [self appDelegate].loggedInUsername, defaultCity, imagesPageIndex, fetchSize, [[self appDelegate] sessionToken]];
-	
-	NSLog(@"CITY PARAMETERS:%@", jsonString);
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&city=%@&pg=%i&size=%i&token=%@", [self appDelegate].loggedInUsername, defaultCity, imagesPageIndex, fetchSize, [[self appDelegate] sessionToken]];
 	
 	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
 	
@@ -500,10 +498,18 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		NSDictionary *results = [jsonString JSONValue];
 		[jsonString release];
 		
-		NSArray *imagesArray = [results objectForKey:@"media"];
-		[self.images addObjectsFromArray:imagesArray];
+		//NSArray *imagesArray = [results objectForKey:@"media"];
+		//[self.images addObjectsFromArray:imagesArray];
 		
-		NSLog(@"CITY COUNT:%i", [self.images count]);
+		NSArray *imagesArray = [results objectForKey:@"media"];
+		//[self.images addObjectsFromArray:imagesArray];
+		
+		// Take the data from the API, convert it 
+		// to Photos objects and store them in 
+		// self.photos array
+		[self updatePhotosArray:imagesArray];
+		
+		//NSLog(@"CITY COUNT:%i", [self.images count]);
 		
 		[self userUploadsRequestFinished];
     }
@@ -584,6 +590,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
 	// Convert string to data for transmission
 	NSString *jsonString = [NSString stringWithFormat:@"username=%@&pg=%i&sz=%i&token=%@", [self appDelegate].loggedInUsername, imagesPageIndex, fetchSize, [[self appDelegate] sessionToken]];
+	
 	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
 	
 	// Create the URL that will be used to authenticate this user
@@ -700,6 +707,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		
 		// Clear images array
 		[self.images removeAllObjects];
+		[self.photos removeAllObjects];
 		
 		switch (self.feedMode) {
 				

@@ -7,6 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AddressBook/AddressBook.h>
+#import <AddressBookUI/AddressBookUI.h>
+#import <Twitter/Twitter.h>
+#import <Accounts/Accounts.h>
 
 typedef enum  {
 	UsersModeFollowing = 0,
@@ -27,7 +31,7 @@ typedef enum  {
 
 @end
 
-@interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource> {
+@interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate> {
 
 	id <RecommendsDelegate> delegate;
 	

@@ -17,6 +17,7 @@
 @class Tag;
 @class JSONFetcher;
 @class XMLFetcher;
+@class ACAccountStore;
 
 @interface TAShareVC : UIViewController <TagsDelegate, RecommendsDelegate, PlacesDelegate, UIActionSheetDelegate> {
 	
@@ -47,7 +48,8 @@
 	IBOutlet UIScrollView *scrollView;
 	
 	NSArray *twitterAccounts;
-	
+	ACAccountStore *savedAccountStore;
+	NSString *selectedAccountIdentifier;
 }
 
 @property (nonatomic, retain) IBOutlet UITextField *captionField;
@@ -69,7 +71,9 @@
 @property (nonatomic, retain) IBOutlet UILabel *placeAddressLabel;
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 
-@property (nonatomic, retain) IBOutlet NSArray *twitterAccounts;
+@property (nonatomic, retain) NSArray *twitterAccounts;
+@property (nonatomic, retain) ACAccountStore *savedAccountStore;
+@property (nonatomic, retain) NSString *selectedAccountIdentifier;
 
 - (IBAction)shareButtonTapped:(id)sender;
 
