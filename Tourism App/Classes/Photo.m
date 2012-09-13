@@ -39,7 +39,7 @@
 		
 		// Convert string to date object		
 		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-		[dateFormatter setDateFormat:@"MM/dd/yyyy hh:mm:ss a"];
+		[dateFormatter setDateFormat:@"dd/MM/yyyy hh:mm:ss a"];
 		NSString *dateString = [photoData objectForKey:@"date"];
 		NSDate *photoDate = [dateFormatter dateFromString:dateString];
 		photo.date = photoDate;
@@ -106,7 +106,7 @@
 		
 		// Convert string to date object		
 		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-		[dateFormatter setDateFormat:@"MM/dd/yyyy hh:mm:ss a"];
+		[dateFormatter setDateFormat:@"dd/MM/yyyy hh:mm:ss a"];
 		NSString *dateString = [photoData objectForKey:@"date"];
 		NSDate *photoDate = [dateFormatter dateFromString:dateString];
 		photo.date = photoDate;

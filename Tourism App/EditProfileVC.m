@@ -25,14 +25,16 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 @implementation EditProfileVC
 
-@synthesize managedObjectContext, formScrollView, currentTextField;
+@synthesize managedObjectContext, formScrollView, currentTextField, bioView;
 @synthesize firstNameField, lastNameField, emailField, cityBtn, selectedCity;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
-        // Custom initialization
+        
+		self.title = @"Edit profile";
     }
     return self;
 }
@@ -40,10 +42,25 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
 	
-	CGSize newSize = CGSizeMake(self.formScrollView.frame.size.width, self.formScrollView.frame.size.height);
+	CGSize newSize = CGSizeMake(self.formScrollView.frame.size.width, (self.formScrollView.frame.size.height * 1.6));
 	[self.formScrollView setContentSize:newSize];
+}
+
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {  
+	
+	BOOL shouldChangeText = YES; 
+	
+	if ([text isEqualToString:@"\n"]) {  
+		
+		shouldChangeText = NO;
+		
+		// Hide the keyboard
+		[textView resignFirstResponder];  
+	}  
+	
+	return shouldChangeText;  
 }
 
 
@@ -56,6 +73,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)viewDidUnload {
 	
+	self.bioView = nil;
 	self.selectedCity = nil;
 	self.managedObjectContext = nil;
 	
@@ -82,6 +100,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)dealloc {
 	
+	[bioView release];
 	[selectedCity release];
 	[managedObjectContext release];
 	
@@ -108,7 +127,6 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		
 		[self fetchProfileDetails];
 	}
-
 }
 
 
@@ -182,8 +200,11 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	NSString *firstName = self.firstNameField.text;
 	NSString *lastName = self.lastNameField.text;
 	NSString *email = self.emailField.text;
+	NSString *bio = self.bioView.text;
 	
-	NSString *postString = [NSString stringWithFormat:@"username=%@&firstname=%@&lastname=%@&emailaddress=%@&city=%@&token=%@", [self appDelegate].loggedInUsername, firstName, lastName, email, self.selectedCity, [self appDelegate].sessionToken];
+	NSString *postString = [NSString stringWithFormat:@"username=%@&firstname=%@&lastname=%@&emailaddress=%@&city=%@&bio=%@&token=%@", [self appDelegate].loggedInUsername, firstName, lastName, email, self.selectedCity, bio, [self appDelegate].sessionToken];
+	
+	NSLog(@"BIO POST:%@", postString);
 	
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	
@@ -213,7 +234,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
     
     JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
 	
-	//NSLog(@"UPDATE PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"UPDATE PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
 	NSAssert(aFetcher == updateProfileFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
@@ -301,6 +322,9 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		self.firstNameField.text = [newUserData objectForKey:@"firstName"];
 		self.lastNameField.text = [newUserData objectForKey:@"lastName"];
 		self.emailField.text = [newUserData objectForKey:@"email"];
+		
+		NSString *bioText = [newUserData objectForKey:@"bio"];
+		if ([bioText length] > 0) self.bioView.text = bioText; 
 		
 		self.selectedCity = [newUserData objectForKey:@"city"];
 		if ([self.selectedCity length] > 0) 

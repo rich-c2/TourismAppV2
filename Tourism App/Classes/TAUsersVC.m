@@ -14,6 +14,7 @@
 #import "TAProfileVC.h"
 #import "TAAppDelegate.h"
 #import "AsyncCell.h"
+#import "User.h"
 
 @interface TAUsersVC ()
 
@@ -21,7 +22,7 @@
 
 @implementation TAUsersVC
 
-@synthesize usersMode, navigationTitle, delegate, searchField;
+@synthesize usersMode, navigationTitle, delegate, searchField, following;
 @synthesize usersTable, selectedUsername, users, managedObjectContext;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -40,6 +41,11 @@
     
 	// Set the title of this view controller
 	self.title = self.navigationTitle;
+	
+	if (self.usersMode == UsersModeFindViaContacts) {
+		
+		self.managedObjectContext = [self appDelegate].managedObjectContext;
+	}
 	
 	if (self.usersMode == UsersModeRecommendTo) {
 		
@@ -85,12 +91,14 @@
 	self.usersTable	= nil;
 	self.selectedUsername = nil;
 	self.users = nil;
+	self.following = nil;
 	self.managedObjectContext = nil;
 
 }
 
 - (void)dealloc {
 	
+	[following release];
 	[navigationTitle release];
 	[usersTable release];
 	[selectedUsername release];
@@ -132,7 +140,7 @@
 				break;
 				
 			case UsersModeFindViaContacts:
-				[self initAddressBook];
+				[self initFollowingAPI];
 				break;
 				
 			case UsersModeFindViaTwitter:
@@ -149,6 +157,22 @@
 				break;
 		}
 	}
+}
+
+
+#pragma AsynCellDelegate methods 
+
+- (void)followingButtonClicked:(UITableViewCell *)tableCell {
+	
+	NSIndexPath *path = [self.usersTable indexPathForCell:tableCell];
+	
+	User *user = [self.users objectAtIndex:[path row]];
+	
+	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+	[profileVC setUsername:user.username];
+	
+	[self.navigationController pushViewController:profileVC animated:YES];
+	[profileVC release];
 }
 
 
@@ -177,7 +201,7 @@
 }
 
 
-- (void)configureCell:(AsyncCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
 	NSString *name;
 	NSString *username;
@@ -186,18 +210,23 @@
 	// FOR NOW - account for the fact that FindUser returns
 	// a set of Users in a different format
 	if (self.usersMode == UsersModeFindViaContacts) {
-	
-		ABRecordRef *person = (ABRecordRef *)[self.users objectAtIndex:[indexPath row]];
 		
-		ABMultiValueRef emails = ABRecordCopyValue(person, kABPersonEmailProperty);
-		NSLog(@"emails:%@", emails);
+		User *user = [self.users objectAtIndex:[indexPath row]];
+		BOOL followingUser = NO;
 		
-		NSString *firstName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonFirstNameProperty);
-		NSString *lastName = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonLastNameProperty);
+		if ([self.following containsObject:user.username]) {
+			
+			NSLog(@"FOLLOWING USER:%@", user.username);
+			followingUser = YES;
+		}
 		
-		name = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
-		username = (__bridge_transfer NSString*)ABRecordCopyValue(person, kABPersonEmailProperty);
+		name = [NSString stringWithFormat:@""];//, firstName, lastName];
+		username = user.username;
 		avatarURL = @""; //[NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userData objectForKey:@"avatar"]];
+		
+		[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+		
+		if ([name length] == 0) name = @"";
 	}
 	
 	else {
@@ -208,31 +237,57 @@
 		name = [user objectForKey:@"name"];
 		username = [user objectForKey:@"username"];
 		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
+		
+		[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+		
+		if ([name length] == 0) name = @"";
 	}
 	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
+	[cell.textLabel setText:username];
+	[cell.detailTextLabel setText:name];
+	//[cell.imageView setImage:<#(UIImage *)#>
 	
 	
 	NSLog(@"name:%@|username:%@|avatarURL:%@", name, username, avatarURL);
 	
-	if ([name length] == 0) name = @"";
 	
-	[cell updateCellWithUsername:username withName:name imageURL:avatarURL];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	
     static NSString *CellIdentifier = @"Cell";
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 	
-	AsyncCell *cell = (AsyncCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-	
-    if (cell == nil) {
+	//if (self.usersMode == UsersModeFindViaContacts) {
+				
+		if (cell == nil) {
+			
+			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+			
+			UIButton *followingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+			[followingBtn setFrame:CGRectMake(0.0, 0.0, 20.0, 20.0)];
+			[followingBtn setBackgroundColor:[UIColor blueColor]];
+			[followingBtn setTitle:@"Following" forState:UIControlStateNormal];
+			[followingBtn addTarget:self action:@selector(followingButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+			
+			cell.accessoryView = followingBtn;
+		}
+	//}
+	/*
+	else {
 		
-		cell = [[[AsyncCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    }
-    
-    // Retrieve Track object and set it's name to the cell
+		AsyncCell *cell = (AsyncCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+		
+		if (cell == nil) {
+			
+			cell = [[[AsyncCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+			[cell setDelegate:self];
+		}
+		
+	}*/
+	
+	// Retrieve Track object and set it's name to the cell
 	[self configureCell:cell atIndexPath:indexPath];
     
     return cell;
@@ -320,7 +375,7 @@
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
 	
-	//NSLog(@"PRINTING FOLLOWING:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"PRINTING FOLLOWING:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
     if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
         
@@ -333,12 +388,23 @@
 		// Build an array from the dictionary for easy access to each entry
 		NSMutableArray *newFollowers = (NSMutableArray *)[results objectForKey:@"users"];
 		
-		// Sort alphabetically by venue title
-		NSSortDescriptor *alphaDesc = [[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
-		[newFollowers sortUsingDescriptors:[NSArray arrayWithObject:alphaDesc]];	
-		[alphaDesc release];
+		if (self.usersMode == UsersModeFindViaContacts) {
+			
+			[self populateFollowingArray:newFollowers];
+			
+			[self initAddressBook];
+		}
 		
-		self.users = newFollowers;
+		else {
+			
+			// Sort alphabetically by venue title
+			NSSortDescriptor *alphaDesc = [[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
+			[newFollowers sortUsingDescriptors:[NSArray arrayWithObject:alphaDesc]];	
+			[alphaDesc release];
+			
+			self.users = newFollowers;
+		}
+		
 		
 		// clean up
 		[jsonString release];
@@ -347,10 +413,14 @@
 		usersLoaded = YES;
     }
 	
-	// Reload table
-	[self.usersTable reloadData];
 	
-	[self hideLoading];
+	if (self.usersMode != UsersModeFindViaContacts) {
+		
+		// Reload table
+		[self.usersTable reloadData];
+		
+		[self hideLoading];
+	}
     
     [usersFetcher release];
     usersFetcher = nil;
@@ -528,11 +598,115 @@
 - (void)initAddressBook {
 
 	ABAddressBookRef ab=ABAddressBookCreate();
-	self.users =(NSArray *)ABAddressBookCopyArrayOfAllPeople(ab);
+	NSArray *contacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(ab);
 	
-	NSLog(@"arrTemp:%@", self.users);
+	//NSLog(@"arrTemp:%@", self.users);
+	
+	NSMutableArray *emails = [[NSMutableArray alloc] init];
+	
+	for (int i = 0; i < [contacts count]; i++) {
+	
+		ABRecordRef *person = (ABRecordRef *)[contacts objectAtIndex:i];
+		
+		ABMultiValueRef emailProperty = (ABMultiValueRef)ABRecordCopyValue(person, kABPersonEmailProperty);
+		
+		// convert it to an array
+		CFArrayRef allEmails = ABMultiValueCopyArrayOfAllValues(emailProperty) ;
+		// add these emails to our initial array
+		[emails addObjectsFromArray: (NSArray *)allEmails] ;
+		
+		//[emails addObjectsFromArray:personEmails];
+	}
+	
+	NSString *emailsString = [emails componentsJoinedByString:@","];
+	[emails release];
+	
+	[self initContactsFriendsAPI:emailsString];
+}
+
+
+- (void)initContactsFriendsAPI:(NSString *)emailsString {
+
+	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&friends_emails=%@", 
+							[self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], emailsString];
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"ContactsFriends"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	contactsFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self
+													action:@selector(receivedContactsFriendsResponse:)];
+	[contactsFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedContactsFriendsResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == contactsFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	// We are not loading
+	loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	NSLog(@"PRINTING CONTACTS FRIENDS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		// Build an array from the dictionary for easy access to each entry
+		self.users = [self convertToUsers:[results objectForKey:@"users"]];
+		
+		// clean up
+		[jsonString release];
+		
+		// We've finished loading the artists
+		usersLoaded = YES;
+    }
+	
+	// Reload table
+	[self.usersTable reloadData];
 	
 	[self hideLoading];
+    
+    [contactsFetcher release];
+    contactsFetcher = nil;
+}
+
+
+- (void)determineFollowingUsers:(NSMutableArray *)installedUsers {
+
+	/*self.users = [NSMutableArray array];
+	
+	NSArray *keys = 
+	
+	for (int i = 0; i < [self.following count]; i++) {
+	
+		NSDictionary *userDict = [self.following objectAtIndex:i];
+		
+		NSString *username = [userDict objectForKey:@"username"];
+		
+		if ([installedUsers containsObject:username]) {
+		
+			[installedUsers replaceObjectAtIndex:<#(NSUInteger)#> withObject:<#(id)#>];
+		}
+		
+	}
+	*/
 }
 
 
@@ -549,11 +723,10 @@
 		if(granted) {
 	
 			NSArray *accounts = [accountStore accountsWithAccountType:accountType];
-			
 			ACAccount *account = [accounts objectAtIndex:2];
 			
-			NSString *userID = [[account accountProperties] objectForKey:@"user_id"]; 
-			NSLog(@"userID:%@", userID);
+			//NSString *userID = [[account accountProperties] objectForKey:@"user_id"]; 
+			//NSLog(@"userID:%@", userID);
 			
 			//  Next, we create an URL that points to the target endpoint
 			NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1.1/friends/ids.json?screen_name=richC2&stringify_ids=true"];
@@ -574,6 +747,7 @@
 					// inspect the contents of error 
 					NSLog(@"%@", error);
 				} 
+				
 				else {
 					
 					NSError *jsonError;
@@ -593,6 +767,34 @@
 			}];
 		}
 	}];
+}
+			 
+
+- (NSMutableArray *)convertToUsers:(NSArray *)usersArray {
+
+	NSMutableArray *userObjects = [NSMutableArray array];
+	
+	for (int i = 0; i < [usersArray count]; i++) {
+		
+		NSDictionary *userDict = [usersArray objectAtIndex:i];
+ 		User *user = [User userWithBasicData:userDict inManagedObjectContext:self.managedObjectContext];
+		[userObjects addObject:user];
+	}
+	
+	return userObjects;
+}
+
+
+- (void)populateFollowingArray:(NSArray *)followingArray {
+	
+	self.following = [NSMutableArray array];
+	
+	for (int i = 0; i < [followingArray count]; i++) {
+		
+		NSDictionary *userDict = [followingArray objectAtIndex:i];
+		
+		[self.following addObject:[userDict objectForKey:@"username"]];
+	}
 }
 
 

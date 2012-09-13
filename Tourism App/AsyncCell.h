@@ -28,7 +28,20 @@
 
 #import "FastCell.h"
 
-@interface AsyncCell : FastCell
+@class AsyncCell;
+
+@protocol AsyncCellDelegate 
+
+- (void)followingButtonClicked:(AsyncCell *)tableCell;
+
+@end
+
+@interface AsyncCell : FastCell {
+
+	id <AsyncCellDelegate> delegate;
+}
+
+@property (nonatomic, retain) id <AsyncCellDelegate> delegate;
 
 @property (nonatomic, retain) NSDictionary* info;
 @property (nonatomic, retain) UIImage* image;
@@ -36,5 +49,7 @@
 - (void) updateCellInfo:(NSDictionary*)_info;
 - (void) updateCellWithUsername:(NSString *)username withName:(NSString *)name 
 					   imageURL:(NSString *)urlString;
+- (void) updateCellWithUsername:(NSString *)username withName:(NSString *)name 
+					   imageURL:(NSString *)urlString followingUser:(BOOL)following;
 
 @end

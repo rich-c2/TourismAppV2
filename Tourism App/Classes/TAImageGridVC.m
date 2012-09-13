@@ -32,7 +32,7 @@
 @implementation TAImageGridVC
 
 @synthesize tagID, tag, city, resetButton, filterButton;
-@synthesize imagesView, gridScrollView;
+@synthesize imagesView, gridScrollView, sortMode, sortModeToggler;
 @synthesize masterArray, username, imagesMode, photos, filteredPhotos;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -68,6 +68,16 @@
 	}
 	
 	if (self.imagesMode == ImagesModeCityTag) {
+		
+		// Show the sort toggler
+		self.sortModeToggler.hidden = NO;
+		
+		// Reposition the scroll view to accomodate sort toggler
+		CGRect newFrame = self.gridScrollView.frame;
+		CGFloat shiftVal = 50;
+		newFrame.origin.y += shiftVal;
+		newFrame.size.height -= shiftVal;
+		[self.gridScrollView setFrame:newFrame];
 	
 		UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithTitle:@"map" style:UIBarButtonItemStyleDone target:self action:@selector(viewImagesMap:)];
 		buttonItem.target = self;
@@ -99,9 +109,12 @@
 	self.username = nil;
 	
     [gridScrollView release];
-    gridScrollView = nil;
+    self.gridScrollView = nil;
     [imagesView release];
-    imagesView = nil;
+    self.imagesView = nil;
+	
+	[sortModeToggler release];
+	self.sortModeToggler = nil;
 	
     [super viewDidUnload];
 }
@@ -126,6 +139,7 @@
 	[filteredPhotos release];
     [gridScrollView release];
     [imagesView release];
+	[sortModeToggler release];
     [super dealloc];
 }
 
@@ -164,6 +178,7 @@
 		}
 	}
 }
+
 
 
 #pragma ExploreDelegate methods 
@@ -259,10 +274,11 @@
 
 #pragma MY-METHODS
 
-
 - (void)initFindMediaAPI {
 	
-	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&pg=%i&sz=%i&token=%@", [self appDelegate].loggedInUsername, [self.tagID intValue], self.city, imagesPageIndex, fetchSize, [[self appDelegate] sessionToken]];
+	NSString *sort = ((self.sortMode == SortModeLatest) ? @"latest" : @"popular");
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&pg=%i&sz=%i&sort=%@&token=%@", [self appDelegate].loggedInUsername, [self.tagID intValue], self.city, imagesPageIndex, fetchSize, sort, [[self appDelegate] sessionToken]];
 	NSLog(@"jsonString:%@", jsonString);
 	
 	// Convert string to data for transmission
@@ -616,7 +632,20 @@
 		if (photo) [self.photos addObject:photo];
 	}
 	
-	NSLog(@"PHOTOS:\n%@", self.photos);
+	
+	if (self.sortMode == SortModePopular) {
+		
+		NSSortDescriptor *lovesDesc = [[NSSortDescriptor alloc] initWithKey:@"lovesCount" ascending:NO];
+		[self.photos sortUsingDescriptors:[NSArray arrayWithObject:lovesDesc]];	
+		[lovesDesc release];
+	}
+	
+	else {
+		
+		 NSSortDescriptor *dateDesc = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+		 [self.photos sortUsingDescriptors:[NSArray arrayWithObject:dateDesc]];	
+		 [dateDesc release];
+	}
 }
 	 
 	 
@@ -697,6 +726,28 @@
 	
 	[self.navigationController pushViewController:mapVC animated:YES];
 	[mapVC release];
+}
+
+
+- (IBAction)sortModeWasChanged {
+
+	// Change the sortMode property to reflect
+	// the selection made by the user
+	self.sortMode = self.sortModeToggler.selectedSegmentIndex;
+	
+	// Clear the thumbnails from the grid
+	[self removeThumbnails];
+	
+	// Clear the self.photos array
+	[self.photos removeAllObjects];
+	
+	// Reset the page index
+	imagesPageIndex = 0;
+	
+	[self showLoading];
+	
+	// Call the findMedia API
+	[self initFindMediaAPI];
 }
 	 
 	 

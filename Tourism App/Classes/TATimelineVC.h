@@ -22,6 +22,7 @@
 	JSONFetcher *loveFetcher;
 	JSONFetcher *vouchFetcher;
 	JSONFetcher	*recommendFetcher;
+	JSONFetcher *flagFetcher;
 	
 	IBOutlet UIScrollView *timelineScrollView;
 	NSInteger scrollIndex;

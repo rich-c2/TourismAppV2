@@ -34,9 +34,10 @@
 @implementation AsyncCell
 
 @synthesize info;
-@synthesize image;
+@synthesize image, delegate;
 
 - (id) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+	
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) 
     {
 		self.backgroundColor = [UIColor whiteColor];
@@ -100,7 +101,33 @@ static UIFont* bold14 = nil;
 	[[UIColor grayColor] set];
 	[name drawInRect:CGRectMake(textXPos, 21.0, widthr, 40.0) withFont:system14 lineBreakMode:UILineBreakModeTailTruncation];
 	
+	NSArray *keys = [self.info allKeys];
+	
+	if ([keys containsObject:@"following"]) {
+		
+		NSNumber *following = [self.info objectForKey:@"following"];
+		
+		if ([following intValue] == 1) {
+			
+			UIButton *followingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+			[followingBtn setFrame:CGRectMake(270.0, 10.0, 40.0, 30.0)];
+			[followingBtn setTitle:@"Following" forState:UIControlStateNormal];
+			[followingBtn addTarget:self action:@selector(followingButtonClicked:) forControlEvents:UIControlStateNormal];
+			[self addSubview:followingBtn];
+		}
+		
+		else {
+			
+			UIButton *followingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+			[followingBtn setFrame:CGRectMake(270.0, 10.0, 40.0, 30.0)];
+			[followingBtn setTitle:@"Follow" forState:UIControlStateNormal];
+			[followingBtn addTarget:self action:@selector(followingButtonClicked:) forControlEvents:UIControlStateNormal];
+			[self addSubview:followingBtn];
+		}
+	}
+	
 	if (self.image) {
+		
 		CGRect r = CGRectMake(imageXPos, 5.0, 48.0, 48.0);
 		[self.image drawInRect:r];
 	}
@@ -136,12 +163,34 @@ static UIFont* bold14 = nil;
 }
 
 
+- (void) updateCellWithUsername:(NSString *)username withName:(NSString *)name 
+					   imageURL:(NSString *)urlString followingUser:(BOOL)following {
+	
+	self.info = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:name, username, urlString, [NSNumber numberWithBool:following], nil] forKeys:[NSArray arrayWithObjects:@"name", @"username", @"imageURL", @"following", nil]];
+	
+	if (urlString) {
+		
+        AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]] success:^(UIImage *requestedImage) {
+            self.image = requestedImage;
+            [self setNeedsDisplay];
+        }];
+        [operation start];
+    }
+}
+
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
 	
     [super setSelected:selected animated:animated];
 	
     if (selected)[self.backgroundView setBackgroundColor:[UIColor cyanColor]];
 	else [self.backgroundView setBackgroundColor:[UIColor whiteColor]];
+}
+
+
+- (void)followingButtonClicked:(id)sender {
+	
+	[self.delegate followingButtonClicked:self];
 }
 
 

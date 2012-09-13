@@ -45,7 +45,9 @@ typedef enum  {
 	UITableView *usersTable;
 	NSString *selectedUsername;
 	NSArray *users;
+	NSMutableArray *following;
 
+	JSONFetcher *contactsFetcher;
 	JSONFetcher *usersFetcher;
 	NSInteger page;
 	NSInteger batchSize;
@@ -66,8 +68,9 @@ typedef enum  {
 @property (nonatomic, retain) IBOutlet UITableView *usersTable;
 @property (nonatomic, retain) NSString *selectedUsername;
 @property (nonatomic, retain) NSArray *users;
+@property (nonatomic, retain) NSMutableArray *following;
 
-- (void)configureCell:(AsyncCell *)cell atIndexPath:(NSIndexPath *)indexPath;
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath;
 - (void)initFollowingAPI;
 
 @end

@@ -72,13 +72,13 @@
 		
 		
 		// Date label
-		/*UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 0.0, 50.0, 25.0)];
+		UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 360.0, 50.0, 25.0)];
 		[dateLabel setBackgroundColor:[UIColor clearColor]];
 		[dateLabel setText:dateText];
 		[dateLabel setFont:[UIFont boldSystemFontOfSize:13.0]];
 		[dateLabel setTextAlignment:UITextAlignmentRight];		
 		[self addSubview:dateLabel];
-		[dateLabel release];*/
+		[dateLabel release];
 		
 		
 		// "+" button
@@ -139,6 +139,15 @@
 		[mapBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:15.0]];	
 		[self addSubview:mapBtn];
 		
+		// Flag button
+		UIButton *flagBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+		[flagBtn setFrame:CGRectMake(255.0, 390.0, 45.0, 25.0)];
+		[flagBtn setBackgroundColor:[UIColor grayColor]];
+		[flagBtn setTitle:@"flag" forState:UIControlStateNormal];
+		[flagBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[flagBtn addTarget:self action:@selector(flagButtonClicked:) forControlEvents:UIControlEventTouchUpInside];		
+		[flagBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:15.0]];	
+		[self addSubview:flagBtn];
 		
 		// Recommend button
 		UIButton *recBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -272,6 +281,13 @@
 
 	[self.delegate recommendButtonClicked];
 }
+
+
+- (void)flagButtonClicked:(id)sender {
+
+	[self.delegate flagButtonClicked:self.imageID];
+}
+
 
 
 - (void)isLoved:(BOOL)loveStatus {

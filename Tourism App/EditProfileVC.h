@@ -21,6 +21,7 @@
 	JSONFetcher *updateProfileFetcher;
 	JSONFetcher *profileFetcher;
 	
+	UITextView *bioView;
 	UITextField *firstNameField, *lastNameField, *emailField;
 	UITextField *currentTextField;
 	
@@ -32,6 +33,7 @@
 
 @property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 
+@property (nonatomic, retain) IBOutlet UITextView *bioView;
 @property (nonatomic, retain) IBOutlet UITextField *firstNameField; 
 @property (nonatomic, retain) IBOutlet UITextField *lastNameField; 
 @property (nonatomic, retain) IBOutlet UITextField *emailField; 

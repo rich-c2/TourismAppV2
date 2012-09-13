@@ -18,9 +18,18 @@ typedef enum  {
 	ImagesModeCityTag = 2
 } ImagesMode;
 
+typedef enum {
+	SortModeLatest = 0,
+	SortModePopular = 1
+} SortMode;
+
 @interface TAImageGridVC : UIViewController <GridImageDelegate, ExploreDelegate> {
 	
 	ImagesMode imagesMode;
+	
+	// This only applies the 'Explore' journey
+	SortMode sortMode;	
+	IBOutlet UISegmentedControl *sortModeToggler;
 	
 	// City/Tag combo data
 	NSNumber *tagID;
@@ -49,6 +58,9 @@ typedef enum  {
 	
 	NSString *username;
 }
+
+@property SortMode sortMode;
+@property (nonatomic, retain) IBOutlet UISegmentedControl *sortModeToggler;
 
 @property ImagesMode imagesMode;
 

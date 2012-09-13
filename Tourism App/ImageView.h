@@ -19,6 +19,7 @@
 - (void)cityTagButtonClicked:(NSString *)imageID;
 - (void)optionsButtonClicked:(NSString *)imageID;
 - (void)recommendButtonClicked;
+- (void)flagButtonClicked:(NSString *)imageID;
 
 @optional
 - (void)mapButtonClicked:(NSString *)imageID;

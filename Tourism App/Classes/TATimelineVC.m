@@ -383,6 +383,14 @@
 }
 
 
+- (void)flagButtonClicked:(NSString *)imageID {
+	
+	[self showLoading];
+	
+	[self initFlagAPI:imageID];
+}
+
+
 /*
 	This function is responsible for 
 	iterating through the self.images on hand, creating
@@ -877,6 +885,59 @@
 	
 	[recommendFetcher release];
 	recommendFetcher = nil;
+    
+}
+
+
+- (void)initFlagAPI:(NSString *)imageID {
+
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&token=%@", [self appDelegate].loggedInUsername, imageID, [[self appDelegate] sessionToken]];	
+	
+	NSLog(@"FLAG DATA:%@", jsonString);
+	
+	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Flag"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	flagFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												  receiver:self action:@selector(receivedFlagResponse:)];
+	[flagFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedFlagResponse:(HTTPFetcher *)aFetcher {
+    
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSAssert(aFetcher == flagFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		//NSDictionary *results = [jsonString JSONValue];
+		
+		//if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"jsonString FLAG:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	[self hideLoading];
+	
+	[flagFetcher release];
+	flagFetcher = nil;
     
 }
 

@@ -463,7 +463,7 @@
     
     JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
 	
-	//NSLog(@"PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
 	NSAssert(aFetcher == profileFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
@@ -505,6 +505,10 @@
 		// Load avatar image
 		self.avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [newUserData objectForKey:@"avatar"]];
 		[self initAvatarImage:self.avatarURL];
+		
+		//Bio
+		NSString *bioText = [newUserData objectForKey:@"bio"];
+		if ([bioText length] > 0) self.bioView.text = bioText; 
 
 		// CITY LABEL
 		[self.cityLabel setText:[NSString stringWithFormat:@"City: %@", [newUserData objectForKey:@"city"]]];

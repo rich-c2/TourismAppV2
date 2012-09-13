@@ -8,6 +8,7 @@
 
 #import "TAFriendsVC.h"
 #import "TAUsersVC.h"
+#import "TAAppDelegate.h"
 
 @interface TAFriendsVC ()
 
@@ -37,6 +38,14 @@
 	self.tableContent = [NSArray arrayWithObjects:@"From my contacts list", @"Twitter friends", @"Search users", nil];
 
 }
+
+
+#pragma mark - Private Methods
+- (TAAppDelegate *)appDelegate {
+	
+    return (TAAppDelegate *)[[UIApplication sharedApplication] delegate];
+}
+
 
 - (void)viewDidUnload {
 	
@@ -116,6 +125,7 @@
 	
 		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
 		[usersVC setUsersMode:UsersModeFindViaContacts];
+		[usersVC setSelectedUsername:[self appDelegate].loggedInUsername];
 		
 		[self.navigationController pushViewController:usersVC animated:YES];
 		[usersVC release];

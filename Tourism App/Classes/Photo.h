@@ -37,6 +37,8 @@
 
 @interface Photo (CoreDataGeneratedAccessors)
 
++ (Photo *)photoWithPhotoData:(NSDictionary *)photoData inManagedObjectContext:(NSManagedObjectContext *)context;
+
 - (void)addCommentsObject:(NSManagedObject *)value;
 - (void)removeCommentsObject:(NSManagedObject *)value;
 - (void)addComments:(NSSet *)values;
