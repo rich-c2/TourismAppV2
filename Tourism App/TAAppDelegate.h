@@ -76,4 +76,12 @@ extern NSString* const TEST_API_ADDRESS;
 
 - (NSArray *)serializeGuideData:(NSArray *)newGuides;
 
+- (void)setTwitterUserID:(NSString *)newUserID;
+- (void)setTwitterUsername:(NSString *)newUsername;
+- (void)setTwitterAccountID:(NSString *)newAccountID;
+
+- (NSString *)getTwitterUserID;
+- (NSString *)getTwitterUsername;
+- (NSString *)getTwitterAccountID;
+
 @end

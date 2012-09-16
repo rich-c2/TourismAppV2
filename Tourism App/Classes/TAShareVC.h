@@ -32,6 +32,7 @@
 	
 	JSONFetcher *submitFetcher;
 	XMLFetcher *cityFetcher;
+	JSONFetcher *updateProfileFetcher;
 	
 	NSString *selectedCity;
 	Tag *selectedTag;

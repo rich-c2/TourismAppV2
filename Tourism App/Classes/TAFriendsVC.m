@@ -9,6 +9,7 @@
 #import "TAFriendsVC.h"
 #import "TAUsersVC.h"
 #import "TAAppDelegate.h"
+#import <MessageUI/MessageUI.h>
 
 @interface TAFriendsVC ()
 
@@ -35,7 +36,7 @@
     
 	//self.tableContent = [NSArray arrayWithObjects:@"Find friends via Twitter", @"Find friends via FB", @"Invite friends", @"Search users", nil];
 	
-	self.tableContent = [NSArray arrayWithObjects:@"From my contacts list", @"Twitter friends", @"Search users", nil];
+	self.tableContent = [NSArray arrayWithObjects:@"Find friends in my contacts", @"Twitter friends", @"Invite via twitter", @"Invite via email",  @"Search users", nil];
 
 }
 
@@ -67,6 +68,105 @@
 	[tableContent release];
     [friendsTable release];
     [super dealloc];
+}
+
+
+
+
+#pragma mark MFMailComposeViewControllerDelegate
+
+// Dismisses the email composition interface when users tap Cancel or Send. Proceeds to update the message field with the result of the operation.
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {	
+    
+    // Notifies users about errors associated with the interface
+    switch (result) {
+            
+        case MFMailComposeResultCancelled:
+            NSLog(@"Result: canceled");
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(@"Result: saved");
+            break;
+        case MFMailComposeResultSent:
+            NSLog(@"Result: sent");
+            break;
+        case MFMailComposeResultFailed:
+            NSLog(@"Result: failed");
+            break;
+        default:
+            NSLog(@"Result: not sent");
+            break;
+    }
+    
+    [self dismissModalViewControllerAnimated:YES];
+}
+
+
+#pragma ABPersonViewControllerDelegate methods
+
+- (BOOL)personViewController:(ABPersonViewController *)personViewController shouldPerformDefaultActionForPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifierForValue {
+	
+	return YES;
+}
+
+
+#pragma ABPeoplePickerNavigationControllerDelegate
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person 
+                                property:(ABPropertyID)property
+                              identifier:(ABMultiValueIdentifier)identifier {
+	
+    
+	if (property == kABPersonEmailProperty) {
+		
+		NSArray *emails = (NSArray *)ABRecordCopyValue(person, property);
+		NSString *emailAddress = (NSString *)ABMultiValueCopyValueAtIndex(emails, 0);
+		
+		// Email message here
+		MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+		picker.mailComposeDelegate = self;
+		
+		// SUBJECT
+		[picker setSubject:@"I found this great app you'd love..."];
+		
+		// TO ADDRESS...
+		NSArray *recipients = [[NSArray alloc] initWithObjects:emailAddress, nil];
+		[picker setToRecipients:recipients];
+		[recipients release];
+		
+		// BODY TEXT
+		NSString *bodyContent = @"You should check out the Tourism App. Just click the link below to download it.";
+		NSString *emailBody = [NSString stringWithFormat:@"%@\n\n", bodyContent];
+		[picker setMessageBody:emailBody isHTML:NO];
+		
+		[self dismissModalViewControllerAnimated:NO];
+		
+		// SHOW INTERFACE
+		[self presentModalViewController:picker animated:YES];
+		[picker release];
+
+	}
+	
+    return NO;
+}
+
+
+- (BOOL)peoplePickerNavigationController:(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person {
+	
+	[peoplePicker setDisplayedProperties:[NSArray arrayWithObjects:[NSNumber numberWithInt:kABPersonPhoneProperty], [NSNumber numberWithInt:kABPersonEmailProperty], nil]];
+	
+	return YES;
+}
+
+
+/*
+ */
+
+
+- (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker {
+
+	[self dismissModalViewControllerAnimated:YES];
 }
 
 
@@ -120,8 +220,10 @@
 	
 	NSString *cellTitle = [self.tableContent objectAtIndex:[indexPath row]];
 	
+	[NSArray arrayWithObjects:@"Find friends in my contacts", @"Twitter friends", @"Invite via twitter", @"Invite via email",  @"Search users", nil];
+	
 	// CONTACTS LIST
-	if ([cellTitle isEqualToString:@"From my contacts list"]) {
+	if ([cellTitle isEqualToString:@"Find friends in my contacts"]) {
 	
 		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
 		[usersVC setUsersMode:UsersModeFindViaContacts];
@@ -131,13 +233,31 @@
 		[usersVC release];
 	}
 	
-	if ([cellTitle isEqualToString:@"Twitter friends"]) { 
+	else if ([cellTitle isEqualToString:@"Twitter friends"]) { 
 	
 		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
 		[usersVC setUsersMode:UsersModeFindViaTwitter];
 		
 		[self.navigationController pushViewController:usersVC animated:YES];
 		[usersVC release];
+	}
+	
+	else if ([cellTitle isEqualToString:@"Invite via twitter"]) { 
+		
+		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
+		[usersVC setUsersMode:UsersModeInviteViaTwitter];
+		
+		[self.navigationController pushViewController:usersVC animated:YES];
+		[usersVC release];
+	}
+	
+	else if ([cellTitle isEqualToString:@"Invite via email"]) { 
+		
+		ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
+		picker.peoplePickerDelegate = self;   
+		
+		[self presentModalViewController:picker animated:YES];
+		[picker release];
 	}
 	
 	// SEARCH USERS

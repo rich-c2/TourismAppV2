@@ -154,16 +154,28 @@
 		that was selected from the UIActionSheet
 	*/
 	
-	//NSString *btnTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
-	NSLog(@"btnTitle:%i", buttonIndex);
-	NSLog(@"retain count:%i", [self.twitterAccounts count]);
-	
-	
-	// Grab the initial Twitter account to tweet from.
-	//NSLog(@"ACCOUNTS:%@", self.twitterAccounts);
-	ACAccount *twitterAccount = [self.twitterAccounts objectAtIndex:(buttonIndex-1)];
-	
-	self.selectedAccountIdentifier = twitterAccount.identifier;
+	if (buttonIndex != 0) {
+		
+		//NSString *btnTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
+		NSLog(@"btnTitle:%i", buttonIndex);
+		NSLog(@"retain count:%i", [self.twitterAccounts count]);
+		
+		
+		// Grab the initial Twitter account to tweet from.
+		ACAccount *twitterAccount = [self.twitterAccounts objectAtIndex:(buttonIndex-1)];
+		
+		self.selectedAccountIdentifier = twitterAccount.identifier;
+		
+		NSString *userID = [[twitterAccount accountProperties] objectForKey:@"user_id"];
+		NSLog(@"ACC ID:%@", userID);
+		
+		[[self appDelegate] setTwitterUsername:twitterAccount.username];
+		[[self appDelegate] setTwitterUserID:userID];
+		[[self appDelegate] setTwitterAccountID:self.selectedAccountIdentifier];
+		
+		// Update the user's profile with the twitter user id
+		[self initUpdateProfileAPI:userID];
+	}
 }
 
 
@@ -605,17 +617,33 @@
 			// Get the list of Twitter accounts.
 			//NSArray *arrayOfAccounts = [accountStore accountsWithAccountType:accountType];
 			self.twitterAccounts = [self.savedAccountStore accountsWithAccountType:accountType];
-			[self.twitterAccounts retain];
 			
 			if ([self.twitterAccounts count] > 0) {
 			
-				[self presentTwitterAccountsSheet];
+				//[self presentTwitterAccountsSheet];
+				
+				[self performSelectorOnMainThread:@selector(presentTwitterAccountsSheet:) withObject:self.twitterAccounts waitUntilDone:NO];
 				
 				//ACAccount *twitterAccount = [arrayOfAccounts objectAtIndex:2];
 				
 			}
 		}	
 	}];
+}
+
+
+- (void)presentTwitterAccountsSheet:(NSArray *) accountsArray {
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:nil destructiveButtonTitle:@"Cancel" otherButtonTitles:nil];
+	
+	for (ACAccount *account in self.twitterAccounts) {
+		
+		NSString *accountTitle = account.accountDescription;
+		[actionSheet addButtonWithTitle:accountTitle];
+	}
+	
+	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
+    [actionSheet release];
 }
 
 
@@ -846,22 +874,6 @@
 }
 
 
-- (void)presentTwitterAccountsSheet {
-	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Choose an option" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:nil];
-
-	for (ACAccount *account in self.twitterAccounts) {
-		
-		NSString *accountTitle = account.accountDescription;
-		[actionSheet addButtonWithTitle:accountTitle];
-	}
-	
-	//[actionSheet showFromTabBar:self.navigationController.t];
-	[actionSheet showFromTabBar:self.parentViewController.tabBarController.tabBar];
-    [actionSheet release];
-}
-
-
 - (void)initTwitterRequest {
 	
 	
@@ -917,6 +929,91 @@
 	}];
 
 	
+}
+
+
+- (void)initUpdateProfileAPI:(NSString *)twt_userid {
+	
+	NSString *postString = [NSString stringWithFormat:@"username=%@&twt_userid=%@&token=%@", [self appDelegate].loggedInUsername, twt_userid, [self appDelegate].sessionToken];
+	
+	NSLog(@"BIO POST:%@", postString);
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"UpdateProfile"];
+	NSString *urlString = [NSString stringWithFormat:@"%@%@", API_ADDRESS, methodName];
+	
+	// Print the URL to the console
+	NSLog(@"URL:%@", urlString);
+	
+	NSURL *url = [urlString convertToURL];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	updateProfileFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+														  receiver:self action:@selector(receivedUpdateProfileResponse:)];
+	[updateProfileFetcher start];
+	
+	////////////////////////////////////////////////////////////////////////////////
+}
+
+
+// Example fetcher response handling
+- (void)receivedUpdateProfileResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSLog(@"UPDATE PROFILE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == updateProfileFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		[jsonString release];
+	}
+	
+	[updateProfileFetcher release];
+	updateProfileFetcher = nil;
+}
+
+
+- (void)verifyTwitterCredentials:(ACAccount *)twitterAccount {
+
+	//NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:@"richC2", @"username", @"chevy78!rfl", @"password", nil];
+	
+	// Send off a account/verify_credentials request
+	TWRequest *verifyRequest = [[[TWRequest alloc] initWithURL:[NSURL URLWithString:@"https://api.twitter.com/1.1/account/verify_credentials.json"] parameters:nil requestMethod:TWRequestMethodGET] autorelease];
+	
+	// Set the account used to post the tweet.
+	[verifyRequest setAccount:twitterAccount];
+	
+	// Block handler to manage the response
+	[verifyRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+		
+		if ([urlResponse statusCode] == 200) {
+			
+			// The response from Twitter is in JSON format
+			// Move the response into a dictionary and print
+			NSError *error;        
+			NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+			NSLog(@"Twitter response: %@", dict);
+			
+		}
+		
+		else
+			NSLog(@"Twitter error, HTTP response: %i", [urlResponse statusCode]);
+	}];
 }
 
 

@@ -26,6 +26,10 @@ NSString* const API_ADDRESS = @"http://want.supergloo.net.au/api/";
 NSString* const FRONT_END_ADDRESS = @"http://want.supergloo.net.au"; 
 NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 
+static NSString *kTwitterUsernameKey = @"twitterUsernameKey";
+static NSString *ktwitterUserIDKey = @"twitterUserIDKey";
+static NSString *kTwitterAccountIDKey = @"twitterAccountIDKey";
+
 @implementation TAAppDelegate
 
 @synthesize window = _window;
@@ -420,6 +424,39 @@ NSString* const TEST_API_ADDRESS = @"http://www.richardflee.me/test/";
 }
 
 
+- (void)setTwitterUserID:(NSString *)newUserID {
+
+	[[NSUserDefaults standardUserDefaults] setObject:newUserID forKey:ktwitterUserIDKey];
+}
+
+
+- (void)setTwitterUsername:(NSString *)newUsername {
+	
+	[[NSUserDefaults standardUserDefaults] setObject:newUsername forKey:kTwitterUsernameKey];
+}
+
+
+- (void)setTwitterAccountID:(NSString *)newAccountID {
+	
+	[[NSUserDefaults standardUserDefaults] setObject:newAccountID forKey:kTwitterAccountIDKey];
+}
+
+- (NSString *)getTwitterUserID {
+	
+	return [[NSUserDefaults standardUserDefaults] objectForKey:ktwitterUserIDKey];
+}
+
+
+- (NSString *)getTwitterUsername {
+	
+	return [[NSUserDefaults standardUserDefaults] objectForKey:kTwitterUsernameKey];
+}
+
+
+- (NSString *)getTwitterAccountID {
+	
+	return [[NSUserDefaults standardUserDefaults] objectForKey:kTwitterAccountIDKey];
+}
 
 
 @end

@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AddressBookUI/AddressBookUI.h>
+#import <MessageUI/MessageUI.h>
 
-@interface TAFriendsVC : UIViewController {
+@interface TAFriendsVC : UIViewController <ABPeoplePickerNavigationControllerDelegate, ABPersonViewControllerDelegate, MFMailComposeViewControllerDelegate> {
 
-	
 	IBOutlet UITableView *friendsTable;
-	
 	NSArray *tableContent;
 }
 

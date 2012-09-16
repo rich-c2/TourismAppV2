@@ -22,8 +22,8 @@
 
 @implementation TAUsersVC
 
-@synthesize usersMode, navigationTitle, delegate, searchField, following;
-@synthesize usersTable, selectedUsername, users, managedObjectContext;
+@synthesize usersMode, navigationTitle, delegate, searchField, following, accountStore;
+@synthesize usersTable, selectedUsername, users, managedObjectContext, selectedAccount;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -82,18 +82,19 @@
 
 - (void)viewDidUnload {
 	
-	[searchField release];
-	self.searchField = nil;
-	
-    [super viewDidUnload];
-    
 	self.navigationTitle = nil;
 	self.usersTable	= nil;
 	self.selectedUsername = nil;
 	self.users = nil;
 	self.following = nil;
 	self.managedObjectContext = nil;
-
+	
+	[searchField release];
+	self.searchField = nil;
+	
+	self.selectedAccount = nil;
+	
+    [super viewDidUnload];
 }
 
 - (void)dealloc {
@@ -149,6 +150,10 @@
 				
 			case UsersModeFindViaFB:
 				//[self initFBFriendsAPI];
+				break;
+				
+			case UsersModeInviteViaTwitter:
+				[self initTwitterAccountSelection];
 				break;
 				
 			default:
@@ -712,17 +717,17 @@
 
 - (void)initTwitterFriendsAPI {
 	
-	ACAccountStore *accountStore = [[[ACAccountStore alloc] init] autorelease];
+	ACAccountStore *accStore = [[[ACAccountStore alloc] init] autorelease];
 	
 	// Create an account type that ensures Twitter accounts are retrieved.
-	ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+	ACAccountType *accountType = [accStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
 	
 	// Request access from the user to use their Twitter accounts.
-	[accountStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
+	[accStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
 		
 		if(granted) {
 	
-			NSArray *accounts = [accountStore accountsWithAccountType:accountType];
+			NSArray *accounts = [accStore accountsWithAccountType:accountType];
 			ACAccount *account = [accounts objectAtIndex:2];
 			
 			//NSString *userID = [[account accountProperties] objectForKey:@"user_id"]; 
@@ -797,6 +802,132 @@
 	}
 }
 
+
+- (void)initTwitterAccountSelection {
+	
+	ACAccountStore *tmpAccountStore = [[ACAccountStore alloc] init];
+	self.accountStore = tmpAccountStore;
+	[tmpAccountStore release];
+	
+	// Create an account type that ensures Twitter accounts are retrieved.
+	ACAccountType *accountType = [self.accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+	
+	// Request access from the user to use their Twitter accounts.
+	[self.accountStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
+		
+		if(granted) {
+			
+			NSString *accID = [[self appDelegate] getTwitterAccountID];
+			
+			if ([accID length] > 0) {
+			
+				self.selectedAccount = [[self.accountStore accountWithIdentifier:accID] retain];
+			
+				[self initFriendsAPI:self.selectedAccount];
+			}
+			
+			else {
+				
+				//NSArray *accounts = [accountStore accountsWithAccountType:accountType];
+			}
+		}
+	}];
+}
+
+
+- (void)initFriendsAPI:(ACAccount *)account {
+
+	[self hideLoading];
+	
+	NSString *username = account.username;
+	
+	//  Next, we create an URL that points to the target endpoint
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://api.twitter.com/1.1/friends/ids.json?screen_name=%@&stringify_ids=true", username]];
+	
+	//  Now we can create our request.  Note that we are performing a GET request.
+	TWRequest *request = [[TWRequest alloc] initWithURL:url 
+											 parameters:nil requestMethod:TWRequestMethodGET];
+	
+	// Attach the account object to this request
+	[request setAccount:account];
+	
+	[request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+		
+		if (!responseData) {
+			
+			// inspect the contents of error 
+			NSLog(@"%@", error);
+		} 
+		
+		else {
+			
+			NSError *jsonError;
+			NSArray *idsArray = [[NSJSONSerialization JSONObjectWithData:responseData 
+																options:NSJSONReadingMutableLeaves 
+																  error:&jsonError] objectForKey:@"ids"];            
+			if (idsArray) {                          
+				
+				// Now format these user_ids and pass
+				// them to Twitter (using users/lookup) to get
+				// the usernames
+				NSLog(@"TIMELINE:%@", idsArray);
+				
+				NSString *userIDs = [idsArray componentsJoinedByString:@","];
+				[self initUsersLookupAPI:userIDs withAccount:self.selectedAccount];
+			} 
+			
+			else { 
+				
+				// inspect the contents of jsonError
+				NSLog(@"%@", jsonError);
+			}
+		}
+	}];
+}
+
+
+- (void)initUsersLookupAPI:(NSString *)userIDs withAccount:(ACAccount *)account {
+
+	//  Next, we create an URL that points to the target endpoint
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com/1.1/users/lookup.json?screen_name=%@", userIDs]];
+	
+	//  Now we can create our request.  Note that we are performing a GET request.
+	TWRequest *request = [[TWRequest alloc] initWithURL:url 
+											 parameters:nil requestMethod:TWRequestMethodPOST];
+	
+	NSLog(@"SELECTED ACCOUNT:%@", account);
+	
+	// Attach the account object to this request
+	[request setAccount:account];
+	
+	[request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+		
+		if (!responseData) {
+			
+			// inspect the contents of error 
+			NSLog(@"%@", error);
+		} 
+		
+		else {
+			
+			NSError *jsonError;
+			NSArray *timeline = [NSJSONSerialization JSONObjectWithData:responseData 
+																options:NSJSONReadingMutableLeaves 
+																  error:&jsonError];            
+			if (timeline) {                          
+				
+				// Now format these user_ids and pass
+				// them to Twitter (using users/lookup) to get
+				// the usernames
+				NSLog(@"LOOKUP TIMELINE:%@", timeline);
+			} 
+			else { 
+				// inspect the contents of jsonError
+				NSLog(@"%@", jsonError);
+			}
+		}
+	}];
+}
 
 
 @end

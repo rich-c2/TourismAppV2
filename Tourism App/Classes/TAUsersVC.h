@@ -19,7 +19,8 @@ typedef enum  {
 	UsersModeFindViaContacts = 3,
 	UsersModeFindViaFB = 4,
 	UsersModeFindViaTwitter = 5, 
-	UsersModeSearchUsers = 6
+	UsersModeSearchUsers = 6, 
+	UsersModeInviteViaTwitter = 7
 } UsersMode;
 
 @class JSONFetcher;
@@ -32,6 +33,9 @@ typedef enum  {
 @end
 
 @interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate> {
+	
+	ACAccount *selectedAccount;
+	ACAccountStore *accountStore;
 
 	id <RecommendsDelegate> delegate;
 	
@@ -55,6 +59,9 @@ typedef enum  {
 	BOOL usersLoaded;
 	BOOL loading;
 }
+
+@property (nonatomic, retain) ACAccount *selectedAccount;
+@property (nonatomic, retain) ACAccountStore *accountStore;
 
 @property (nonatomic, retain) id <RecommendsDelegate> delegate;
 
