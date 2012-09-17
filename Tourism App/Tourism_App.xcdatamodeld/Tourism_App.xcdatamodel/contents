@@ -69,6 +69,7 @@
         <attribute name="firstName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="followersCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="followingCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="fullName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="guidesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="lastName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="photosCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -97,7 +98,7 @@
         <element name="Notification" positionX="160" positionY="192" width="128" height="135"/>
         <element name="Photo" positionX="160" positionY="192" width="128" height="270"/>
         <element name="Tag" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="User" positionX="160" positionY="192" width="128" height="270"/>
+        <element name="User" positionX="160" positionY="192" width="128" height="285"/>
         <element name="Venue" positionX="160" positionY="192" width="128" height="135"/>
     </elements>
 </model>

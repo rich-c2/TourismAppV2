@@ -27,6 +27,8 @@
 
 @interface Guide (CoreDataGeneratedAccessors)
 
++ (Guide *)guideWithGuideData:(NSDictionary *)guideData inManagedObjectContext:(NSManagedObjectContext *)context;
+
 - (void)addFollowedByObject:(User *)value;
 - (void)removeFollowedByObject:(User *)value;
 - (void)addFollowedBy:(NSSet *)values;

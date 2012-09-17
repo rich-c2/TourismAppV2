@@ -198,7 +198,7 @@ NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZ
     
     NSAssert(aFetcher == venuesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	NSLog(@"PRINTING VENUES DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING VENUES DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
 	//[self.loadingSpinner stopAnimating];
 	
@@ -215,6 +215,8 @@ NSString* const CLIENT_SECRET = @"GIJHYETIFSBFBMWGRKXJ0TPYZJ0UGRP2B5WRGWD5E5TKFZ
 		
 		// Create a dictionary from the JSON string
 		NSDictionary *results = [jsonString JSONValue];
+		
+		[jsonString release];
 		
 		// Build an array from the dictionary for easy access to each entry
 		NSDictionary *responseDict = [results objectForKey:@"response"];

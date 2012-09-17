@@ -35,7 +35,6 @@
 		9B09867315D8A0CE006F8B63 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B09867115D8A0CE006F8B63 /* AddressBook.framework */; };
 		9B09867415D8A0CE006F8B63 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B09867215D8A0CE006F8B63 /* AddressBookUI.framework */; };
 		9B09896B15E74869005F53A1 /* TANotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B09896A15E74869005F53A1 /* TANotificationsManager.m */; };
-		9B2737CB15FD7F5E00FB487A /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737CA15FD7F5E00FB487A /* User.m */; };
 		9B2737CF15FDAE9B00FB487A /* TALandingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737CD15FDAE9A00FB487A /* TALandingVC.m */; };
 		9B2737D015FDAE9B00FB487A /* TALandingVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B2737CE15FDAE9A00FB487A /* TALandingVC.xib */; };
 		9B2737D415FDB29F00FB487A /* TARegisterVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737D215FDB29F00FB487A /* TARegisterVC.m */; };
@@ -67,6 +66,9 @@
 		9B3580CF15E1F8F3007309C0 /* NSObject+SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3580CE15E1F8F3007309C0 /* NSObject+SBJson.m */; };
 		9B3580DC15E21A01007309C0 /* TAUsersVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3580DA15E21A01007309C0 /* TAUsersVC.m */; };
 		9B3580DD15E21A01007309C0 /* TAUsersVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B3580DB15E21A01007309C0 /* TAUsersVC.xib */; };
+		9B4573E21606B45F000868B6 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B4573E11606B45F000868B6 /* User.m */; };
+		9B4573E91606C296000868B6 /* TAUserTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B4573E81606C296000868B6 /* TAUserTableCell.m */; };
+		9B4573EB1606C2CB000868B6 /* TAUserTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B4573EA1606C2CB000868B6 /* TAUserTableCell.xib */; };
 		9B48E96B15EEF7E700919F3A /* TACitiesListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B48E96915EEF7E700919F3A /* TACitiesListVC.m */; };
 		9B48E96C15EEF7E700919F3A /* TACitiesListVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B48E96A15EEF7E700919F3A /* TACitiesListVC.xib */; };
 		9B48E97115EF0C6000919F3A /* TAMediaResultsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B48E96F15EF0C6000919F3A /* TAMediaResultsVC.m */; };
@@ -199,8 +201,6 @@
 		9B09867215D8A0CE006F8B63 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		9B09896915E74869005F53A1 /* TANotificationsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TANotificationsManager.h; path = Classes/TANotificationsManager.h; sourceTree = "<group>"; };
 		9B09896A15E74869005F53A1 /* TANotificationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TANotificationsManager.m; path = Classes/TANotificationsManager.m; sourceTree = "<group>"; };
-		9B2737C915FD7F5E00FB487A /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = Classes/User.h; sourceTree = "<group>"; };
-		9B2737CA15FD7F5E00FB487A /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = Classes/User.m; sourceTree = "<group>"; };
 		9B2737CC15FDAE9A00FB487A /* TALandingVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TALandingVC.h; path = Classes/TALandingVC.h; sourceTree = "<group>"; };
 		9B2737CD15FDAE9A00FB487A /* TALandingVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TALandingVC.m; path = Classes/TALandingVC.m; sourceTree = "<group>"; };
 		9B2737CE15FDAE9A00FB487A /* TALandingVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TALandingVC.xib; path = Classes/TALandingVC.xib; sourceTree = "<group>"; };
@@ -256,6 +256,11 @@
 		9B3580D915E21A01007309C0 /* TAUsersVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAUsersVC.h; path = Classes/TAUsersVC.h; sourceTree = "<group>"; };
 		9B3580DA15E21A01007309C0 /* TAUsersVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAUsersVC.m; path = Classes/TAUsersVC.m; sourceTree = "<group>"; };
 		9B3580DB15E21A01007309C0 /* TAUsersVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAUsersVC.xib; path = Classes/TAUsersVC.xib; sourceTree = "<group>"; };
+		9B4573E01606B45F000868B6 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = User.h; path = Classes/User.h; sourceTree = "<group>"; };
+		9B4573E11606B45F000868B6 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = User.m; path = Classes/User.m; sourceTree = "<group>"; };
+		9B4573E71606C296000868B6 /* TAUserTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAUserTableCell.h; path = Classes/TAUserTableCell.h; sourceTree = "<group>"; };
+		9B4573E81606C296000868B6 /* TAUserTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAUserTableCell.m; path = Classes/TAUserTableCell.m; sourceTree = "<group>"; };
+		9B4573EA1606C2CB000868B6 /* TAUserTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAUserTableCell.xib; path = Classes/TAUserTableCell.xib; sourceTree = "<group>"; };
 		9B48E96815EEF7E700919F3A /* TACitiesListVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACitiesListVC.h; path = Classes/TACitiesListVC.h; sourceTree = "<group>"; };
 		9B48E96915EEF7E700919F3A /* TACitiesListVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACitiesListVC.m; path = Classes/TACitiesListVC.m; sourceTree = "<group>"; };
 		9B48E96A15EEF7E700919F3A /* TACitiesListVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACitiesListVC.xib; path = Classes/TACitiesListVC.xib; sourceTree = "<group>"; };
@@ -456,7 +461,6 @@
 		9B09861715D89F27006F8B63 = {
 			isa = PBXGroup;
 			children = (
-				9BD9B40815F573CF00179B85 /* MessageUI.framework */,
 				9B09862E15D89F27006F8B63 /* Tourism App */,
 				9B09864A15D89F28006F8B63 /* Tourism AppTests */,
 				9B09862515D89F27006F8B63 /* Frameworks */,
@@ -476,6 +480,7 @@
 		9B09862515D89F27006F8B63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BD9B40815F573CF00179B85 /* MessageUI.framework */,
 				9BD7A00415EDCC250033EB64 /* Accounts.framework */,
 				9BD7A00215EDCC1A0033EB64 /* Twitter.framework */,
 				9B09867115D8A0CE006F8B63 /* AddressBook.framework */,
@@ -504,9 +509,6 @@
 			isa = PBXGroup;
 			children = (
 				9B69152715F6E09400964273 /* Constants.h */,
-				9BE0FE4615F6D9AE00E19851 /* EditProfileVC.h */,
-				9BE0FE4715F6D9AF00E19851 /* EditProfileVC.m */,
-				9BE0FE4815F6D9AF00E19851 /* EditProfileVC.xib */,
 				9BEF9C4E15E371BE000AEE5E /* AppDelegate */,
 				9BE61D1E15E4755A008A45D7 /* ASI */,
 				9BDEAA0815EC8867000EF65F /* Explore */,
@@ -548,6 +550,9 @@
 				9BD9B40B15F5798E00179B85 /* TAFriendsVC.h */,
 				9BD9B40C15F5798F00179B85 /* TAFriendsVC.m */,
 				9BD9B40D15F5798F00179B85 /* TAFriendsVC.xib */,
+				9B4573E71606C296000868B6 /* TAUserTableCell.h */,
+				9B4573E81606C296000868B6 /* TAUserTableCell.m */,
+				9B4573EA1606C2CB000868B6 /* TAUserTableCell.xib */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -585,6 +590,9 @@
 		9B35806E15E1C19E007309C0 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				9BE0FE4615F6D9AE00E19851 /* EditProfileVC.h */,
+				9BE0FE4715F6D9AF00E19851 /* EditProfileVC.m */,
+				9BE0FE4815F6D9AF00E19851 /* EditProfileVC.xib */,
 				9B35807015E1C2E3007309C0 /* TAProfileVC.h */,
 				9B35807115E1C2E3007309C0 /* TAProfileVC.m */,
 				9B35807215E1C2E3007309C0 /* TAProfileVC.xib */,
@@ -655,8 +663,6 @@
 			children = (
 				9BBC84BB15FF12B10042DEAF /* Venue.h */,
 				9BBC84BC15FF12B10042DEAF /* Venue.m */,
-				9B2737C915FD7F5E00FB487A /* User.h */,
-				9B2737CA15FD7F5E00FB487A /* User.m */,
 				9BF6242D15F4438500DB6B0B /* MyCoreLocation.h */,
 				9BF6242E15F4438500DB6B0B /* MyCoreLocation.m */,
 				9BD79FF215EDAF070033EB64 /* MyMapAnnotation.h */,
@@ -667,6 +673,8 @@
 				9BB4045615ECA3910080E00E /* Tag.m */,
 				9BDF043D15EAEC42008AFBE2 /* Notification.h */,
 				9BDF043E15EAEC42008AFBE2 /* Notification.m */,
+				9B4573E01606B45F000868B6 /* User.h */,
+				9B4573E11606B45F000868B6 /* User.m */,
 				9BBC84BE15FF13120042DEAF /* Photo.h */,
 				9BBC84BF15FF13120042DEAF /* Photo.m */,
 				9B6BE5E715EEDF0B00635C30 /* Guide.h */,
@@ -997,6 +1005,7 @@
 				9B2737D515FDB29F00FB487A /* TARegisterVC.xib in Resources */,
 				9B2737DA15FDBC5F00FB487A /* TAForgottenPasswordVC.xib in Resources */,
 				9B2737DF15FDD25E00FB487A /* TALoginLandingVC.xib in Resources */,
+				9B4573EB1606C2CB000868B6 /* TAUserTableCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1112,13 +1121,14 @@
 				9BE0FE3F15F6C1A400E19851 /* ImageView.m in Sources */,
 				9BE0FE4415F6C22500E19851 /* TATimelineVC.m in Sources */,
 				9BE0FE4915F6D9AF00E19851 /* EditProfileVC.m in Sources */,
-				9B2737CB15FD7F5E00FB487A /* User.m in Sources */,
 				9B2737CF15FDAE9B00FB487A /* TALandingVC.m in Sources */,
 				9B2737D415FDB29F00FB487A /* TARegisterVC.m in Sources */,
 				9B2737D915FDBC5F00FB487A /* TAForgottenPasswordVC.m in Sources */,
 				9B2737DE15FDD25E00FB487A /* TALoginLandingVC.m in Sources */,
 				9BBC84BD15FF12B10042DEAF /* Venue.m in Sources */,
 				9BBC84C015FF13130042DEAF /* Photo.m in Sources */,
+				9B4573E21606B45F000868B6 /* User.m in Sources */,
+				9B4573E91606C296000868B6 /* TAUserTableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

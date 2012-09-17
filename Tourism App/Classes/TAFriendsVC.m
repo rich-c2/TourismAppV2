@@ -265,6 +265,7 @@
 		
 		TAUsersVC *usersVC = [[TAUsersVC alloc] initWithNibName:@"TAUsersVC" bundle:nil];
 		[usersVC setUsersMode:UsersModeSearchUsers];
+		[usersVC setSelectedUsername:[self appDelegate].loggedInUsername];
 		
 		[self.navigationController pushViewController:usersVC animated:YES];
 		[usersVC release];

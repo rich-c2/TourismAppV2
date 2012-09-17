@@ -21,7 +21,7 @@
 #import <Accounts/Accounts.h>
 #import <Twitter/Twitter.h>
 
-
+#define SUBMIT_ALERT_TAG 9000
 #define MAIN_CONTENT_HEIGHT 367
 
 @interface TAShareVC ()
@@ -300,7 +300,7 @@
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	
-	//if (submissionSuccess) [self.navigationController popViewControllerAnimated:YES];
+	if (submissionSuccess) [self.navigationController popViewControllerAnimated:YES];
 }
 
 
@@ -358,7 +358,6 @@
 		
 		// Initialiase the URL Request
 		NSMutableURLRequest *request = [self createSubmitRequest:url];
-		NSLog(@"NEW REQUEST:%@", request);
 		
 		// JSONFetcher
 		submitFetcher = [[JSONFetcher alloc] initWithURLRequest:request
@@ -382,7 +381,7 @@
     
     JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
 	
-	NSLog(@"SUBMIT DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"SUBMIT DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
 	NSAssert(aFetcher == submitFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
@@ -416,6 +415,7 @@
 													   delegate:self
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:nil];
+	[alertView setTag:SUBMIT_ALERT_TAG];
 	[alertView show];
 	[alertView release];
 	
@@ -935,8 +935,6 @@
 - (void)initUpdateProfileAPI:(NSString *)twt_userid {
 	
 	NSString *postString = [NSString stringWithFormat:@"username=%@&twt_userid=%@&token=%@", [self appDelegate].loggedInUsername, twt_userid, [self appDelegate].sessionToken];
-	
-	NSLog(@"BIO POST:%@", postString);
 	
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	

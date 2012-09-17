@@ -2,7 +2,7 @@
 //  User.m
 //  Tourism App
 //
-//  Created by Richard Lee on 10/09/12.
+//  Created by Richard Lee on 17/09/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
@@ -13,6 +13,7 @@
 
 
 @implementation User
+
 
 // Here the persistant store will be queried using the username data within the basicInfo dictionary.
 // The basicInfo dictionary will only contain a username and avatarURL.
@@ -36,6 +37,15 @@
 		user = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:context];
 		user.username = [basicInfo objectForKey:@"username"];
 		user.avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [basicInfo objectForKey:@"avatar"]];
+		user.fullName = [basicInfo objectForKey:@"name"];
+	}
+	
+	else if (!error && user) {
+		
+		// Update user properties
+		user.username = [basicInfo objectForKey:@"username"];
+		user.avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [basicInfo objectForKey:@"avatar"]];
+		user.fullName = [basicInfo objectForKey:@"name"];
 	}
 	
 	NSLog(@"RETURNING USER:%@", user);
@@ -75,6 +85,7 @@
 @dynamic lastName;
 @dynamic photosCount;
 @dynamic username;
+@dynamic fullName;
 @dynamic comments;
 @dynamic followingGuides;
 @dynamic guides;

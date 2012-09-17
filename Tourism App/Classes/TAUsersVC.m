@@ -13,8 +13,8 @@
 #import "SBJson.h"
 #import "TAProfileVC.h"
 #import "TAAppDelegate.h"
-#import "AsyncCell.h"
 #import "User.h"
+#import "TAUserTableCell.h"
 
 @interface TAUsersVC ()
 
@@ -23,7 +23,7 @@
 @implementation TAUsersVC
 
 @synthesize usersMode, navigationTitle, delegate, searchField, following, accountStore;
-@synthesize usersTable, selectedUsername, users, managedObjectContext, selectedAccount;
+@synthesize usersTable, selectedUsername, users, managedObjectContext, selectedAccount, loadCell;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -83,36 +83,43 @@
 - (void)viewDidUnload {
 	
 	self.navigationTitle = nil;
+	[searchField release];
+	self.searchField = nil;
+	self.following = nil;
+	self.accountStore = nil;
 	self.usersTable	= nil;
 	self.selectedUsername = nil;
 	self.users = nil;
-	self.following = nil;
 	self.managedObjectContext = nil;
-	
-	[searchField release];
-	self.searchField = nil;
-	
 	self.selectedAccount = nil;
+	self.loadCell = nil;
 	
     [super viewDidUnload];
 }
 
+
 - (void)dealloc {
 	
-	[following release];
 	[navigationTitle release];
+	[searchField release];
+	[following release];
+	[accountStore release];
 	[usersTable release];
 	[selectedUsername release];
 	[users release];
 	[managedObjectContext release];
-	[searchField release];
+	[selectedAccount release];
+	[loadCell release];
+	
 	[super dealloc];
 }
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
+
 
 - (void)viewWillAppear:(BOOL)animated {
 	
@@ -145,7 +152,7 @@
 				break;
 				
 			case UsersModeFindViaTwitter:
-				[self initTwitterFriendsAPI];
+				[self initFollowingAPI];
 				break;
 				
 			case UsersModeFindViaFB:
@@ -154,6 +161,10 @@
 				
 			case UsersModeInviteViaTwitter:
 				[self initTwitterAccountSelection];
+				break;
+				
+			case UsersModeSearchUsers:
+				[self initFollowingAPI];
 				break;
 				
 			default:
@@ -165,19 +176,52 @@
 }
 
 
-#pragma AsynCellDelegate methods 
+- (IBAction)followingButtonTapped:(id)sender {
+	
+	UIButton *userCellButton = (UIButton *)sender;
+	
+	UIView *contentView = [userCellButton superview];
+	TAUserTableCell *userCell = (TAUserTableCell *)[contentView superview];
+	
+	NSIndexPath *path = [self.usersTable indexPathForCell:userCell];
+	
+	
+	if (self.usersMode == UsersModeSearchUsers) {
+		
+		NSDictionary *user = [self.users objectAtIndex:[path row]];
+		[self initUnfollowAPI:[user objectForKey:@"username"]];
+	}
+	
+	else {
+		
+		User *user = [self.users objectAtIndex:[path row]];
+		
+		[self initUnfollowAPI:user.username];
+	}
+}
 
-- (void)followingButtonClicked:(UITableViewCell *)tableCell {
+
+- (IBAction)followButtonTapped:(id)sender {
 	
-	NSIndexPath *path = [self.usersTable indexPathForCell:tableCell];
+	UIButton *userCellButton = (UIButton *)sender;
 	
-	User *user = [self.users objectAtIndex:[path row]];
+	UIView *contentView = [userCellButton superview];
+	TAUserTableCell *userCell = (TAUserTableCell *)[contentView superview];
 	
-	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-	[profileVC setUsername:user.username];
+	NSIndexPath *path = [self.usersTable indexPathForCell:userCell];
 	
-	[self.navigationController pushViewController:profileVC animated:YES];
-	[profileVC release];
+	
+	if (self.usersMode == UsersModeSearchUsers) {
+		
+		NSDictionary *user = [self.users objectAtIndex:[path row]];
+		[self initFollowAPI:[user objectForKey:@"username"]];
+	}
+	
+	else {
+		
+		User *user = [self.users objectAtIndex:[path row]];
+		[self initFollowAPI:user.username];
+	}
 }
 
 
@@ -206,28 +250,26 @@
 }
 
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+- (void)configureCell:(TAUserTableCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
 	NSString *name;
 	NSString *username;
 	NSString *avatarURL;	
 	
+	BOOL followingUser = NO;
+	
 	// FOR NOW - account for the fact that FindUser returns
 	// a set of Users in a different format
-	if (self.usersMode == UsersModeFindViaContacts) {
+	if (self.usersMode == UsersModeFindViaContacts || self.usersMode == UsersModeFindViaTwitter) {
 		
 		User *user = [self.users objectAtIndex:[indexPath row]];
-		BOOL followingUser = NO;
 		
-		if ([self.following containsObject:user.username]) {
-			
-			NSLog(@"FOLLOWING USER:%@", user.username);
+		if ([self.following containsObject:user.username])
 			followingUser = YES;
-		}
 		
-		name = [NSString stringWithFormat:@""];//, firstName, lastName];
+		name = user.fullName;
 		username = user.username;
-		avatarURL = @""; //[NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [userData objectForKey:@"avatar"]];
+		avatarURL = user.avatarURL;
 		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
 		
@@ -243,54 +285,34 @@
 		username = [user objectForKey:@"username"];
 		avatarURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [user objectForKey:@"avatar"]];
 		
+		if ([self.following containsObject:username])
+			followingUser = YES;
+		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleBlue];
 		
 		if ([name length] == 0) name = @"";
 	}
 	
-	[cell.textLabel setText:username];
-	[cell.detailTextLabel setText:name];
-	//[cell.imageView setImage:<#(UIImage *)#>
+	if (self.usersMode == UsersModeFindViaContacts || self.usersMode == UsersModeSearchUsers) 
+		[cell setFollowingUser:followingUser];
 	
+	[cell.usernameLabel setText:username];
+	[cell.nameLabel setText:name];
 	
-	NSLog(@"name:%@|username:%@|avatarURL:%@", name, username, avatarURL);
-	
-	
+	[cell initImage:avatarURL];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-    static NSString *CellIdentifier = @"Cell";
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    TAUserTableCell *cell = (TAUserTableCell *)[tableView dequeueReusableCellWithIdentifier:[TAUserTableCell reuseIdentifier]];
 	
-	//if (self.usersMode == UsersModeFindViaContacts) {
-				
-		if (cell == nil) {
-			
-			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
-			
-			UIButton *followingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-			[followingBtn setFrame:CGRectMake(0.0, 0.0, 20.0, 20.0)];
-			[followingBtn setBackgroundColor:[UIColor blueColor]];
-			[followingBtn setTitle:@"Following" forState:UIControlStateNormal];
-			[followingBtn addTarget:self action:@selector(followingButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-			
-			cell.accessoryView = followingBtn;
-		}
-	//}
-	/*
-	else {
+	if (cell == nil) {
 		
-		AsyncCell *cell = (AsyncCell*) [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-		
-		if (cell == nil) {
-			
-			cell = [[[AsyncCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-			[cell setDelegate:self];
-		}
-		
-	}*/
+		[[NSBundle mainBundle] loadNibNamed:@"TAUserTableCell" owner:self options:nil];
+        cell = loadCell;
+        self.loadCell = nil;
+	}
 	
 	// Retrieve Track object and set it's name to the cell
 	[self configureCell:cell atIndexPath:indexPath];
@@ -303,50 +325,58 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	/*if (self.usersMode == UsersModeRecommendTo) {
-	
-		AsyncCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-		
-		cell.c
-	}*/
-	
 	if (self.usersMode != UsersModeRecommendTo) {
 		
-		// Retrieve the Dictionary at the given index that's in self.users
-		NSDictionary *user = [self.users objectAtIndex:[indexPath row]];
-		
-		NSString *username;
-		
-		// The FindUser API returns a different structure of JSON
-		// so we have to access the "username" a different way
-		/*if (self.usersMode == UsersModeSearchUsers) {
+		if (self.usersMode == UsersModeFindViaContacts) {
 			
-			NSDictionary *userData = [user objectForKey:@"user"];
-			username = [userData objectForKey:@"username"];
+			// Retrieve the User object at the given index that's in self.users
+			User *user = [self.users objectAtIndex:[indexPath row]];		
+			NSString *username = user.username;
+			
+			TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+			[profileVC setUsername:username];
+			
+			[self.navigationController pushViewController:profileVC animated:YES];
+			[profileVC release];
 		}
-		
-		else {*/
 			
-			username = [user objectForKey:@"username"];
-		//}
-		
-		TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
-		[profileVC setUsername:username];
-		
-		[self.navigationController pushViewController:profileVC animated:YES];
-		[profileVC release];
-	}
-	
-	else {
-		
-		AsyncCell *cell = (AsyncCell *)[tableView cellForRowAtIndexPath:indexPath];
-		
-		[cell setSelected:YES];
+		else {
+			
+			// Retrieve the Dictionary at the given index that's in self.users
+			NSDictionary *user = [self.users objectAtIndex:[indexPath row]];		
+			NSString *username = [user objectForKey:@"username"];
+			
+			TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+			[profileVC setUsername:username];
+			
+			[self.navigationController pushViewController:profileVC animated:YES];
+			[profileVC release];
+		}
 	}
 }
 
 
 #pragma MY-METHODS
+
+- (void)imageLoaded:(UIImage *)image withURL:(NSURL *)url {
+	
+	NSArray *cells = [self.usersTable visibleCells];
+    [cells retain];
+    SEL selector = @selector(imageLoaded:withURL:);
+	
+    for (int i = 0; i < [cells count]; i++) {
+		
+		UITableViewCell* c = [[cells objectAtIndex: i] retain];
+        if ([c respondsToSelector:selector]) {
+            [c performSelector:selector withObject:image withObject:url];
+        }
+        [c release];
+		c = nil;
+    }
+	
+    [cells release];
+}
+
 
 - (void)initFollowingAPI {
 	
@@ -380,7 +410,7 @@
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
 	
-	NSLog(@"PRINTING FOLLOWING:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING FOLLOWING:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
     if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
         
@@ -398,6 +428,18 @@
 			[self populateFollowingArray:newFollowers];
 			
 			[self initAddressBook];
+		}
+		
+		else if (self.usersMode	== UsersModeFindViaTwitter) {
+			
+			[self populateFollowingArray:newFollowers];
+			
+			[self initTwitterAccountSelection];
+		}
+		
+		else if (self.usersMode	== UsersModeSearchUsers) {
+			
+			[self populateFollowingArray:newFollowers];
 		}
 		
 		else {
@@ -464,7 +506,7 @@
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
 		
-	NSLog(@"PRINTING FOLLOWERS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING FOLLOWERS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
     if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
         
@@ -570,7 +612,7 @@
 	// We are not loading
 	loading = NO;
 	
-	NSLog(@"PRINTING USER SEARCH DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING USER SEARCH DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
     
@@ -602,10 +644,8 @@
 
 - (void)initAddressBook {
 
-	ABAddressBookRef ab=ABAddressBookCreate();
+	ABAddressBookRef ab =ABAddressBookCreate();
 	NSArray *contacts = (NSArray *)ABAddressBookCopyArrayOfAllPeople(ab);
-	
-	//NSLog(@"arrTemp:%@", self.users);
 	
 	NSMutableArray *emails = [[NSMutableArray alloc] init];
 	
@@ -616,17 +656,24 @@
 		ABMultiValueRef emailProperty = (ABMultiValueRef)ABRecordCopyValue(person, kABPersonEmailProperty);
 		
 		// convert it to an array
-		CFArrayRef allEmails = ABMultiValueCopyArrayOfAllValues(emailProperty) ;
-		// add these emails to our initial array
-		[emails addObjectsFromArray: (NSArray *)allEmails] ;
+		CFArrayRef allEmails = ABMultiValueCopyArrayOfAllValues(emailProperty);
 		
-		//[emails addObjectsFromArray:personEmails];
+		CFRelease(emailProperty);
+		
+		// add these emails to our initial array
+		[emails addObjectsFromArray:(NSArray *)allEmails];
+		
+		//CFRelease(allEmails);
 	}
+	
+	CFRelease(contacts);
 	
 	NSString *emailsString = [emails componentsJoinedByString:@","];
 	[emails release];
 	
 	[self initContactsFriendsAPI:emailsString];
+	
+	CFRelease(ab);
 }
 
 
@@ -663,7 +710,7 @@
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
 	
-	NSLog(@"PRINTING CONTACTS FRIENDS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING CONTACTS FRIENDS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
     if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
         
@@ -715,61 +762,113 @@
 }
 
 
-- (void)initTwitterFriendsAPI {
+- (void)initTwitterFriendsAPI:(NSString *)user_ids {
 	
-	ACAccountStore *accStore = [[[ACAccountStore alloc] init] autorelease];
+	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&user_ids=%@", 
+							[self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], user_ids];
 	
-	// Create an account type that ensures Twitter accounts are retrieved.
-	ACAccountType *accountType = [accStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+	NSLog(@"TWITTER FRIENDS DATA:%@", postString);
 	
-	// Request access from the user to use their Twitter accounts.
-	[accStore requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"TwitterFriends"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	contactsFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													 receiver:self
+													   action:@selector(receivedTwitterFriendsResponse:)];
+	[contactsFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedTwitterFriendsResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == contactsFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	// We are not loading
+	loading = NO;
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	NSLog(@"PRINTING TWITTER FRIENDS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
 		
-		if(granted) {
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		// Build an array from the dictionary for easy access to each entry
+		self.users = [self convertToUsers:[results objectForKey:@"users"]];
+		
+		// clean up
+		[jsonString release];
+		
+		// We've finished loading the artists
+		usersLoaded = YES;
+    }
 	
-			NSArray *accounts = [accStore accountsWithAccountType:accountType];
-			ACAccount *account = [accounts objectAtIndex:2];
+	// Reload table
+	[self.usersTable reloadData];
+	
+	[self hideLoading];
+    
+    [contactsFetcher release];
+    contactsFetcher = nil;
+}
+
+
+- (void)initTwitterIDsAPI:(ACAccount *)account {
+	
+	NSString *username = account.username;
 			
-			//NSString *userID = [[account accountProperties] objectForKey:@"user_id"]; 
-			//NSLog(@"userID:%@", userID);
+	//  Next, we create an URL that points to the target endpoint
+	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://api.twitter.com/1.1/friends/ids.json?screen_name=%@&stringify_ids=true", username]];
+	
+	//  Now we can create our request.  Note that we are performing a GET request.
+	TWRequest *request = [[TWRequest alloc] initWithURL:url 
+											 parameters:nil 
+										  requestMethod:TWRequestMethodGET];
+	
+	// Attach the account object to this request
+	[request setAccount:account];
 			
-			//  Next, we create an URL that points to the target endpoint
-			NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1.1/friends/ids.json?screen_name=richC2&stringify_ids=true"];
+	[request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+		
+		if (!responseData) {
+			// inspect the contents of error 
+			NSLog(@"%@", error);
+		} 
+		
+		else {
 			
-			//  Now we can create our request.  Note that we are performing a GET request.
-			TWRequest *request = [[TWRequest alloc] initWithURL:url 
-													 parameters:nil 
-												  requestMethod:TWRequestMethodGET];
-			
-			// Attach the account object to this request
-			[request setAccount:account];
-			
-			[request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+			NSError *jsonError;
+			NSArray *idsArray = [[NSJSONSerialization JSONObjectWithData:responseData 
+																 options:NSJSONReadingMutableLeaves 
+																   error:&jsonError] objectForKey:@"ids"];            
+			if (idsArray) {      
 				
-				[self hideLoading];
+				// at this point, we have an object that we can parse
+				NSLog(@"TIMELINE:%@", idsArray);
 				
-				if (!responseData) {
-					// inspect the contents of error 
-					NSLog(@"%@", error);
-				} 
+				NSString *userIDs = [idsArray componentsJoinedByString:@","];
+				[self initTwitterFriendsAPI:userIDs];
 				
-				else {
-					
-					NSError *jsonError;
-					NSArray *timeline = [NSJSONSerialization JSONObjectWithData:responseData 
-																		options:NSJSONReadingMutableLeaves 
-																		  error:&jsonError];            
-					if (timeline) {                          
-						// at this point, we have an object that we can parse
-						NSLog(@"TIMELINE:%@", timeline);
-						
-					} 
-					else { 
-						// inspect the contents of jsonError
-						NSLog(@"%@", jsonError);
-					}
-				}
-			}];
+			} 
+			else { 
+				// inspect the contents of jsonError
+				NSLog(@"%@", jsonError);
+			}
 		}
 	}];
 }
@@ -800,6 +899,8 @@
 		
 		[self.following addObject:[userDict objectForKey:@"username"]];
 	}
+	
+	NSLog(@"POPULATED FOLLOWING:%@", self.following);
 }
 
 
@@ -823,7 +924,9 @@
 			
 				self.selectedAccount = [[self.accountStore accountWithIdentifier:accID] retain];
 			
-				[self initFriendsAPI:self.selectedAccount];
+				if (self.usersMode == UsersModeInviteViaTwitter) [self initFriendsAPI:self.selectedAccount];
+				
+				else if (self.usersMode == UsersModeFindViaTwitter) [self initTwitterIDsAPI:self.selectedAccount];
 			}
 			
 			else {
@@ -845,8 +948,8 @@
 	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://api.twitter.com/1.1/friends/ids.json?screen_name=%@&stringify_ids=true", username]];
 	
 	//  Now we can create our request.  Note that we are performing a GET request.
-	TWRequest *request = [[TWRequest alloc] initWithURL:url 
-											 parameters:nil requestMethod:TWRequestMethodGET];
+	TWRequest *request = [[[TWRequest alloc] initWithURL:url 
+											 parameters:nil requestMethod:TWRequestMethodGET] autorelease];
 	
 	// Attach the account object to this request
 	[request setAccount:account];
@@ -870,9 +973,10 @@
 				// Now format these user_ids and pass
 				// them to Twitter (using users/lookup) to get
 				// the usernames
-				NSLog(@"TIMELINE:%@", idsArray);
+				//NSLog(@"TIMELINE:%@", idsArray);
 				
 				NSString *userIDs = [idsArray componentsJoinedByString:@","];
+				
 				[self initUsersLookupAPI:userIDs withAccount:self.selectedAccount];
 			} 
 			
@@ -887,9 +991,15 @@
 
 
 - (void)initUsersLookupAPI:(NSString *)userIDs withAccount:(ACAccount *)account {
+	
+	NSString *user_ids_str_enc = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,(CFStringRef)userIDs,NULL,CFSTR(","),kCFStringEncodingUTF8);
+	
+	NSString *urlStr = [NSString stringWithFormat:@"https://api.twitter.com/1.1/users/lookup.json?user_id=%@&include_entities=false", user_ids_str_enc];
 
 	//  Next, we create an URL that points to the target endpoint
-	NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com/1.1/users/lookup.json?screen_name=%@", userIDs]];
+	NSURL *url = [NSURL URLWithString:urlStr];
+	
+	NSLog(@"url:%@", [url description]);
 	
 	//  Now we can create our request.  Note that we are performing a GET request.
 	TWRequest *request = [[TWRequest alloc] initWithURL:url 
@@ -928,6 +1038,127 @@
 		}
 	}];
 }
+	 
+	 
+- (void)initFollowAPI:(NSString *)followingUsername {
+ 
+	NSString *postString = [NSString stringWithFormat:@"following=%@&follower=%@&token=%@", followingUsername, [self appDelegate].loggedInUsername, [self appDelegate].sessionToken];
+	
+	NSLog(@"FOLLOW POST STRING:%@", postString);
+
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Follow"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+
+	// JSONFetcher
+	followFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												receiver:self
+												  action:@selector(receivedFollowResponse:)];
+	[followFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedFollowResponse:(HTTPFetcher *)aFetcher {
+ 
+	JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+
+	//NSLog(@"DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+
+	NSAssert(aFetcher == followFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+	 
+	 // Store incoming data into a string
+	 NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+	 
+	 // Create a dictionary from the JSON string
+	 NSDictionary *results = [jsonString JSONValue];
+	 
+	 if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+	 
+	 NSLog(@"FOLLOW jsonString:%@", jsonString);
+	 
+	 [jsonString release];
+	}
+
+	// Follow API was successful
+	if (success) {
+	 
+		
+	}
+
+	[followFetcher release];
+	followFetcher = nil;
+}
+
+
+- (void)initUnfollowAPI:(NSString *)followingUsername {
+	
+	NSString *postString = [NSString stringWithFormat:@"following=%@&follower=%@&token=%@", followingUsername, [self appDelegate].loggedInUsername, [self appDelegate].sessionToken];
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"Unfollow"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	unfollowFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+													 receiver:self
+													   action:@selector(receivedUnfollowResponse:)];
+	[unfollowFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedUnfollowResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	//NSLog(@"DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == unfollowFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");	
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) success = YES;
+		
+		NSLog(@"UNFOLLOW jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	// Follow API was successful
+	if (success) {
+		
+		
+	}
+	
+	[unfollowFetcher release];
+	unfollowFetcher = nil;
+}	 
+	 
 
 
 @end

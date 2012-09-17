@@ -24,7 +24,7 @@ typedef enum  {
 } UsersMode;
 
 @class JSONFetcher;
-@class AsyncCell;
+@class TAUserTableCell;
 
 @protocol RecommendsDelegate
 
@@ -32,7 +32,9 @@ typedef enum  {
 
 @end
 
-@interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource, ABPeoplePickerNavigationControllerDelegate> {
+@interface TAUsersVC : UIViewController <UITableViewDelegate, UITableViewDataSource> {
+	
+	TAUserTableCell *loadCell;
 	
 	ACAccount *selectedAccount;
 	ACAccountStore *accountStore;
@@ -51,6 +53,8 @@ typedef enum  {
 	NSArray *users;
 	NSMutableArray *following;
 
+	JSONFetcher *unfollowFetcher;
+	JSONFetcher *followFetcher;
 	JSONFetcher *contactsFetcher;
 	JSONFetcher *usersFetcher;
 	NSInteger page;
@@ -59,6 +63,8 @@ typedef enum  {
 	BOOL usersLoaded;
 	BOOL loading;
 }
+
+@property (nonatomic, retain) IBOutlet TAUserTableCell *loadCell;
 
 @property (nonatomic, retain) ACAccount *selectedAccount;
 @property (nonatomic, retain) ACAccountStore *accountStore;
@@ -77,7 +83,10 @@ typedef enum  {
 @property (nonatomic, retain) NSArray *users;
 @property (nonatomic, retain) NSMutableArray *following;
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath;
+- (IBAction)followingButtonTapped:(id)sender;
+- (IBAction)followButtonTapped:(id)sender;
+- (void)configureCell:(TAUserTableCell *)cell atIndexPath:(NSIndexPath *)indexPath;
 - (void)initFollowingAPI;
+- (void)imageLoaded:(UIImage *)image withURL:(NSURL *)url;
 
 @end

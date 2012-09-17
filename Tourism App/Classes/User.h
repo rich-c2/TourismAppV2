@@ -2,7 +2,7 @@
 //  User.h
 //  Tourism App
 //
-//  Created by Richard Lee on 10/09/12.
+//  Created by Richard Lee on 17/09/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSString * lastName;
 @property (nonatomic, retain) NSNumber * photosCount;
 @property (nonatomic, retain) NSString * username;
+@property (nonatomic, retain) NSString * fullName;
 @property (nonatomic, retain) NSSet *comments;
 @property (nonatomic, retain) NSSet *followingGuides;
 @property (nonatomic, retain) NSSet *guides;
@@ -33,6 +34,7 @@
 @interface User (CoreDataGeneratedAccessors)
 
 + (User *)userWithBasicData:(NSDictionary *)basicInfo inManagedObjectContext:(NSManagedObjectContext *)context;
+
 + (User *)userWithUsername:(NSString *)theUsername 
 	inManagedObjectContext:(NSManagedObjectContext *)context;
 
