@@ -224,35 +224,50 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
 	
-	NSInteger yOffset = (int)scrollView.contentOffset.y;
-	NSInteger height = (int)scrollView.contentSize.height;
-	NSInteger differential = height - yOffset;
+    if (loading) return;
+    isDragging = YES;
+}
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	
-	//NSLog(@"yOffset:%i|height:%i|differential:%i", yOffset, height, differential);
+	if (loading) return;
 	
-	if (differential == MAIN_CONTENT_HEIGHT) {
+	else if (isDragging && scrollView.contentOffset.y < 0) {
 		
-		NSLog(@"FRESH");
+		// UPDATE UI
 		
-		refresh = YES;
+		/*if (scrollView.contentOffset.y > -65.0f && scrollView.contentOffset.y < 0.0f && !loading) {
+			
+			[refreshHeaderView flipImageAnimated:YES];
+			[refreshHeaderView setStatus:kPullToReloadStatus];
+			[popSound play];
+			
+		} else if (!refreshHeaderView.isFlipped
+				   &amp;&amp; scrollView.contentOffset.y &lt; -65.0f) {
+			[refreshHeaderView flipImageAnimated:YES];
+			[refreshHeaderView setStatus:kReleaseToReloadStatus];
+			[psst1Sound play];
+		}*/
 	}
 }
 
 
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-
-	// If the scroll view has reach the "refresh" point
-	// and more images are not currently being
-	// loaded, then load more images
-	if (refresh && !loading) [self loadMoreImages];
-}
-
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView
+				  willDecelerate:(BOOL)decelerate {
 	
-	NSLog(@"REFRESH IS:%@", ((refresh) ? @"YES" : @"NO"));
+	if (loading) return;
 	
-	refresh = NO;
+	isDragging = NO;
+	
+	CGFloat endPoint = scrollView.contentSize.height - scrollView.frame.size.height;
+	CGFloat tippingPoint = 75.0;
+	
+	if ((scrollView.contentOffset.y - endPoint) >= tippingPoint) {
+
+		[self showLoading];
+		[self loadMoreImages];
+	}
 }
 
 
@@ -342,14 +357,27 @@
 
 - (IBAction)loadMoreImages {
 	
+	loading = YES;
+	
 	[self showLoading];
 	
-	refresh = NO;
-		
-	// Make a new call to the Uploads API
-	if (self.imagesMode == ImagesModeMyPhotos) [self initUploadsAPI];
-	
-	else if (self.imagesMode == ImagesModeCityTag) [self initFindMediaAPI];
+	switch (self.imagesMode) {
+			
+		case ImagesModeMyPhotos:
+			[self initUploadsAPI];
+			break;
+			
+		case ImagesModeLikedPhotos:
+			[self initLovedAPI];
+			break;
+			
+		case ImagesModeCityTag:
+			[self initFindMediaAPI];
+			break;
+			
+		default:
+			break;
+	}
 }
 
 
@@ -567,6 +595,9 @@
 		// the relevant iVars
 		[self lovedImagesRequestFinished];
     }
+	
+	// hide loading animation
+	[self hideLoading];
     
     [imagesFetcher release];
     imagesFetcher = nil;

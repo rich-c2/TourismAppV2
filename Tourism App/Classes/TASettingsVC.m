@@ -14,6 +14,7 @@
 #import "SBJson.h"
 #import "SVProgressHUD.h"
 #import "EditProfileVC.h"
+#import "TAScrollVC.h"
 
 static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
@@ -26,11 +27,13 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 @synthesize settingsTable, menuDictionary, keys;
 
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
-        // Custom initialization
+		
+       [self setHidesBottomBarWhenPushed:NO];
     }
     return self;
 }
@@ -40,7 +43,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
     [super viewDidLoad];
 	
 	NSArray *accountObjects = [NSArray arrayWithObjects:@"Log out", @"Private photos", @"Edit profile", nil];
-	NSArray *otherObjects = [NSArray arrayWithObjects:@"About", @"Contact support", nil];
+	NSArray *otherObjects = [NSArray arrayWithObjects:@"About", @"Contact support", @"Test scroll", nil];
 	NSArray *cityObjects = [NSArray arrayWithObjects:[self getUsersDefaultCity], nil];
 	
 	self.keys = [NSArray arrayWithObjects:@"Account", @"Default City", @"Other", nil];
@@ -255,6 +258,14 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		// SHOW INTERFACE
 		[self presentModalViewController:picker animated:YES];
 		[picker release];
+	}
+	
+	else if ([listItem isEqualToString:@"Test scroll"]){
+	
+		TAScrollVC *timeline = [[TAScrollVC alloc] initWithNibName:@"TAScrollVC" bundle:nil];
+		
+		[self.navigationController pushViewController:timeline animated:YES];
+		[timeline release];
 	}
 }
 							

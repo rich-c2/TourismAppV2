@@ -102,7 +102,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	[super viewWillAppear:animated];
 }
 
-
+/*
 #pragma UIScrollViewDelegate methods 
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -141,6 +141,59 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	NSLog(@"REFRESH IS:%@", ((refresh) ? @"YES" : @"NO"));
 	
 	refresh = NO;
+}
+*/
+
+
+
+#pragma UIScrollViewDelegate methods 
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+	
+    if (loading) return;
+    isDragging = YES;
+}
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	
+	if (loading) return;
+	
+	else if (isDragging && scrollView.contentOffset.y < 0) {
+		
+		// UPDATE UI
+		
+		/*if (scrollView.contentOffset.y > -65.0f && scrollView.contentOffset.y < 0.0f && !loading) {
+		 
+		 [refreshHeaderView flipImageAnimated:YES];
+		 [refreshHeaderView setStatus:kPullToReloadStatus];
+		 [popSound play];
+		 
+		 } else if (!refreshHeaderView.isFlipped
+		 &amp;&amp; scrollView.contentOffset.y &lt; -65.0f) {
+		 [refreshHeaderView flipImageAnimated:YES];
+		 [refreshHeaderView setStatus:kReleaseToReloadStatus];
+		 [psst1Sound play];
+		 }*/
+	}
+}
+
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView
+				  willDecelerate:(BOOL)decelerate {
+	
+	if (loading) return;
+	
+	isDragging = NO;
+	
+	CGFloat endPoint = scrollView.contentSize.height - scrollView.frame.size.height;
+	CGFloat tippingPoint = 75.0;
+	
+	if ((scrollView.contentOffset.y - endPoint) >= tippingPoint) {
+		
+		[self showLoading];
+		[self loadMoreImages];
+	}
 }
 
 
@@ -656,7 +709,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
 	[self showLoading];
 	
-	refresh = NO;
+	loading = YES;
 	
 	switch (self.feedMode) {
 			

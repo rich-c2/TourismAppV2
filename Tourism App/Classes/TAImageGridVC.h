@@ -46,7 +46,10 @@ typedef enum {
 	
 	BOOL loading;
 	BOOL imagesLoaded;
+	
+	BOOL isDragging;
 	BOOL refresh;
+	
 	BOOL filterMode;
 	
 	UIBarButtonItem *resetButton;

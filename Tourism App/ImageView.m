@@ -289,7 +289,6 @@
 }
 
 
-
 - (void)isLoved:(BOOL)loveStatus {
 
 	loved = loveStatus;

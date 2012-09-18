@@ -35,6 +35,9 @@
 		9B09867315D8A0CE006F8B63 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B09867115D8A0CE006F8B63 /* AddressBook.framework */; };
 		9B09867415D8A0CE006F8B63 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B09867215D8A0CE006F8B63 /* AddressBookUI.framework */; };
 		9B09896B15E74869005F53A1 /* TANotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B09896A15E74869005F53A1 /* TANotificationsManager.m */; };
+		9B1DA621160806C6008050B7 /* TAPhotoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1DA620160806C6008050B7 /* TAPhotoFrame.m */; };
+		9B1DA62916080A30008050B7 /* TAScrollVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B1DA62716080A30008050B7 /* TAScrollVC.m */; };
+		9B1DA62A16080A30008050B7 /* TAScrollVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B1DA62816080A30008050B7 /* TAScrollVC.xib */; };
 		9B2737CF15FDAE9B00FB487A /* TALandingVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737CD15FDAE9A00FB487A /* TALandingVC.m */; };
 		9B2737D015FDAE9B00FB487A /* TALandingVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B2737CE15FDAE9A00FB487A /* TALandingVC.xib */; };
 		9B2737D415FDB29F00FB487A /* TARegisterVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B2737D215FDB29F00FB487A /* TARegisterVC.m */; };
@@ -201,6 +204,11 @@
 		9B09867215D8A0CE006F8B63 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		9B09896915E74869005F53A1 /* TANotificationsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TANotificationsManager.h; path = Classes/TANotificationsManager.h; sourceTree = "<group>"; };
 		9B09896A15E74869005F53A1 /* TANotificationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TANotificationsManager.m; path = Classes/TANotificationsManager.m; sourceTree = "<group>"; };
+		9B1DA61F160806C6008050B7 /* TAPhotoFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAPhotoFrame.h; path = Classes/TAPhotoFrame.h; sourceTree = "<group>"; };
+		9B1DA620160806C6008050B7 /* TAPhotoFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAPhotoFrame.m; path = Classes/TAPhotoFrame.m; sourceTree = "<group>"; };
+		9B1DA62616080A30008050B7 /* TAScrollVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAScrollVC.h; path = Classes/TAScrollVC.h; sourceTree = "<group>"; };
+		9B1DA62716080A30008050B7 /* TAScrollVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAScrollVC.m; path = Classes/TAScrollVC.m; sourceTree = "<group>"; };
+		9B1DA62816080A30008050B7 /* TAScrollVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAScrollVC.xib; path = Classes/TAScrollVC.xib; sourceTree = "<group>"; };
 		9B2737CC15FDAE9A00FB487A /* TALandingVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TALandingVC.h; path = Classes/TALandingVC.h; sourceTree = "<group>"; };
 		9B2737CD15FDAE9A00FB487A /* TALandingVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TALandingVC.m; path = Classes/TALandingVC.m; sourceTree = "<group>"; };
 		9B2737CE15FDAE9A00FB487A /* TALandingVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TALandingVC.xib; path = Classes/TALandingVC.xib; sourceTree = "<group>"; };
@@ -553,6 +561,11 @@
 				9B4573E71606C296000868B6 /* TAUserTableCell.h */,
 				9B4573E81606C296000868B6 /* TAUserTableCell.m */,
 				9B4573EA1606C2CB000868B6 /* TAUserTableCell.xib */,
+				9B1DA61F160806C6008050B7 /* TAPhotoFrame.h */,
+				9B1DA620160806C6008050B7 /* TAPhotoFrame.m */,
+				9B1DA62616080A30008050B7 /* TAScrollVC.h */,
+				9B1DA62716080A30008050B7 /* TAScrollVC.m */,
+				9B1DA62816080A30008050B7 /* TAScrollVC.xib */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -1006,6 +1019,7 @@
 				9B2737DA15FDBC5F00FB487A /* TAForgottenPasswordVC.xib in Resources */,
 				9B2737DF15FDD25E00FB487A /* TALoginLandingVC.xib in Resources */,
 				9B4573EB1606C2CB000868B6 /* TAUserTableCell.xib in Resources */,
+				9B1DA62A16080A30008050B7 /* TAScrollVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1129,6 +1143,8 @@
 				9BBC84C015FF13130042DEAF /* Photo.m in Sources */,
 				9B4573E21606B45F000868B6 /* User.m in Sources */,
 				9B4573E91606C296000868B6 /* TAUserTableCell.m in Sources */,
+				9B1DA621160806C6008050B7 /* TAPhotoFrame.m in Sources */,
+				9B1DA62916080A30008050B7 /* TAScrollVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -30,7 +30,7 @@ typedef enum {
 	
 	BOOL loading;
 	BOOL imagesLoaded;
-	BOOL refresh;
+	BOOL isDragging;
 	
 	NSMutableArray *images;
 	NSMutableArray *photos;
