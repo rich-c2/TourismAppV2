@@ -9,8 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "GridImage.h"
 #import "TAUsersVC.h"
+#import <MapKit/MapKit.h>
 
 @class JSONFetcher;
+@class TAPhotoTableCell;
 
 typedef enum  {
 	GuideModeCreated = 0,
@@ -20,6 +22,11 @@ typedef enum  {
 @interface TAGuideDetailsVC : UIViewController <GridImageDelegate, UIActionSheetDelegate, RecommendsDelegate> {
 
 	GuideMode guideMode;
+	IBOutlet MKMapView *guideMap;
+	
+	IBOutlet UITableView *photosTable;
+	
+	TAPhotoTableCell *loadCell;
 	
 	JSONFetcher *guideFetcher;
 	JSONFetcher *isLovedFetcher;
@@ -27,7 +34,7 @@ typedef enum  {
 	JSONFetcher *recommendFetcher;
 	
 	NSDictionary *guideData;
-	NSMutableArray *images;
+	NSMutableArray *photos;
 	NSString *guideID;
 	
 	BOOL isLoved;
@@ -36,25 +43,29 @@ typedef enum  {
 	
 	IBOutlet UIButton *authorBtn;
 	IBOutlet UIScrollView *gridScrollView;
-	IBOutlet UIImageView *guideThumb;
 	IBOutlet UILabel *titleLabel;
 	IBOutlet UIView *imagesView;
 }
 
 @property GuideMode guideMode;
+@property (nonatomic, retain) IBOutlet MKMapView *guideMap;
+
+@property (nonatomic, retain) IBOutlet UITableView *photosTable;
+
+@property (nonatomic, retain) IBOutlet TAPhotoTableCell *loadCell;
 
 @property (nonatomic, retain) NSDictionary *guideData;
-@property (nonatomic, retain) NSMutableArray *images;
+@property (nonatomic, retain) NSMutableArray *photos;
 @property (nonatomic, retain) NSString *guideID;
 
 @property (nonatomic, retain) IBOutlet UIButton *authorBtn;
 @property (nonatomic, retain) IBOutlet UIScrollView *gridScrollView;
-@property (nonatomic, retain) IBOutlet UIImageView *guideThumb;
 @property (nonatomic, retain) IBOutlet UILabel *titleLabel;
 @property (nonatomic, retain) IBOutlet UIView *imagesView;
 
 - (IBAction)authorButtonTapped:(id)sender;
 - (IBAction)optionsButtonTapped:(id)sender;
 - (IBAction)initFollowersList:(id)sender;
+- (void)configureCell:(TAPhotoTableCell *)cell atIndexPath:(NSIndexPath *)indexPath;
 
 @end

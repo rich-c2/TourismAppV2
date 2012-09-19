@@ -15,6 +15,12 @@
 #import "TAProfileVC.h"
 #import "TAImageDetailsVC.h"
 #import "TAMapVC.h"
+#import "MyMapAnnotation.h"
+#import "Photo.h"
+#import "Venue.h"
+#import "User.h"
+#import "TAPhotoTableCell.h"
+#import "TATimelineVC.h"
 
 #define IMAGE_VIEW_TAG 7000
 #define GRID_IMAGE_WIDTH 75.0
@@ -28,8 +34,8 @@
 
 @implementation TAGuideDetailsVC
 
-@synthesize guideMode, images, guideID, gridScrollView, guideData;
-@synthesize guideThumb, titleLabel, authorBtn, imagesView;
+@synthesize guideMode, photos, guideID, gridScrollView, guideData, guideMap;
+@synthesize titleLabel, authorBtn, imagesView, photosTable, loadCell;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -44,6 +50,8 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	self.photos = [NSMutableArray array];
 	
 	// FOR NOW: Add an "save" button to the top-right of the nav bar
 	// if this is a guide NOT created by the logged-in user
@@ -66,23 +74,28 @@
 - (void)viewDidUnload {
 	
 	self.guideID = nil;
-	self.images = nil;
+	self.photos = nil;
 	self.guideData = nil;
 	
-    [imagesView release];
+    [self.imagesView release];
     self.imagesView = nil;
-    [authorBtn release];
+    [self.authorBtn release];
     self.authorBtn = nil;
-    [titleLabel release];
+    [self.titleLabel release];
     self.titleLabel = nil;
-    [guideThumb release];
-    self.guideThumb = nil;
 	
-	[gridScrollView release];
+	[self.gridScrollView release];
 	self.gridScrollView = nil;
 	
-	[authorBtn release];
-	authorBtn = nil;
+	[self.authorBtn release];
+	self.authorBtn = nil;
+	
+    //[self.guideMap release];
+    self.guideMap = nil;
+	
+	//[self.photosTable release];
+	self.photosTable = nil;
+	
     [super viewDidUnload];
 }
 
@@ -95,21 +108,22 @@
 	
 	[guideData release];
 	[guideID release];
-	[images release];
+	[photos release];
     [imagesView release];
     [authorBtn release];
     [titleLabel release];
-    [guideThumb release];
 	[gridScrollView release];
 	[authorBtn release];
+    [guideMap release];
+	[photosTable release];
+	
     [super dealloc];
 }
-
 
 - (void)viewWillAppear:(BOOL)animated {
 	
     [super viewDidAppear:animated];
-	
+	/*
 	if (!guideLoaded && !loading) {
 			
 		// Show loading animation
@@ -120,6 +134,104 @@
 		
 		[self initIsLovedAPI];
 	}
+	
+	[self.photosTable deselectRowAtIndexPath:[self.photosTable indexPathForSelectedRow] animated:YES];*/
+}
+
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	
+    return 1;
+}
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	
+    return [self.photos count];
+}
+
+
+- (void)configureCell:(TAPhotoTableCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+	
+	Photo *photo = [self.photos objectAtIndex:[indexPath row]];
+
+	NSString *title = photo.venue.title;
+	if ([title length] == 0) title = @"[untitled]";
+	
+	NSString *details = [NSString stringWithFormat:@"%i loves   %i vouches", [[photo lovesCount] intValue], [[photo vouchesCount] intValue]];
+	
+	[cell.titleLabel setText:title];
+	[cell.detailsLabel setText:details];
+	
+	[cell initImage:photo.thumbURL];
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+    TAPhotoTableCell *cell = (TAPhotoTableCell *)[tableView dequeueReusableCellWithIdentifier:[TAPhotoTableCell reuseIdentifier]];
+	
+	if (cell == nil) {
+		
+		[[NSBundle mainBundle] loadNibNamed:@"TAPhotoTableCell" owner:self options:nil];
+        cell = loadCell;
+        self.loadCell = nil;
+	}
+	
+	// Retrieve Track object and set it's name to the cell
+	[self configureCell:cell atIndexPath:indexPath];
+    
+    return cell;
+}
+
+
+#pragma mark - Table view delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	// Retrieve the User object at the given index that's in self.users
+	Photo *photo = [self.photos objectAtIndex:[indexPath row]];		
+	
+	// Push the TATimelineVC onto the stack
+	TATimelineVC *timelineVC = [[TATimelineVC alloc] initWithNibName:@"TATimelineVC" bundle:nil];
+	[timelineVC setPhotos:self.photos];
+	[timelineVC setSelectedImageID:[photo photoID]];
+	
+	[self.navigationController pushViewController:timelineVC animated:YES];
+	[timelineVC release];
+}
+
+
+#pragma MKMapViewDelegate methods
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
+	
+    if ([annotation isKindOfClass:[MKUserLocation class]])
+		return nil;		
+	
+	static NSString * const kPinAnnotationIdentifier = @"PinIdentifier";
+	
+	MKPinAnnotationView* pinView;
+	
+    if ([annotation isKindOfClass:[MyMapAnnotation class]]) {
+		
+		// try to dequeue an existing pin view first
+        static NSString* annotationIdentifier = @"annotationIdentifier";
+        pinView = (MKPinAnnotationView *)
+		[self.guideMap dequeueReusableAnnotationViewWithIdentifier:annotationIdentifier];
+		
+		if (!pinView) {
+			
+			pinView = [[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kPinAnnotationIdentifier] autorelease];
+			
+			[pinView setUserInteractionEnabled:YES];
+			[pinView setCanShowCallout:YES];
+		}
+	}
+	
+	return pinView;
 }
 
 
@@ -151,14 +263,14 @@
 	
 		TAMapVC *mapVC = [[TAMapVC alloc] initWithNibName:@"TAMapVC" bundle:nil];
 		[mapVC setMapMode:MapModeMultiple];
-		[mapVC setPhotos:self.images];
+		[mapVC setPhotos:self.photos];
 		
 		[self.navigationController pushViewController:mapVC animated:YES];
 		[mapVC release];
 	}
 }
 
-
+/*
 - (void) imageLoaded:(UIImage*)image withURL:(NSURL*)url {
 	
 	NSArray *gridImages = [[self.imagesView subviews] retain];
@@ -176,14 +288,14 @@
 	}
 	
 	[gridImages release];
-}
+}*/
 
 
 #pragma GridImageDelegate methods 
 
 - (void)gridImageButtonClicked:(NSInteger)viewTag {
 	
-	NSDictionary *image = [self.images objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
+	NSDictionary *image = [self.photos objectAtIndex:(viewTag - IMAGE_VIEW_TAG)];
 	
 	// Push the Image Details VC onto the stack
 	TAImageDetailsVC *imageDetailsVC = [[TAImageDetailsVC alloc] initWithNibName:@"TAImageDetailsVC" bundle:nil];
@@ -195,6 +307,26 @@
 
 
 #pragma MY-METHODS
+
+- (void)imageLoaded:(UIImage *)image withURL:(NSURL *)url {
+	
+	NSArray *cells = [self.photosTable visibleCells];
+    [cells retain];
+    SEL selector = @selector(imageLoaded:withURL:);
+	
+    for (int i = 0; i < [cells count]; i++) {
+		
+		UITableViewCell* c = [[cells objectAtIndex: i] retain];
+        if ([c respondsToSelector:selector]) {
+            [c performSelector:selector withObject:image withObject:url];
+        }
+        [c release];
+		c = nil;
+    }
+	
+    [cells release];
+}
+
 
 - (void)updateImageGrid {
 	
@@ -224,13 +356,12 @@
 		yPos = (rowCount * (GRID_IMAGE_HEIGHT + IMAGE_PADDING));
 	}
 	
-	for (int i = subviewsCount; i < [self.images count]; i++) {
+	for (int i = subviewsCount; i < [self.photos count]; i++) {
 		
 		// Retrieve Image object from array, and construct
 		// a URL string for the thumbnail image
-		NSDictionary *image = [self.images objectAtIndex:i];
-		NSDictionary *paths = [image objectForKey:@"paths"];
-		NSString *thumbURL = [NSString stringWithFormat:@"%@%@", FRONT_END_ADDRESS, [paths objectForKey:@"thumb"]];
+		Photo *photo = [self.photos objectAtIndex:i];
+		NSString *thumbURL = [photo thumbURL];
 		
 		// Create GridImage, set its Tag and Delegate, and add it 
 		// to the imagesView
@@ -310,9 +441,13 @@
     
     NSAssert(aFetcher == guideFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	NSLog(@"PRINTING GET GUIDE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING GET GUIDE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
-    if ([theJSONFetcher.data length] > 0) {
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		guideLoaded = YES;
         
         // Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -325,11 +460,7 @@
 			self.guideData = [results objectForKey:@"guide"];
 			
 			// Build an array from the dictionary for easy access to each entry
-			NSMutableArray *imagesArray = [[self.guideData  objectForKey:@"images"] mutableCopy];
-			self.images = imagesArray;
-			[imagesArray release];
-			
-			//NSLog(@"self.images:%@", self.images);
+			[self updatePhotosArray:[self.guideData objectForKey:@"images"]];
 		}
 		
 		[jsonString release];
@@ -339,7 +470,10 @@
 	[self updateUIElements];
 	
 	// Create the grid of images using the results
-	[self updateImageGrid];
+	//[self updateImageGrid];
+	[self.photosTable reloadData];
+	
+	[self initMapLocations];
 	
 	// hide loading
 	[self hideLoading];
@@ -443,8 +577,6 @@
 - (void)initIsLovedAPI {
 	
 	NSString *jsonString = [NSString stringWithFormat:@"username=%@&code=%@&type=guide", [self appDelegate].loggedInUsername, self.guideID];	
-	
-	//username=fuzzyhead&code=nulprg&type=guide
 	
 	NSData *postData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
 	
@@ -723,6 +855,62 @@
 	
 	[self.navigationController pushViewController:usersVC animated:YES];
 	[usersVC release];
+}
+
+
+- (void)initMapLocations {
+	
+	// Map type
+	self.guideMap.mapType = MKMapTypeStandard;
+	
+	/*Region and Zoom*/
+	MKCoordinateRegion region;
+	MKCoordinateSpan span;
+	span.latitudeDelta = 0.09;
+	span.longitudeDelta = 0.09;
+	
+	for (int i = 0; i < [self.photos count]; i++) {
+		
+		Photo *photo = [self.photos objectAtIndex:i];
+		
+		CLLocationCoordinate2D coordLocation;
+		coordLocation.latitude = [photo.latitude doubleValue];
+		coordLocation.longitude = [photo.longitude doubleValue];
+		
+		if (i == 0) {
+			
+			region.span = span;
+			region.center = coordLocation;
+			
+			[self.guideMap setRegion:region animated:TRUE];
+			[self.guideMap regionThatFits:region];
+		}
+		
+		NSString *title = photo.venue.title;
+		if ([title length] == 0) title = @"[untitled]";
+		
+		MyMapAnnotation *mapAnnotation = [[MyMapAnnotation alloc] initWithCoordinate:coordLocation title:title];
+		[self.guideMap addAnnotation:mapAnnotation];
+		[mapAnnotation release];
+	}
+}
+
+
+/*
+ Iterates through the self.images array,  
+ converts all the Dictionary values to
+ Photos (NSManagedObjects) and stores
+ them in self.photos array
+ */
+- (void)updatePhotosArray:(NSArray *)imagesArray {
+	
+	NSManagedObjectContext *context = [self appDelegate].managedObjectContext;
+	
+	for (NSDictionary *image in imagesArray) {
+		
+		Photo *photo = [Photo photoWithPhotoData:image inManagedObjectContext:context];
+		if (photo) [self.photos addObject:photo];
+	}
 }
 
 

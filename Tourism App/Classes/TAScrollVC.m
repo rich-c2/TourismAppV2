@@ -9,7 +9,6 @@
 #import "TAScrollVC.h"
 #import "Photo.h"
 #import "User.h"
-#import "TAPhotoFrame.h"
 #import "SVProgressHUD.h"
 #import "JSONFetcher.h"
 #import "SBJson.h"
@@ -17,6 +16,7 @@
 #import "TACommentsVC.h"
 #import "TAMapVC.h"
 #import "TAUsersVC.h"
+#import "TAProfileVC.h"
 
 #define IMAGE_WIDTH 320
 #define IMAGE_HEIGHT 320
@@ -31,6 +31,8 @@
 @implementation TAScrollVC
 
 @synthesize photosScrollView, photos, loveBtn, loveIDs, vouchedIDs;
+@synthesize mainView, flipToView;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -53,6 +55,24 @@
 	
 	// The fetch size for each API call
     fetchSize = 20;
+	
+	UIView *flipView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 299.0, 299.0)];
+	[flipView setBackgroundColor:[UIColor greenColor]];
+	self.flipToView = flipView;
+	[flipView release];
+	
+	UIView *mv = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 299.0, 299.0)];
+	[mv setBackgroundColor:[UIColor redColor]];
+	self.mainView = mv;
+	[mv release];
+	
+	[self.photosScrollView addSubview:self.mainView];
+	[self.mainView release];
+	
+	UIBarButtonItem *button = [[UIBarButtonItem alloc] initWithTitle:@"Flip" style:UIBarButtonItemStyleDone target:self 
+															  action:@selector(flipAction:)];
+	self.navigationItem.rightBarButtonItem = button;
+	[button release];
 }
 
 
@@ -71,6 +91,9 @@
 	self.photos = nil;
 	self.loveIDs = nil;
 	self.vouchedIDs = nil;
+	
+	self.mainView = nil; 
+	self.flipToView = nil;
 }
 
 
@@ -88,6 +111,9 @@
 	[photos release];
 	[vouchedIDs release];
 	
+	[mainView release]; 
+	[flipToView release];
+	
 	[super dealloc];
 }
 
@@ -96,7 +122,24 @@
 
 	[super viewWillAppear:animated];
 	
-	[self initFeedAPI];
+	//if (!loading && !photosLoaded) {
+	
+		//[self initFeedAPI];
+	//}
+}
+
+
+#pragma PhotoFameDelegate methods 
+
+- (void)usernameButtonClicked {
+
+	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
+	
+	TAProfileVC *profileVC = [[TAProfileVC alloc] initWithNibName:@"TAProfileVC" bundle:nil];
+	[profileVC setUsername:[[currPhoto whoTook] username]];
+	
+	[self.navigationController pushViewController:profileVC animated:YES];
+	[profileVC release];
 }
 
 
@@ -321,8 +364,9 @@
 		Photo *photo = [self.photos objectAtIndex:i];
 		NSString *imageURL = [photo url];
 		
-		CGRect viewFrame = CGRectMake(xPos, yPos, IMAGE_WIDTH, IMAGE_HEIGHT);
-		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL];
+		CGRect viewFrame = CGRectMake(xPos, yPos, IMAGE_WIDTH, 357.0);
+		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL caption:[photo caption] username:[[photo whoTook] username] avatarURL:[[photo whoTook] avatarURL]];
+		[photoView setDelegate:self];
 		
 		[photoView setTag:(IMAGE_VIEW_TAG + i)];
 		
@@ -359,6 +403,8 @@
 
 - (void)initFeedAPI {
 	
+	loading = YES;
+	
 	// Convert string to data for transmission
 	NSString *jsonString = [NSString stringWithFormat:@"username=%@&pg=%i&sz=%i&token=%@", [self appDelegate].loggedInUsername, imagesPageIndex, fetchSize, [[self appDelegate] sessionToken]];
 	
@@ -388,10 +434,13 @@
 	
 	//NSLog(@"PRINTING FIND MEDIA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
+	loading = NO;
 	
 	NSInteger statusCode = [theJSONFetcher statusCode];
     
     if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		photosLoaded = YES;
 		
 		// Store incoming data into a string
 		// Create a dictionary from the JSON string
@@ -867,6 +916,33 @@
 	
 	[vouchFetcher release];
 	vouchFetcher = nil;
+}
+
+
+- (void)flipAction:(id)sender {		
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	
+	[UIView setAnimationTransition:([self.mainView superview] ?
+									UIViewAnimationTransitionFlipFromLeft : UIViewAnimationTransitionFlipFromRight)
+									forView:self.photosScrollView cache:YES];
+	if ([self.flipToView superview]) {
+		
+		[self.flipToView retain];
+		[self.flipToView removeFromSuperview];
+		[self.photosScrollView addSubview:mainView];
+	}
+	
+	else {
+		
+		[self.mainView retain];
+		[self.mainView removeFromSuperview];
+		
+		[self.photosScrollView addSubview:self.flipToView];
+	}
+	
+	[UIView commitAnimations];
 }
 
 @end

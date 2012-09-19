@@ -86,14 +86,14 @@
 		/* 
 		 VENUE & LOCATION
 		 */
-		
+
 		NSDictionary *locationData = [photoData objectForKey:@"location"];
 		NSDictionary *venueData = [photoData objectForKey:@"address"];
 		photo.venue = [Venue venueWithData:venueData location:locationData inManagedObjectContext:context];
 		
 		photo.latitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"latitude"] doubleValue]];
 		photo.longitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"longitude"] doubleValue]];
-		
+
 		////////////////////////////////////////////////////////////
 	}
 	
@@ -154,14 +154,14 @@
 		/* 
 			VENUE & LOCATION
 		*/
-		
+
 		NSDictionary *locationData = [photoData objectForKey:@"location"];
 		NSDictionary *venueData = [photoData objectForKey:@"address"];
 		photo.venue = [Venue venueWithData:venueData location:locationData inManagedObjectContext:context];
 		
 		photo.latitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"latitude"] doubleValue]];
 		photo.longitude = [NSNumber numberWithDouble:[[locationData objectForKey:@"longitude"] doubleValue]];
-		
+
 		////////////////////////////////////////////////////////////
 	}
 	

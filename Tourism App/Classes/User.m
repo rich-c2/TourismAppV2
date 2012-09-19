@@ -21,8 +21,6 @@
 	
 	User *user = nil;
 	
-	NSLog(@"Fetching username:%@", [basicInfo objectForKey:@"username"]);
-	
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	request.entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:context];
 	request.predicate = [NSPredicate predicateWithFormat:@"username = %@", [basicInfo objectForKey:@"username"]];
@@ -48,8 +46,6 @@
 		user.fullName = [basicInfo objectForKey:@"name"];
 	}
 	
-	NSLog(@"RETURNING USER:%@", user);
-	
 	return user;
 }
 
@@ -59,8 +55,6 @@
 	inManagedObjectContext:(NSManagedObjectContext *)context {
 	
 	User *user = nil;
-	
-	NSLog(@"Fetching username:%@", theUsername);
 	
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	request.entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:context];

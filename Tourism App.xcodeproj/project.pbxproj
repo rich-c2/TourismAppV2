@@ -82,6 +82,8 @@
 		9B7B0A0C15EB49AB001C2E3E /* TASimpleListVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */; };
 		9B7B0A1115EB5BBA001C2E3E /* TACreateGuideVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */; };
 		9B7B0A1215EB5BBA001C2E3E /* TACreateGuideVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */; };
+		9BA89DCF16098D18001FEC96 /* TAPhotoTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BA89DCE16098D18001FEC96 /* TAPhotoTableCell.m */; };
+		9BA89DD216098D34001FEC96 /* TAPhotoTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BA89DD116098D34001FEC96 /* TAPhotoTableCell.xib */; };
 		9BB3439615F096DB006BD1FD /* TACameraVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB3439415F096DB006BD1FD /* TACameraVC.m */; };
 		9BB3439715F096DB006BD1FD /* TACameraVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BB3439515F096DB006BD1FD /* TACameraVC.xib */; };
 		9BB4045715ECA3910080E00E /* Tag.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045615ECA3910080E00E /* Tag.m */; };
@@ -288,6 +290,9 @@
 		9B7B0A0E15EB5BB9001C2E3E /* TACreateGuideVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACreateGuideVC.h; path = Classes/TACreateGuideVC.h; sourceTree = "<group>"; };
 		9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACreateGuideVC.m; path = Classes/TACreateGuideVC.m; sourceTree = "<group>"; };
 		9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACreateGuideVC.xib; path = Classes/TACreateGuideVC.xib; sourceTree = "<group>"; };
+		9BA89DCD16098D18001FEC96 /* TAPhotoTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAPhotoTableCell.h; path = Classes/TAPhotoTableCell.h; sourceTree = "<group>"; };
+		9BA89DCE16098D18001FEC96 /* TAPhotoTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAPhotoTableCell.m; path = Classes/TAPhotoTableCell.m; sourceTree = "<group>"; };
+		9BA89DD116098D34001FEC96 /* TAPhotoTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAPhotoTableCell.xib; path = Classes/TAPhotoTableCell.xib; sourceTree = "<group>"; };
 		9BB3439315F096DB006BD1FD /* TACameraVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACameraVC.h; path = Classes/TACameraVC.h; sourceTree = "<group>"; };
 		9BB3439415F096DB006BD1FD /* TACameraVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACameraVC.m; path = Classes/TACameraVC.m; sourceTree = "<group>"; };
 		9BB3439515F096DB006BD1FD /* TACameraVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACameraVC.xib; path = Classes/TACameraVC.xib; sourceTree = "<group>"; };
@@ -566,6 +571,9 @@
 				9B1DA62616080A30008050B7 /* TAScrollVC.h */,
 				9B1DA62716080A30008050B7 /* TAScrollVC.m */,
 				9B1DA62816080A30008050B7 /* TAScrollVC.xib */,
+				9BA89DCD16098D18001FEC96 /* TAPhotoTableCell.h */,
+				9BA89DCE16098D18001FEC96 /* TAPhotoTableCell.m */,
+				9BA89DD116098D34001FEC96 /* TAPhotoTableCell.xib */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -1020,6 +1028,7 @@
 				9B2737DF15FDD25E00FB487A /* TALoginLandingVC.xib in Resources */,
 				9B4573EB1606C2CB000868B6 /* TAUserTableCell.xib in Resources */,
 				9B1DA62A16080A30008050B7 /* TAScrollVC.xib in Resources */,
+				9BA89DD216098D34001FEC96 /* TAPhotoTableCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1145,6 +1154,7 @@
 				9B4573E91606C296000868B6 /* TAUserTableCell.m in Sources */,
 				9B1DA621160806C6008050B7 /* TAPhotoFrame.m in Sources */,
 				9B1DA62916080A30008050B7 /* TAScrollVC.m in Sources */,
+				9BA89DCF16098D18001FEC96 /* TAPhotoTableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

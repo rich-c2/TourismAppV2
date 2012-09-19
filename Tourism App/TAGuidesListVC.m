@@ -269,7 +269,11 @@
 	
 	loading = NO;
 	
-	if ([theJSONFetcher.data length] > 0) {
+	NSInteger statusCode = [theJSONFetcher statusCode];
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		guidesLoaded = YES;
 		
 		// Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -347,7 +351,11 @@
     
 	loading = NO;
 	
-    if ([theJSONFetcher.data length] > 0) {
+    NSInteger statusCode = [theJSONFetcher statusCode];
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		guidesLoaded = YES;
         
         // Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
@@ -411,7 +419,7 @@
     
     JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
 	
-	NSLog(@"ADD TO GUIDE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"ADD TO GUIDE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
     
 	NSAssert(aFetcher == guidesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
@@ -491,9 +499,13 @@
     
     NSAssert(aFetcher == guidesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	NSLog(@"PRINTING GET GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	//NSLog(@"PRINTING GET GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
     
-    if ([theJSONFetcher.data length] > 0) {
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		guidesLoaded = YES;
         
         // Store incoming data into a string
 		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];

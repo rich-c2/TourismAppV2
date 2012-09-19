@@ -10,10 +10,19 @@
 #import "TAUsersVC.h"
 #import <Twitter/Twitter.h>
 #import <Accounts/Accounts.h>
+#import "TAPhotoFrame.h"
 
 @class JSONFetcher;
 
-@interface TAScrollVC : UIViewController <RecommendsDelegate> {
+@interface TAScrollVC : UIViewController <RecommendsDelegate, PhotoFrameDelegate, UIActionSheetDelegate> {
+	
+	// Test views
+	IBOutlet UIView *mainView;
+	IBOutlet UIView *flipToView;
+	
+	// BOOL trackers
+	BOOL loading;
+	BOOL photosLoaded;
 	
 	// Toolbar buttons
 	UIBarButtonItem *loveBtn;
@@ -35,6 +44,9 @@
 	NSMutableArray *loveIDs;
 	NSMutableArray *vouchedIDs;
 }
+
+@property (nonatomic, retain) IBOutlet UIView *mainView;
+@property (nonatomic, retain) IBOutlet UIView *flipToView;
 
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *loveBtn;
 
