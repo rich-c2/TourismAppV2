@@ -17,8 +17,8 @@
 @interface TAScrollVC : UIViewController <RecommendsDelegate, PhotoFrameDelegate, UIActionSheetDelegate> {
 	
 	// Test views
-	IBOutlet UIView *mainView;
-	IBOutlet UIView *flipToView;
+	UIImageView *mainView;
+	UIImageView *flipToView;
 	
 	// BOOL trackers
 	BOOL loading;
@@ -45,8 +45,8 @@
 	NSMutableArray *vouchedIDs;
 }
 
-@property (nonatomic, retain) IBOutlet UIView *mainView;
-@property (nonatomic, retain) IBOutlet UIView *flipToView;
+@property (nonatomic, retain) UIView *mainView;
+@property (nonatomic, retain) UIView *flipToView;
 
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *loveBtn;
 

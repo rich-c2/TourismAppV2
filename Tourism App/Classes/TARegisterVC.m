@@ -14,7 +14,7 @@
 #import "JSONFetcher.h"
 #import "Constants.h"
 
-#define MAIN_CONTENT_HEIGHT 367
+#define MAIN_CONTENT_HEIGHT 200
 
 static NSString *kAccountUsernameSavedKey = @"accountUsernameSavedKey";
 static NSString *kSavedUsernameKey = @"savedUsernameKey";
@@ -27,7 +27,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 @implementation TARegisterVC
 
-@synthesize firstNameField, lastNameField, emailField;
+@synthesize nameField, emailField;
 @synthesize usernameField, passwordField, formScrollView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -41,11 +41,15 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)viewDidLoad {
 	
+	// Set up custom nav bar
+	[self initNavBar];
+	
 	// register scroll view content size
-	CGSize newSize = CGSizeMake(self.formScrollView.frame.size.width, (self.formScrollView.frame.size.height * 1.25));
+	CGSize newSize = CGSizeMake(self.formScrollView.frame.size.width, (self.formScrollView.frame.size.height * 1.1));
 	[self.formScrollView setContentSize:newSize];
 	
-	[self.firstNameField becomeFirstResponder];
+	// Focus on name field
+	[self.nameField becomeFirstResponder];
 	
     [super viewDidLoad];
 }
@@ -60,10 +64,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)viewDidUnload {
 	
-    [firstNameField release];
-    firstNameField = nil;
-    [lastNameField release];
-    lastNameField = nil;
+    [nameField release];
+    nameField = nil;
     [emailField release];
     emailField = nil;
     [usernameField release];
@@ -83,8 +85,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)dealloc {
 	
-    [firstNameField release];
-    [lastNameField release];
+    [nameField release];
     [emailField release];
     [usernameField release];
     [passwordField release];
@@ -99,7 +100,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
 	// Reset the height of the Table's frame
 	CGRect newTableFrame = self.formScrollView.frame;
-	newTableFrame.size.height = (MAIN_CONTENT_HEIGHT - (KEYBOARD_HEIGHHT - TAB_BAR_HEIGHT));
+	newTableFrame.size.height = (367.0 - (KEYBOARD_HEIGHHT - TAB_BAR_HEIGHT));
 	[self.formScrollView setFrame:newTableFrame];
 }
 
@@ -134,7 +135,14 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
 	[self showLoading];
 	
-	NSString *jsonString = [NSString stringWithFormat:@"firstname=%@&lastname=%@&emailaddress=%@&username=%@&password=%@", self.firstNameField.text, self.lastNameField.text, self.emailField.text, self.usernameField.text, self.passwordField.text];
+	
+	/* 
+		NOTE!
+		PASSING NAMEFIELD.TEXT FOR BOTH FIRST NAME AND LAST NAME
+		PARAMETERS FOR THE REGISTER API CALL - THIS MUST CHANGE
+	 */
+	
+	NSString *jsonString = [NSString stringWithFormat:@"firstname=%@&lastname=%@&emailaddress=%@&username=%@&password=%@", self.nameField.text, self.nameField.text, self.emailField.text, self.usernameField.text, self.passwordField.text];
 	
 	NSLog(@"newJSON:%@", jsonString);
 	
@@ -266,6 +274,20 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)hideLoading {
 	
 	[SVProgressHUD dismissWithSuccess:@"Loaded!"];
+}
+
+
+- (void)initNavBar {
+
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 

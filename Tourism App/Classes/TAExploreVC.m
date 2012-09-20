@@ -41,6 +41,9 @@
 	
     [super viewDidLoad];
 	
+	// Setup nav bar
+	[self initNavBar];
+	
 	if (self.exploreMode == ExploreModeSubset) {
 	
 		// Hide the nearby btn
@@ -156,6 +159,21 @@
 	
 	// Set the Tag button's title to that of the Location's
 	[self.tagBtn setTitle:tag.title forState:UIControlStateNormal];
+}
+
+
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 

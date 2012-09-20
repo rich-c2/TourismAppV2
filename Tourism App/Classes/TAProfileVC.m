@@ -61,6 +61,9 @@
 	
     [super viewDidLoad];
 	
+	// Setup nav bar
+	[self initNavBar];
+	
 	// Update username label
 	if ([self.username length] > 0)
 		[self.usernameLabel setText:self.username];
@@ -548,6 +551,20 @@
 													receiver:self
 													  action:@selector(receivedIsFollowingResponse:)];
 	[isFollowingFetcher start];
+}
+
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 

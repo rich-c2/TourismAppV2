@@ -41,6 +41,9 @@
 	
     [super viewDidLoad];
 	
+	// Setup nav bar
+	[self initNavBar];
+	
 	// Set tap action for segmented control buttons
 	[self.tabsControl addTarget:self
 						 action:@selector(initGetNotificationsAPI)
@@ -196,6 +199,20 @@
 		[self.navigationController pushViewController:guideDetailsVC animated:YES];
 		[guideDetailsVC release];
 	}
+}
+
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 

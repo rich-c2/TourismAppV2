@@ -39,6 +39,9 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	// Setup nav bar
+	[self initNavBar];
     
 	// Get user location
 	MyCoreLocation *location = [[MyCoreLocation alloc] init];
@@ -222,6 +225,19 @@
 
 
 #pragma MY METHODS
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
+}
 
 - (IBAction)showCameraUI:(id)sender {
 	

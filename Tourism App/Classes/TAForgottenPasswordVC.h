@@ -19,4 +19,6 @@
 
 @property (nonatomic, retain) IBOutlet UITextField *usernameField;
 
+- (IBAction)goBack:(id)sender;
+
 @end

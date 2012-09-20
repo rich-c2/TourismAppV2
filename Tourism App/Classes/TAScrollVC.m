@@ -56,13 +56,13 @@
 	// The fetch size for each API call
     fetchSize = 20;
 	
-	UIView *flipView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 299.0, 299.0)];
-	[flipView setBackgroundColor:[UIColor greenColor]];
+	UIImageView *flipView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 301.0, 301.0)];
+	[flipView setImage:[UIImage imageNamed:@"test-photo-back.png"]];
 	self.flipToView = flipView;
 	[flipView release];
 	
-	UIView *mv = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 299.0, 299.0)];
-	[mv setBackgroundColor:[UIColor redColor]];
+	UIImageView *mv = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 301.0, 301.0)];
+	[mv setImage:[UIImage imageNamed:@"test-photo-view.png"]];
 	self.mainView = mv;
 	[mv release];
 	
@@ -923,6 +923,7 @@
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
+	[UIView setAnimationBeginsFromCurrentState:YES];
 	
 	[UIView setAnimationTransition:([self.mainView superview] ?
 									UIViewAnimationTransitionFlipFromLeft : UIViewAnimationTransitionFlipFromRight)

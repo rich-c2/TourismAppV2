@@ -64,6 +64,9 @@ static NSString *kTwitterAccountIDKey = @"twitterAccountIDKey";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	
+	// STATUS BAR COLOUR/STYLE
+	[application setStatusBarStyle:UIStatusBarStyleBlackOpaque];
+	
 	// Setup any test/temporary data in here
 	// FOR NOW, the log-in data iset in here
 	[self initApp];

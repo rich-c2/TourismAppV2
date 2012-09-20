@@ -38,10 +38,11 @@
 }
 
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+	
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+	[self initNavBar];
 }
 
 - (void)viewDidUnload {
@@ -80,6 +81,20 @@
 
 
 #pragma MY METHODS 
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
 
 - (void)initSendPasswordAPI {
 	

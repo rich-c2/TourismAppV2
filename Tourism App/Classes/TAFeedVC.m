@@ -53,6 +53,9 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	// Setup nav bar
+	[self initNavBar];
     
 	self.images = [NSMutableArray array];
 	self.photos = [NSMutableArray array];
@@ -275,6 +278,19 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 
 #pragma MY-METHODS
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
+}
 
 - (void)willLogout {
     

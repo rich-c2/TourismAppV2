@@ -46,6 +46,9 @@ static NSString *kSkipLoginLandingKey = @"skipLoginLandingKey";
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	// Set up nav bar
+	[self initNavBar];
 
     // Pre-populate the login form with credentials
 	// that have been used successfully previously
@@ -122,6 +125,20 @@ static NSString *kSkipLoginLandingKey = @"skipLoginLandingKey";
 
 
 #pragma MY-METHODS
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = YES;
+	
+}
+
+
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
 
 - (void)login {
 	

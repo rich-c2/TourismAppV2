@@ -15,21 +15,19 @@
 	JSONFetcher *registerFetcher;
 
 	IBOutlet UIScrollView *formScrollView;
-	IBOutlet UITextField *firstNameField;
-	IBOutlet UITextField *lastNameField;
+	IBOutlet UITextField *nameField;
 	IBOutlet UITextField *emailField;
 	IBOutlet UITextField *usernameField;
 	IBOutlet UITextField *passwordField;
 }
 
 @property (nonatomic, retain) IBOutlet UIScrollView *formScrollView;
-@property (nonatomic, retain) IBOutlet UITextField *firstNameField;
-@property (nonatomic, retain) IBOutlet UITextField *lastNameField;
+@property (nonatomic, retain) IBOutlet UITextField *nameField;
 @property (nonatomic, retain) IBOutlet UITextField *emailField;
 @property (nonatomic, retain) IBOutlet UITextField *usernameField;
 @property (nonatomic, retain) IBOutlet UITextField *passwordField;
 
-
+- (IBAction)goBack:(id)sender;
 
 
 
