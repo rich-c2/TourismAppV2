@@ -42,6 +42,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
     [super viewDidLoad];
 	
+	[self initNavBar];
+	
 	NSArray *accountObjects = [NSArray arrayWithObjects:@"Log out", @"Private photos", @"Edit profile", nil];
 	NSArray *otherObjects = [NSArray arrayWithObjects:@"About", @"Contact support", @"Test scroll", nil];
 	NSArray *cityObjects = [NSArray arrayWithObjects:[self getUsersDefaultCity], nil];
@@ -350,6 +352,14 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 
 #pragma mark - Public Methods
+
+
+- (void)initNavBar {
+	
+	// Hide default nav bar
+	self.navigationController.navigationBarHidden = NO;
+	
+}
 
 - (void)logout {
 	

@@ -118,6 +118,8 @@
 		9BB4045A15ECA3920080E00E /* City.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045915ECA3920080E00E /* City.m */; };
 		9BBC84BD15FF12B10042DEAF /* Venue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBC84BC15FF12B10042DEAF /* Venue.m */; };
 		9BBC84C015FF13130042DEAF /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBC84BF15FF13120042DEAF /* Photo.m */; };
+		9BC3B7A8160C1338005C7C5F /* TAPullButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BC3B7A7160C1338005C7C5F /* TAPullButton.m */; };
+		9BC3B7B0160C363E005C7C5F /* TAPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BC3B7AF160C363E005C7C5F /* TAPhotoView.m */; };
 		9BD79FEB15EDAAE50033EB64 /* TAMapVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FE915EDAAE40033EB64 /* TAMapVC.m */; };
 		9BD79FEC15EDAAE50033EB64 /* TAMapVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BD79FEA15EDAAE40033EB64 /* TAMapVC.xib */; };
 		9BD79FF415EDAF080033EB64 /* MyMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FF315EDAF080033EB64 /* MyMapAnnotation.m */; };
@@ -360,6 +362,10 @@
 		9BBC84BC15FF12B10042DEAF /* Venue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Venue.m; path = Classes/Venue.m; sourceTree = "<group>"; };
 		9BBC84BE15FF13120042DEAF /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = Classes/Photo.h; sourceTree = "<group>"; };
 		9BBC84BF15FF13120042DEAF /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = Classes/Photo.m; sourceTree = "<group>"; };
+		9BC3B7A6160C1338005C7C5F /* TAPullButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAPullButton.h; path = Classes/TAPullButton.h; sourceTree = "<group>"; };
+		9BC3B7A7160C1338005C7C5F /* TAPullButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAPullButton.m; path = Classes/TAPullButton.m; sourceTree = "<group>"; };
+		9BC3B7AE160C363E005C7C5F /* TAPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAPhotoView.h; path = Classes/TAPhotoView.h; sourceTree = "<group>"; };
+		9BC3B7AF160C363E005C7C5F /* TAPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAPhotoView.m; path = Classes/TAPhotoView.m; sourceTree = "<group>"; };
 		9BD79FE815EDAAE40033EB64 /* TAMapVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAMapVC.h; path = Classes/TAMapVC.h; sourceTree = "<group>"; };
 		9BD79FE915EDAAE40033EB64 /* TAMapVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAMapVC.m; path = Classes/TAMapVC.m; sourceTree = "<group>"; };
 		9BD79FEA15EDAAE40033EB64 /* TAMapVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAMapVC.xib; path = Classes/TAMapVC.xib; sourceTree = "<group>"; };
@@ -631,6 +637,10 @@
 				9BA89DCD16098D18001FEC96 /* TAPhotoTableCell.h */,
 				9BA89DCE16098D18001FEC96 /* TAPhotoTableCell.m */,
 				9BA89DD116098D34001FEC96 /* TAPhotoTableCell.xib */,
+				9BC3B7A6160C1338005C7C5F /* TAPullButton.h */,
+				9BC3B7A7160C1338005C7C5F /* TAPullButton.m */,
+				9BC3B7AE160C363E005C7C5F /* TAPhotoView.h */,
+				9BC3B7AF160C363E005C7C5F /* TAPhotoView.m */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -1275,6 +1285,8 @@
 				9B1DA621160806C6008050B7 /* TAPhotoFrame.m in Sources */,
 				9B1DA62916080A30008050B7 /* TAScrollVC.m in Sources */,
 				9BA89DCF16098D18001FEC96 /* TAPhotoTableCell.m in Sources */,
+				9BC3B7A8160C1338005C7C5F /* TAPullButton.m in Sources */,
+				9BC3B7B0160C363E005C7C5F /* TAPhotoView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1422,6 +1434,57 @@
 			};
 			name = Release;
 		};
+		9BC3B7B1160C5326005C7C5F /* Ad Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: C2 Media Pty Ltd";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: C2 Media Pty Ltd";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(SDKROOT)/usr/include/libxml2/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PROVISIONING_PROFILE = "2915A6AA-447E-48C2-974B-76A07DC6DC69";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2915A6AA-447E-48C2-974B-76A07DC6DC69";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Ad Hoc";
+		};
+		9BC3B7B2160C5326005C7C5F /* Ad Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Tourism App/Tourism App-Prefix.pch";
+				INFOPLIST_FILE = "Tourism App/Tourism App-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = "Ad Hoc";
+		};
+		9BC3B7B3160C5326005C7C5F /* Ad Hoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Tourism App.app/Tourism App";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Tourism App/Tourism App-Prefix.pch";
+				INFOPLIST_FILE = "Tourism AppTests/Tourism AppTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = "Ad Hoc";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1430,6 +1493,7 @@
 			buildConfigurations = (
 				9B09865315D89F28006F8B63 /* Debug */,
 				9B09865415D89F28006F8B63 /* Release */,
+				9BC3B7B1160C5326005C7C5F /* Ad Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1439,6 +1503,7 @@
 			buildConfigurations = (
 				9B09865615D89F28006F8B63 /* Debug */,
 				9B09865715D89F28006F8B63 /* Release */,
+				9BC3B7B2160C5326005C7C5F /* Ad Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1448,6 +1513,7 @@
 			buildConfigurations = (
 				9B09865915D89F28006F8B63 /* Debug */,
 				9B09865A15D89F28006F8B63 /* Release */,
+				9BC3B7B3160C5326005C7C5F /* Ad Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

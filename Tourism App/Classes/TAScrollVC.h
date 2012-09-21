@@ -14,7 +14,7 @@
 
 @class JSONFetcher;
 
-@interface TAScrollVC : UIViewController <RecommendsDelegate, PhotoFrameDelegate, UIActionSheetDelegate> {
+@interface TAScrollVC : UIViewController <RecommendsDelegate, PhotoFrameDelegate, UIActionSheetDelegate, PullButtonDelegate> {
 	
 	// Test views
 	UIImageView *mainView;

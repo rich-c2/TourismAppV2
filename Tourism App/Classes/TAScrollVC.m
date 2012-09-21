@@ -19,7 +19,7 @@
 #import "TAProfileVC.h"
 
 #define IMAGE_WIDTH 320
-#define IMAGE_HEIGHT 320
+#define IMAGE_HEIGHT 290
 #define IMAGE_PADDING 0
 #define IMAGE_VIEW_TAG 7000
 #define SCREEN_WIDTH 320
@@ -56,6 +56,9 @@
 	// The fetch size for each API call
     fetchSize = 20;
 	
+	
+	// FLIP TEST //
+	/*
 	UIImageView *flipView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 301.0, 301.0)];
 	[flipView setImage:[UIImage imageNamed:@"test-photo-back.png"]];
 	self.flipToView = flipView;
@@ -73,6 +76,34 @@
 															  action:@selector(flipAction:)];
 	self.navigationItem.rightBarButtonItem = button;
 	[button release];
+	
+	CGFloat xPos = 0.0;
+	CGFloat frameWidth = 320.0;
+	
+	for (int i = 0; i < 3; i++) {
+	
+		CGRect viewFrame = CGRectMake(xPos, 0.0, frameWidth, 580.0);
+		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:@""];
+		[photoView setDelegate:self];
+		[photoView setBackgroundColor:[UIColor greenColor]];
+		
+		[self.photosScrollView addSubview:photoView];
+		[photoView release];
+		
+		xPos += frameWidth;
+	}
+	
+	[self.photosScrollView setContentSize:CGSizeMake(xPos, self.photosScrollView.frame.size.width)];*/
+	
+	/*CGRect btnFrame = CGRectMake(120.0, 0.0, 80.0, 80.0);
+	TAPullButton *pullBtn = [[TAPullButton alloc] initWithFrame:btnFrame];
+	[pullBtn setFrame:btnFrame];
+	[pullBtn setBackgroundColor:[UIColor cyanColor]];
+	[pullBtn setDelegate:self];
+	//[pullBtn addTarget:self action:@selector(pullButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+	
+	[self.view addSubview:pullBtn];
+	[pullBtn release];*/
 }
 
 
@@ -122,10 +153,12 @@
 
 	[super viewWillAppear:animated];
 	
-	//if (!loading && !photosLoaded) {
+	if (!loading && !photosLoaded) {
 	
-		//[self initFeedAPI];
-	//}
+		[self showLoading];
+		
+		[self initFeedAPI];
+	}
 }
 
 
@@ -142,6 +175,23 @@
 	[profileVC release];
 }
 
+- (void)disableScroll {
+
+	[self.photosScrollView setScrollEnabled:NO];
+}
+
+- (void)enableScroll {
+	
+	[self.photosScrollView setScrollEnabled:YES];
+}
+
+
+#pragma PullButtonDelegate methods 
+
+- (void)buttonTouched {
+	
+	NSLog(@"GOTCHA'");
+}
 
 #pragma UIActionSheetDelegate methods 
 
@@ -271,12 +321,14 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	
+	
 	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
 	
 	if ([self.loveIDs containsObject:[currPhoto photoID]])
 		[self.loveBtn setTitle:@"Unlove"];
 	
 	else [self.loveBtn setTitle:@"Love"];
+	 
 }
 
 
@@ -356,7 +408,7 @@
 - (void)populateTimeline {
 	
 	CGFloat xPos = 0.0;
-	CGFloat yPos = 10.0;
+	CGFloat yPos = 0.0;
 	CGFloat sViewContentHeight = yPos;
 	
 	for (int i = 0; i < [self.photos count]; i++) {
@@ -364,8 +416,11 @@
 		Photo *photo = [self.photos objectAtIndex:i];
 		NSString *imageURL = [photo url];
 		
-		CGRect viewFrame = CGRectMake(xPos, yPos, IMAGE_WIDTH, 357.0);
-		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL caption:[photo caption] username:[[photo whoTook] username] avatarURL:[[photo whoTook] avatarURL]];
+		CGRect viewFrame = CGRectMake(xPos, yPos, IMAGE_WIDTH, 580.0);
+		//TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL caption:[photo caption] username:[[photo whoTook] username] avatarURL:[[photo whoTook] avatarURL]];
+		
+		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL];
+		
 		[photoView setDelegate:self];
 		
 		[photoView setTag:(IMAGE_VIEW_TAG + i)];

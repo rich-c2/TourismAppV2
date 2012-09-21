@@ -43,8 +43,6 @@
         
 		// Listen for when the user has logged-in
 		if (observe) [self initLoginObserver];
-		
-		self.title = @"Account";
     }
     return self;
 }
@@ -153,7 +151,7 @@
 			[self.photosBtn setHidden:YES];
 			[self.guidesBtn setHidden:YES];
 			
-			[self setupNavBar];
+			//[self setupNavBar];
 		}
 		
 		else {
@@ -221,7 +219,7 @@
 	
 	if (loggedIn == 1) {
 		
-		[self setupNavBar];
+		//[self setupNavBar];
 		
 		// Set the username for this profile
 		// It equals the username of whoever just logged-in
@@ -688,7 +686,7 @@
 }
 
 
-- (void)viewSettings:(id)sender {
+- (IBAction)viewSettings:(id)sender {
 	
 	// Push the following VC onto the stack
 	TASettingsVC *settingsVC = [[TASettingsVC alloc] initWithNibName:@"TASettingsVC" bundle:nil];

@@ -7,9 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "TAPullButton.h"
+#import "TAPhotoView.h"
+
 
 @protocol PhotoFrameDelegate
 
+- (void)disableScroll;
+- (void)enableScroll;
 - (void)usernameButtonClicked;
 /*- (void)loveCountButtonClicked:(NSString *)imageID;
 - (void)loveButtonClicked:(NSString *)imageID isLoved:(BOOL)loved;
@@ -24,25 +29,41 @@
 
 @end
 
-@interface TAPhotoFrame : UIView {
+@interface TAPhotoFrame : UIView <UIScrollViewDelegate, PullButtonDelegate> {
+	
+	// TEST
+	UIView *containerView;
+	UIView *container;
+	UIScrollView *containerScroll;
+	UIScrollView *actionsScrollView;
+	UIView *actionsView;
+	BOOL pullEnabled;
 	
 	id <PhotoFrameDelegate> delegate;
 	
 	UIImageView *avatarView;
-	UIImageView *imageView;
+	TAPhotoView *imageView;
 	UIProgressView *progressView;
 	NSString *urlString;
 }
 
 @property (nonatomic, retain) id <PhotoFrameDelegate> delegate;
 
+@property (nonatomic, retain) UIView *containerView;
+@property (nonatomic, retain) UIView *container;
+@property (nonatomic, retain) UIScrollView *containerScroll;
+@property (nonatomic, retain) UIScrollView *actionsScrollView;
+@property (nonatomic, retain) UIView *actionsView;
+
 @property (nonatomic, retain) UIImageView *avatarView;
-@property (nonatomic, retain) UIImageView *imageView;
+@property (nonatomic, retain) TAPhotoView *imageView;
 @property (nonatomic, retain) UIProgressView *progressView;
 @property (nonatomic, retain) NSString *urlString;
 
 - (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString 
 			caption:(NSString *)caption username:(NSString *)username avatarURL:(NSString *)avatarURL;
+- (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString;
+
 - (void)initImage;
 - (void)imageLoaded:(UIImage*)image withURL:(NSURL*)_url;
 

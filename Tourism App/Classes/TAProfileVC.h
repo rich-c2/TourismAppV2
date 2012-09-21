@@ -89,4 +89,6 @@
 
 - (void)willLogout;
 
+- (IBAction)viewSettings:(id)sender;
+
 @end
