@@ -30,6 +30,8 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	[self initNavBar];
     
 	self.menuItems = [NSArray arrayWithObjects:@"Liked photos", @"My photos", @"My guides", @"Following guides", nil];
 }
@@ -148,6 +150,14 @@
 		[self.navigationController pushViewController:guidesListVC animated:YES];
 		[guidesListVC release];
 	} 
+}
+
+
+#pragma MY METHODS
+
+- (void)initNavBar {
+
+	self.navigationController.navigationBarHidden = NO;
 }
 
 @end

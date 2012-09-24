@@ -10,7 +10,7 @@
 
 @implementation TAPullButton
 
-@synthesize containerView, delegate, lastTouch, touch;
+@synthesize containerView, delegate, lastTouch, touch, initialTouch;
 
 - (id)initWithFrame:(CGRect)frame {
 	
@@ -18,7 +18,7 @@
 	
     if (self) {
 		
-		lastTouch = 999.0;
+		lastTouch = 9999.0;
 		
         CGRect btnFrame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
 		UIView *bv = [[UIView alloc] initWithFrame:btnFrame];
@@ -41,67 +41,51 @@
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	
-	//NSLog(@"TOUCHES BEGAN");
+	UITouch *newTouch = [[event allTouches] anyObject];
+	CGPoint location = [newTouch locationInView:[[[self superview] superview] superview]];
+	//CGPoint xLocation = CGPointMake(location.x, location.y);
+	
+	initialTouch = location.y;
 	
 	[self.delegate buttonTouched];
-	
-	/*
-	UITouch *touch = (UITouch *)[touches anyObject];
-	start = [touch locationInView:self.superview].y;
-	if(start > 30 && pulldownView.center.y < 0)//touch was not in upper area of view AND pulldownView not visible
-	{
-		start = -1; //start is a CGFloat member of this view
-	}*/
 }
 
 
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
 	
-	
 	touch = [[event allTouches] anyObject];
-	CGPoint location = [touch locationInView:touch.view];
-	CGPoint xLocation = CGPointMake(location.x, location.y);
-	//NSLog(@"Hey:%f", xLocation.y);	
-	
 	CGPoint pointMoved = [touch locationInView:[self superview]];
 	
-	if (lastTouch != 999.0) {
+	NSLog(@"pointMoved LOC:%.2f", pointMoved.y);
 	
-		//CGFloat touchShift = lastTouch - xLocation.y;
-		
-		/*CGRect newFrame = self.frame;
-		newFrame.origin.y = pointMoved.y;
-		
-		[self setFrame:newFrame];*/
-		
-		//[self.delegate buttonPulledDown:touchShift];
+	if (lastTouch != 9999.0) {
 		
 		[self.delegate buttonPulledToPoint:pointMoved.y];
-		
-		if (xLocation.y > lastTouch) pullingUp = NO;
-		else pullingUp = YES;
 	}
 	
-	lastTouch = xLocation.y;
+	lastTouch = pointMoved.y;
 }
 
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	
-	/*UITouch *finalTouch = [[event allTouches] anyObject];
-	CGPoint location = [finalTouch locationInView:touch.view];
-	CGPoint xLocation = CGPointMake(location.x, location.y);
+	UITouch *finalTouch = [[event allTouches] anyObject];
+	CGPoint location = [finalTouch locationInView:[[[self superview] superview] superview]];
+	//CGPoint xLocation = CGPointMake(location.x, location.y);
 	
-	if (xLocation.y > lastTouch) pullingUp = NO;
-	else pullingUp = YES;*/
+	if (location.y - initialTouch > 0) pullingUp = NO;
+	else pullingUp = YES;
 	
-	touch = [[event allTouches] anyObject];
-	CGPoint pointMoved = [touch locationInView:[self superview]];
+	NSLog(@"X LOC:%.2f|%.2f", location.y, initialTouch);
+	NSLog(@"PULLING %@", ((pullingUp) ? @"UP" : @"NO"));
+	
+	//touch = [[event allTouches] anyObject];
+	CGPoint pointMoved = [finalTouch locationInView:[self superview]];
 	
 	[self.delegate pullDownEnded:pointMoved.y pullingUpward:pullingUp];
 	
-	//lastTouch = 999.0;
+	lastTouch = 9999.0;
 }
 
 @end

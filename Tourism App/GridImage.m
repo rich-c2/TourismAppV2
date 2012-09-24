@@ -14,6 +14,8 @@
 
 #define TICK_MARK_VIEW_TAG 9000
 #define CLOSE_VIEW_TAG 8000
+#define IMAGE_WIDTH 83.0
+#define IMAGE_HEIGHT 83.0
 
 @implementation GridImage
 
@@ -50,11 +52,18 @@
 		[self addSubview:tickMarkView];
 		[tickMarkView release];
 		*/
+		
+		UIImageView *polaroidBG = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, frame.size.width, frame.size.height)];
+		[polaroidBG setImage:[UIImage imageNamed:@"thumb-polaroid-bg.png"]];
+		[self addSubview:polaroidBG];
+		[polaroidBG release];
+		
         
 		UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-		[btn setFrame:CGRectMake(0.0, 0.0, frame.size.width, frame.size.height)];
-		[btn setBackgroundColor:[UIColor lightGrayColor]];
+		[btn setFrame:CGRectMake(10.0, 10.0, IMAGE_WIDTH, IMAGE_HEIGHT)];
+		[btn setBackgroundColor:[UIColor magentaColor]];
 		[btn addTarget:self action:@selector(imageButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		[btn setContentMode:UIViewContentModeScaleAspectFill];
 		
 		self.imageView = btn;
 		
@@ -122,8 +131,6 @@
 		NSLog(@"IMAGE LOADED:%@", [url description]);
 		
 		[self.imageView setImage:image forState:UIControlStateNormal];
-		
-		//[self setNeedsDisplay];
 	}
 }
 

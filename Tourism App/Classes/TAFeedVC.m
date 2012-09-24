@@ -18,9 +18,9 @@
 
 
 #define IMAGE_VIEW_TAG 7000
-#define GRID_IMAGE_WIDTH 75.0
-#define GRID_IMAGE_HEIGHT 75.0
-#define IMAGE_PADDING 4.0
+#define GRID_IMAGE_WIDTH 102.0
+#define GRID_IMAGE_HEIGHT 102.0
+#define IMAGE_PADDING 1.0
 #define MAIN_CONTENT_HEIGHT 367.0
 
 static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
@@ -381,8 +381,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	// start placing the next batch of images
 	if (subviewsCount > 0) {
 		
-		NSInteger rowCount = subviewsCount/4;
-		NSInteger leftOver = subviewsCount%4;
+		NSInteger rowCount = subviewsCount/3;
+		NSInteger leftOver = subviewsCount%3;
 		
 		// Calculate starting xPos & yPos
 		xPos = (leftOver * (GRID_IMAGE_WIDTH + IMAGE_PADDING));
@@ -426,8 +426,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 - (void)updateGridLayout {
 	
 	// Updated number of how many rows there are
-	NSInteger rowCount = [[self.imagesView subviews] count]/4;
-	NSInteger leftOver = [[self.imagesView subviews] count]%4;
+	NSInteger rowCount = [[self.imagesView subviews] count]/3;
+	NSInteger leftOver = [[self.imagesView subviews] count]%3;
 	if (leftOver > 0) rowCount++;
 	
 	// Update the scroll view's content height

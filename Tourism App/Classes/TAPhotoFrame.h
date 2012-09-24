@@ -16,9 +16,10 @@
 - (void)disableScroll;
 - (void)enableScroll;
 - (void)usernameButtonClicked;
-/*- (void)loveCountButtonClicked:(NSString *)imageID;
-- (void)loveButtonClicked:(NSString *)imageID isLoved:(BOOL)loved;
-- (void)commentButtonClicked:(NSString *)imageID;
+- (void)loveButtonTapped:(NSString *)imageID;
+- (void)vouchButtonTapped:(NSString *)imageID;
+//- (void)loveCountButtonClicked:(NSString *)imageID;
+/*- (void)commentButtonClicked:(NSString *)imageID;
 - (void)cityTagButtonClicked:(NSString *)imageID;
 - (void)optionsButtonClicked:(NSString *)imageID;
 - (void)recommendButtonClicked;
@@ -39,6 +40,8 @@
 	UIView *actionsView;
 	BOOL pullEnabled;
 	
+	NSString *imageID;
+	
 	id <PhotoFrameDelegate> delegate;
 	
 	UIImageView *avatarView;
@@ -55,14 +58,14 @@
 @property (nonatomic, retain) UIScrollView *actionsScrollView;
 @property (nonatomic, retain) UIView *actionsView;
 
+@property (nonatomic, retain) NSString *imageID;
+
 @property (nonatomic, retain) UIImageView *avatarView;
 @property (nonatomic, retain) TAPhotoView *imageView;
 @property (nonatomic, retain) UIProgressView *progressView;
 @property (nonatomic, retain) NSString *urlString;
 
-- (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString 
-			caption:(NSString *)caption username:(NSString *)username avatarURL:(NSString *)avatarURL;
-- (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString;
+- (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString imageID:(NSString *)_imageID isLoved:(BOOL)loved isVouched:(BOOL)vouched caption:(NSString *)caption username:(NSString *)username avatarURL:(NSString *)avatarURL;
 
 - (void)initImage;
 - (void)imageLoaded:(UIImage*)image withURL:(NSURL*)_url;

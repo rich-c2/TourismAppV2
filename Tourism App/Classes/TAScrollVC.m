@@ -39,8 +39,6 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 	
     if (self) {
-        
-		[self setHidesBottomBarWhenPushed:YES];
     }
     return self;
 }
@@ -48,6 +46,8 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	[self initNavBar];
 	
     self.photos = [NSMutableArray array];
 	self.loveIDs = [NSMutableArray array];
@@ -162,6 +162,7 @@
 }
 
 
+
 #pragma PhotoFameDelegate methods 
 
 - (void)usernameButtonClicked {
@@ -175,15 +176,41 @@
 	[profileVC release];
 }
 
+
+- (void)loveButtonTapped:(NSString *)imageID {
+	
+	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
+	
+	if ([self.loveIDs containsObject:[currPhoto photoID]])
+		[self initUnloveAPI:[currPhoto photoID]];
+	
+	else [self initLoveAPI:[currPhoto photoID]];
+}
+
+
+- (void)vouchButtonTapped:(NSString *)imageID {
+
+	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
+	
+	if ([self.vouchedIDs containsObject:[currPhoto photoID]])
+		[self initUnvouchAPI:[currPhoto photoID]];
+	
+	else [self initVouchAPI:[currPhoto photoID]];
+}
+
+
 - (void)disableScroll {
 
 	[self.photosScrollView setScrollEnabled:NO];
 }
 
+
 - (void)enableScroll {
 	
 	[self.photosScrollView setScrollEnabled:YES];
 }
+
+
 
 
 #pragma PullButtonDelegate methods 
@@ -205,8 +232,6 @@
 		
 		Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
 		BOOL isVouched = (([self.vouchedIDs containsObject:[currPhoto photoID]]) ? YES : NO);
-		
-		[self showLoading];
 		
 		if (isVouched)[self initUnvouchAPI:[currPhoto photoID]];
 		else [self initVouchAPI:[currPhoto photoID]];
@@ -399,6 +424,12 @@
 
 #pragma MY METHODS
 
+- (void)initNavBar {
+
+	self.navigationController.navigationBarHidden = YES;
+}
+
+
 /*
  This function is responsible for 
  iterating through the self.images on hand, creating
@@ -416,13 +447,14 @@
 		Photo *photo = [self.photos objectAtIndex:i];
 		NSString *imageURL = [photo url];
 		
-		CGRect viewFrame = CGRectMake(xPos, yPos, IMAGE_WIDTH, 580.0);
-		//TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL caption:[photo caption] username:[[photo whoTook] username] avatarURL:[[photo whoTook] avatarURL]];
+		CGRect viewFrame = CGRectMake(xPos, yPos, IMAGE_WIDTH, 367.0);
 		
-		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL];
+		BOOL loved = (([self.loveIDs containsObject:[photo photoID]]) ? YES : NO);
+		BOOL vouched = (([self.vouchedIDs containsObject:[photo photoID]]) ? YES : NO);
+		
+		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL imageID:[photo photoID] isLoved:loved isVouched:vouched caption:[photo caption] username:[[photo whoTook] username] avatarURL:[[photo whoTook] avatarURL]];
 		
 		[photoView setDelegate:self];
-		
 		[photoView setTag:(IMAGE_VIEW_TAG + i)];
 		
 		if (i == 0) [photoView initImage];
@@ -504,7 +536,6 @@
 		[jsonString release];
 		
 		NSArray *imagesArray = [results objectForKey:@"media"];
-		//[self.images addObjectsFromArray:imagesArray];
 		
 		// Take the data from the API, convert it 
 		// to Photos objects and store them in 
@@ -583,17 +614,6 @@
     }
 	
     [photoFrames release];
-}
-
-
-- (IBAction)loveButtonTapped:(id)sender {
-
-	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
-	
-	if ([self.loveIDs containsObject:[currPhoto photoID]])
-		[self initUnloveAPI:[currPhoto photoID]];
-	
-	else [self initLoveAPI:[currPhoto photoID]];
 }
 
 
@@ -727,11 +747,9 @@
 	
 	if (success) {
 		
-		// Update Photo object?
-		//Photo *photo = [self.imagesDictionary objectForKey:imageID];
+		// Photo *photo = [self.imagesDictionary objectForKey:imageID];
 		
-		//[photo setIsLoved:[NSNumber numberWithInt:1]];
-		//[photo setLovesCount:[NSNumber numberWithInt:[newLovesCount intValue]]];
+		// Update loves count?
 		
 		// Update loveIDs array
 		[self.loveIDs addObject:imageID];
@@ -776,14 +794,12 @@
 	
 	if (success) {
 		
-		/*Photo *photo = [self.imagesDictionary objectForKey:imageID];
+		// Photo *photo = [self.imagesDictionary objectForKey:imageID];
 		
-		[photo setIsLoved:[NSNumber numberWithInt:0]];
-		[photo setLovesCount:[NSNumber numberWithInt:[newLovesCount intValue]]];*/
+		// Update loves count?
 		
 		// Update loveIDs array
 		[self.loveIDs removeObject:imageID];
-		
 	}
 	
 	[loveFetcher release];
@@ -886,23 +902,18 @@
 		
 		imageID = [results objectForKey:@"code"];
 		
-		NSLog(@"VOUCH jsonString:%@", jsonString);
-		
 		[jsonString release];
 	}
 	
 	if (success) {
 		
-		/*
-		Photo *photo = [self.imagesDictionary objectForKey:imageID];
-		[photo setIsVouched:[NSNumber numberWithInt:1]];
-		*/
+		// Photo *photo = [self.imagesDictionary objectForKey:imageID];
+		
+		// Update photo vouches count?
 		
 		// Update vouchedIDs array
 		[self.vouchedIDs addObject:imageID];
 	}
-	
-	[self hideLoading];
 	
 	[vouchFetcher release];
 	vouchFetcher = nil;
@@ -952,22 +963,18 @@
 		
 		imageID = [results objectForKey:@"code"];
 		
-		NSLog(@"UNVOUCH jsonString:%@", jsonString);
-		
 		[jsonString release];
 	}
 	
 	if (success) {
 		
-		/*
-		Photo *photo = [self.imagesDictionary objectForKey:imageID];
-		[photo setIsVouched:[NSNumber numberWithInt:0]];*/
+		// Photo *photo = [self.imagesDictionary objectForKey:imageID];
+		
+		// Update photo vouches count?
 		
 		// Update vouchedIDs array
 		[self.vouchedIDs removeObject:imageID];
 	}
-	
-	[self hideLoading];
 	
 	[vouchFetcher release];
 	vouchFetcher = nil;

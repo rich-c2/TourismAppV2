@@ -25,6 +25,7 @@
 	
 	UIView *containerView;
 	
+	CGFloat initialTouch;
 	CGFloat lastTouch;
 	UITouch *touch;
 }
@@ -33,6 +34,7 @@
 
 @property (nonatomic, retain) UIView *containerView;
 
+@property (nonatomic) CGFloat initialTouch;
 @property (nonatomic) CGFloat lastTouch;
 @property (nonatomic, retain) UITouch *touch;
 
