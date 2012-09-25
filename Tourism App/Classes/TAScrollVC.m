@@ -9,6 +9,7 @@
 #import "TAScrollVC.h"
 #import "Photo.h"
 #import "User.h"
+#import "Tag.h"
 #import "SVProgressHUD.h"
 #import "JSONFetcher.h"
 #import "SBJson.h"
@@ -196,6 +197,26 @@
 		[self initUnvouchAPI:[currPhoto photoID]];
 	
 	else [self initVouchAPI:[currPhoto photoID]];
+}
+
+
+- (void)flagButtonTapped:(NSString *)imageID {
+	
+	[self initFlagAPI:imageID];
+}
+
+
+- (void)commentButtonTapped:(NSString *)imageID commentText:(NSString *)comment {
+
+	[self initAddCommentAPI:imageID commentText:comment];
+}
+
+
+- (void)addPhotoToSelectedGuide:(NSString *)guideID {
+	
+	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
+	
+	[self initAddToGuideAPI:guideID photoID:[currPhoto photoID]];
 }
 
 
@@ -453,6 +474,8 @@
 		BOOL vouched = (([self.vouchedIDs containsObject:[photo photoID]]) ? YES : NO);
 		
 		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL imageID:[photo photoID] isLoved:loved isVouched:vouched caption:[photo caption] username:[[photo whoTook] username] avatarURL:[[photo whoTook] avatarURL]];
+		[photoView setSelectedCity:[[photo city] title]];
+		[photoView setSelectedTagID:[[photo tag] tagID]];
 		
 		[photoView setDelegate:self];
 		[photoView setTag:(IMAGE_VIEW_TAG + i)];
@@ -978,6 +1001,146 @@
 	
 	[vouchFetcher release];
 	vouchFetcher = nil;
+}
+	 
+
+- (void)initAddCommentAPI:(NSString *)imageID commentText:(NSString *)comment {
+	
+	// Start loading animation
+	[self showLoading];
+	
+	// Convert string to data for transmission
+	NSString *jsonString = [NSString stringWithFormat:@"code=%@&username=%@&comment=%@&token=%@", imageID, [self appDelegate].loggedInUsername, comment, [self appDelegate].sessionToken];
+	NSData *jsonData = [jsonString dataUsingEncoding:NSASCIIStringEncoding];
+    
+    // Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"AddComment"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+    
+    // Initialiase the URL Request
+    NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+    addCommentFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												receiver:self
+												  action:@selector(receivedAddCommentResponse:)];
+    [addCommentFetcher start];
+}									
+
+
+// Example fetcher response handling
+- (void)receivedAddCommentResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == addCommentFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	NSLog(@"PRINTING ADD COMMENT DATA:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        // Store incoming data into a string
+		/*NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) {
+			
+			NSDictionary *newCommentData = [results objectForKey:@"comment"];
+			
+			NSLog(@"newCommentData:%@", newCommentData);
+			
+			[self.comments addObject:newCommentData];
+		}
+		
+		[jsonString release];*/
+    }
+	
+	[self hideLoading];
+    
+    [addCommentFetcher release];
+    addCommentFetcher = nil;
+}
+
+
+- (void)initAddToGuideAPI:(NSString *)guideID photoID:(NSString *)photoID {
+	
+	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@&imageID=%@&guideID=%@", [self appDelegate].loggedInUsername, [[self appDelegate] sessionToken], photoID, guideID];
+	
+	NSLog(@"ADD TO GUIDE string:%@", postString);
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"addtoguide"];	
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	addToGuideFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												   receiver:self
+													 action:@selector(receivedAddToGuideResponse:)];
+	[addToGuideFetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedAddToGuideResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	//NSLog(@"ADD TO GUIDE DETAILS:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == addToGuideFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	loading = NO;
+	
+	BOOL success = NO;
+	NSInteger statusCode = [theJSONFetcher statusCode];
+	NSString *title;
+	NSString *message;
+	
+	if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) { 
+			
+			success = YES;
+			
+			title = @"Success!";
+			message = [NSString stringWithFormat:@"The photo was successfully added"];// to \"%@\"", ];
+		}
+		
+		//NSLog(@"jsonString:%@", jsonString);
+		
+		[jsonString release];
+	}
+	
+	
+	if (!success) {
+		
+		title = @"Sorry!";
+		message = @"There was an error adding that photo";
+	}
+	
+	
+	UIAlertView *av = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+	[av show];
+	[av release];
+	
+	[addToGuideFetcher release];
+	addToGuideFetcher = nil;
 }
 
 

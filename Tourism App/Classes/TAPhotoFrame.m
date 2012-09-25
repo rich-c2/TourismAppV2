@@ -9,16 +9,25 @@
 #import "TAPhotoFrame.h"
 #import "UIImageView+AFNetworking.h"
 #import "ImageManager.h"
+#import "TACommentView.h"
+#import "TAAppDelegate.h"
+#import "SBJson.h"
+#import "JSONFetcher.h"
+#import "TAGuideButton.h"
 
 #define MAIN_WIDTH 301
 #define MAIN_HEIGHT 301
 #define CONTAINER_START_POINT -349.0
+#define SCROLL_COLUMN_WIDTH 290
+#define SCROLL_COLUMN_PADDING 10
+
+#define INNER_VIEW_TAG 8888
 
 @implementation TAPhotoFrame
 
 @synthesize imageView, progressView, urlString, delegate, avatarView, container;
 @synthesize containerView, actionsScrollView, actionsView, containerScroll;
-@synthesize imageID;
+@synthesize imageID, guides, selectedCity, selectedTagID, guidesView;
 
 
 - (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString imageID:(NSString *)_imageID isLoved:(BOOL)loved isVouched:(BOOL)vouched caption:(NSString *)caption username:(NSString *)username avatarURL:(NSString *)avatarURL {
@@ -59,11 +68,19 @@
 		[self.container release];
 		
 		
+		// ACTIONS AREA BG
+		CGRect bgFrame = CGRectMake(6.0, 0.0, SCROLL_COLUMN_WIDTH, 350.0);
+		UIImageView *bgImage = [[UIImageView alloc] initWithFrame:bgFrame];
+		[bgImage setImage:[UIImage imageNamed:@"photo-actions-shadow-bg.png"]];		
+		[self.container addSubview:bgImage];
+		[bgImage release];
+		
+		
 		// SCROLL VIEW
-		CGRect svFrame = CGRectMake(6.0, 0.0, 290.0, 349.0);
+		CGRect svFrame = CGRectMake(6.0, 0.0, SCROLL_COLUMN_WIDTH, 349.0);
 		UIScrollView *sv = [[UIScrollView alloc] initWithFrame:svFrame];
-		[sv setBackgroundColor:[UIColor yellowColor]];
-		[sv setContentSize:CGSizeMake(1000.0, 349.0)];
+		[sv setBackgroundColor:[UIColor clearColor]];
+		[sv setPagingEnabled:YES];
 		self.actionsScrollView = sv;
 		[sv release];
 		
@@ -72,9 +89,8 @@
 		
 
 		// ACTIONS VIEW
-		CGRect avFrame = CGRectMake(9.0, 9.0, 272.0, 330.0);
+		CGRect avFrame = CGRectMake(0.0, 10.0, SCROLL_COLUMN_WIDTH, 330.0);
 		UIScrollView *av = [[UIScrollView alloc] initWithFrame:avFrame];
-		[av setBackgroundColor:[UIColor blueColor]];
 		self.actionsView = av;
 		[av release];
 		
@@ -132,10 +148,9 @@
 		
 		
 		// PULL BUTTON
-		CGRect btnFrame = CGRectMake(((cFrame.size.width/2)-40.0), 349.0, 80.0, 40.0);
+		CGRect btnFrame = CGRectMake(((cFrame.size.width/2)-39.0), 346.0, 78.0, 58.0);
 		TAPullButton *pullBtn = [[TAPullButton alloc] initWithFrame:btnFrame];
 		[pullBtn setFrame:btnFrame];
-		[pullBtn setBackgroundColor:[UIColor cyanColor]];
 		[pullBtn setDelegate:self];
 		
 		[self.container addSubview:pullBtn];
@@ -147,8 +162,8 @@
 		
 		
 		// CAPTION
-		CGFloat labelYPos = iViewFrame.origin.y + iViewFrame.size.height + 5.0;
-		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, labelYPos, MAIN_WIDTH, 35.0)];
+		CGFloat labelYPos = iViewFrame.origin.y + iViewFrame.size.height + 10.0;
+		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, labelYPos, MAIN_WIDTH, 18.0)];
 		[captionLabel setText:caption];
 		[captionLabel setBackgroundColor:[UIColor clearColor]];
 		[self.container addSubview:captionLabel];
@@ -156,9 +171,9 @@
 		
 		
 		// USERNAME BUTTON
-		CGFloat usernameYPos = iViewFrame.origin.y + iViewFrame.size.height + 5.0 + 35.0;
+		CGFloat usernameYPos = iViewFrame.origin.y + iViewFrame.size.height + 10.0 + 18.0;
 		UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-		[btn setFrame:CGRectMake(44.0, usernameYPos, 195.0, 25.0)];
+		[btn setFrame:CGRectMake(28.0, usernameYPos, 195.0, 25.0)];
 		[btn setTitle:username forState:UIControlStateNormal];
 		[btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 		[btn addTarget:self action:@selector(usernameClicked:) forControlEvents:UIControlEventTouchUpInside];		
@@ -168,7 +183,7 @@
 		
 		
 		// Avatar image view
-		UIImageView *aView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, usernameYPos, 15.0, 15.0)];
+		UIImageView *aView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, (usernameYPos+4), 15.0, 15.0)];
 		[aView setBackgroundColor:[UIColor lightGrayColor]];
 		self.avatarView = aView;
 		[self.container addSubview:self.avatarView];
@@ -179,6 +194,13 @@
 	}
 	
 	return self;
+}
+
+
+#pragma mark - Private Methods
+- (TAAppDelegate *)appDelegate {
+	
+    return (TAAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
 
@@ -217,15 +239,16 @@
 	
 	NSLog(@"%@", ((pullingUpward) ? @"PULLING UP" : @"PULLING DOWN"));
 	NSLog(@"LAST Y POS:%.2f", lastYPos);
+	NSLog(@"Y POS:%.2f", yPos);
 	
 	if (pullingUpward) { 
 	
-		if (yPos >= -5.0) {
+		if (yPos >= -14.0) {
 			
 			CGRect newFrame = self.containerView.frame;
 			newFrame.origin.y = CONTAINER_START_POINT;
 			
-			[UIView animateWithDuration:0.5 animations:^{
+			[UIView animateWithDuration:0.25 animations:^{
 				
 				self.containerView.frame = newFrame;        
 				
@@ -236,15 +259,43 @@
 			}];
 		}
 		
-		else [self.delegate enableScroll];
+		else {
+		
+			CGRect newFrame = self.containerView.frame;
+			newFrame.origin.y = 0.0;
+			
+			[UIView animateWithDuration:0.5 animations:^{
+				
+				self.containerView.frame = newFrame;        
+				
+			} completion:^(BOOL finished) {
+				
+				[self.delegate enableScroll];
+			}];
+		} 
 	}
 	
 	else {
 		
-		if (yPos >= 0.0) {
+		if (yPos >= 5.0) {
 			
 			CGRect newFrame = self.containerView.frame;
 			newFrame.origin.y = 0.0;
+			
+			[UIView animateWithDuration:0.5 animations:^{
+				
+				self.containerView.frame = newFrame;        
+				
+			} completion:^(BOOL finished) {
+				
+				[self.delegate enableScroll];
+			}];
+		}
+		
+		else {
+			
+			CGRect newFrame = self.containerView.frame;
+			newFrame.origin.y = CONTAINER_START_POINT;
 			
 			[UIView animateWithDuration:0.25 animations:^{
 				
@@ -255,8 +306,6 @@
 				[self.delegate enableScroll];
 			}];
 		}
-		
-		else [self.delegate enableScroll];
 	}
 }
 
@@ -284,7 +333,7 @@
 
 - (void)populateActionsView {
 	
-	CGFloat xPos = 0.0;
+	CGFloat xPos = SCROLL_COLUMN_PADDING;
 	CGFloat yPos = 0.0;
 	CGFloat buttonWidth = 272.0;
 	CGFloat buttonHeight = 32.0;
@@ -361,7 +410,7 @@
 	UIButton *recommendBtn = [UIButton buttonWithType:UIButtonTypeCustom];
 	[recommendBtn setFrame:recommendFrame];
 	[recommendBtn setImage:[UIImage imageNamed:@"recommend-photo-button.png"] forState:UIControlStateNormal];
-	[recommendBtn addTarget:self action:@selector(vouchButtonTapped:) forControlEvents:UIControlEventTouchUpInside];				
+	[recommendBtn addTarget:self action:@selector(recommendButtonTapped:) forControlEvents:UIControlEventTouchUpInside];				
 	[self.actionsView addSubview:recommendBtn];
 	
 	
@@ -409,6 +458,25 @@
 	[self.actionsView addSubview:emailBtn];
 }
 
+
+#pragma GuideButtonDelegate methods 
+
+- (void)selectedGuide:(NSString *)guideID {
+
+	[self returnToActions];
+	
+	[self.delegate addPhotoToSelectedGuide:guideID];
+}
+
+
+#pragma CommentViewDelegate methods 
+
+- (void)commentReadyForSubmit:(NSString *)commentText {
+	
+	[self returnToActions];
+
+	[self.delegate commentButtonTapped:self.imageID commentText:commentText];
+}
 
 
 #pragma MY METHODS 
@@ -459,6 +527,33 @@
 }
 
 
+- (void)returnToActions {
+	
+	// Reset the contentSize to the minimum width
+	CGSize newSize = self.actionsScrollView.contentSize;
+	newSize.width = self.actionsScrollView.frame.size.width;
+	self.actionsScrollView.contentSize = newSize;
+	
+	// Disable the actions scroll view from 
+	// being interacted with
+	self.actionsScrollView.userInteractionEnabled = NO;
+	
+	// Animate across to the comment view
+	CGPoint newOffset = CGPointMake(0.0, 0.0);
+	
+	[UIView animateWithDuration:0.25 animations:^{
+		
+		self.actionsScrollView.contentOffset = newOffset;        
+		
+	} completion:^(BOOL finished) {
+		
+		self.actionsScrollView.userInteractionEnabled = YES;
+		
+		UIView *innerView = [self.actionsScrollView viewWithTag:INNER_VIEW_TAG];
+		[innerView removeFromSuperview];
+	}];
+}
+
 
 #pragma ACTIONS
 
@@ -466,6 +561,30 @@
 	
 	// pass info on to delegate
 	[self.delegate usernameButtonClicked];
+}
+
+
+- (void)viewOnMapButtonTapped:(id)sender {
+
+	// not implemented
+}
+
+
+- (void)tweetButtonTapped:(id)sender {
+
+	// not implemented
+}
+
+
+- (void)emailButtonTapped:(id)sender {
+	
+	// not implemented
+}
+
+
+- (void)recommendButtonTapped:(id)sender {
+
+// not implemented
 }
 
 
@@ -481,5 +600,177 @@
 	// pass info on to delegate
 	[self.delegate vouchButtonTapped:self.imageID];
 }
+
+
+- (void)flagButtonTapped:(id)sender {
+
+	// pass info on to delegate
+	[self.delegate flagButtonTapped:self.imageID];
+}
+
+
+- (void)commentButtonTapped:(id)sender {
+	
+	// Disable the actions scroll view from 
+	// being interacted with
+	CGSize newSize = self.actionsScrollView.contentSize;
+	newSize.width += MAIN_WIDTH;
+	self.actionsScrollView.contentSize = newSize;
+	self.actionsScrollView.userInteractionEnabled = NO;
+	
+
+	CGRect commentFrame = CGRectMake(SCROLL_COLUMN_WIDTH, 0.0, MAIN_WIDTH, 330.0);
+	TACommentView *commentView = [[TACommentView alloc] initWithFrame:commentFrame];
+	[commentView setDelegate:self];
+	[commentView setTag:INNER_VIEW_TAG];
+	
+	[self.actionsScrollView addSubview:commentView];
+	[commentView release];
+	
+	// Animate across to the comment view
+	CGPoint newOffset = CGPointMake(SCROLL_COLUMN_WIDTH, 0.0);
+	
+	[UIView animateWithDuration:0.25 animations:^{
+		
+		self.actionsScrollView.contentOffset = newOffset;        
+		
+	} completion:^(BOOL finished) {
+		
+		self.actionsScrollView.userInteractionEnabled = YES;
+	}];
+}
+
+
+- (void)addToGuideButtonTapped:(id)sender {
+	
+	// Find the existing Guides that this
+	// photo can be added to be calling the
+	// "FindGuides" API
+	[self initFindGuidesAPI];
+}
+
+
+- (void)initFindGuidesAPI {
+	
+	NSString *jsonString = [NSString stringWithFormat:@"username=%@&tag=%i&city=%@&pg=%i&sz=%@&private=0&token=%@", [self appDelegate].loggedInUsername, [self.selectedTagID intValue], self.selectedCity, 0, @"4", [[self appDelegate] sessionToken]];
+	
+	// Convert string to data for transmission
+	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"FindGuides"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Create URL request with URL and the JSON data
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:jsonData];
+	
+	// JSONFetcher
+	guidesFetcher = [[JSONFetcher alloc] initWithURLRequest:request
+												   receiver:self
+													 action:@selector(receivedFindGuidesResponse:)];
+	[guidesFetcher start];
+}	
+
+
+// Example fetcher response handling
+- (void)receivedFindGuidesResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+    
+    NSAssert(aFetcher == guidesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	//NSLog(@"PRINTING GET GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	
+	NSInteger statusCode = [theJSONFetcher statusCode];
+    
+    if ([theJSONFetcher.data length] > 0 && statusCode == 200) {
+        
+        // Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		// Build an array from the dictionary for easy access to each entry
+		self.guides = [results objectForKey:@"guides"];
+		
+		[jsonString release];
+    }
+	
+	// Reload the table
+	[self goToGuidesView];
+    
+    [guidesFetcher release];
+    guidesFetcher = nil;
+}
+
+
+- (void)goToGuidesView {
+
+	// Disable the actions scroll view from 
+	// being interacted with
+	CGSize newSize = self.actionsScrollView.contentSize;
+	newSize.width += MAIN_WIDTH;
+	self.actionsScrollView.contentSize = newSize;
+	self.actionsScrollView.userInteractionEnabled = NO;
+	
+	
+	CGRect guidesFrame = CGRectMake(SCROLL_COLUMN_WIDTH, 0.0, MAIN_WIDTH, 330.0);
+	
+	UIView *gv = [[UIView alloc] initWithFrame:guidesFrame];
+	[gv setTag:INNER_VIEW_TAG];
+	
+	self.guidesView = gv;
+	[gv release];
+	
+	[self.actionsScrollView addSubview:self.guidesView];
+	[self.guidesView release];
+	
+	[self createGuideButtons];
+	
+	// Animate across to the comment view
+	CGPoint newOffset = CGPointMake(SCROLL_COLUMN_WIDTH, 0.0);
+	
+	[UIView animateWithDuration:0.25 animations:^{
+		
+		self.actionsScrollView.contentOffset = newOffset;        
+		
+	} completion:^(BOOL finished) {
+		
+		self.actionsScrollView.userInteractionEnabled = YES;
+	}];
+}
+
+
+- (void)createGuideButtons {
+	
+	CGFloat xPos = SCROLL_COLUMN_PADDING;
+	CGFloat yPos = 10.0;
+	CGFloat buttonWidth = 272.0;
+	CGFloat buttonHeight = 45.0;
+	CGFloat buttonPadding = 3.0;
+	
+	for (NSMutableDictionary *guide in self.guides) {
+		
+		// ADD TO GUIDE BUTTON
+		CGRect guideBtnFrame = CGRectMake(xPos, yPos, buttonWidth, buttonHeight);
+		
+		TAGuideButton *guideBtn = [[TAGuideButton alloc] initWithFrame:guideBtnFrame title:[guide objectForKey:@"title"] loves:[guide objectForKey:@"loves"]];
+		[guideBtn setGuideID:[guide objectForKey:@"guideID"]];
+		[guideBtn setDelegate:self];
+		
+		[self.guidesView addSubview:guideBtn];
+		[guideBtn release];
+		
+		yPos += (buttonHeight + buttonPadding);
+	}
+}
+
+
+- (void)guideButtonTapped:(id)sender {
+
+	NSLog(@"HEY");
+}
+
 
 @end

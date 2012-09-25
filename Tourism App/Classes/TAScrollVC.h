@@ -32,6 +32,8 @@
 	JSONFetcher *feedFetcher;
 	JSONFetcher *vouchFetcher;
 	JSONFetcher *flagFetcher;
+	JSONFetcher *addCommentFetcher;
+	JSONFetcher *addToGuideFetcher;
 	
 	NSInteger fetchSize;
 	NSInteger imagesPageIndex;

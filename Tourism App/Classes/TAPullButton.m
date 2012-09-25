@@ -20,9 +20,16 @@
 		
 		lastTouch = 9999.0;
 		
-        CGRect btnFrame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
+		CGRect ribbonFrame = CGRectMake(0.0, 0.0, frame.size.width, frame.size.height);
+		UIImageView *ribbon = [[UIImageView alloc] initWithFrame:ribbonFrame];
+		[ribbon setImage:[UIImage imageNamed:@"pull-down-ribbon.png"]];
+		[ribbon setUserInteractionEnabled:YES];
+		[self addSubview:ribbon];
+		[ribbon release];
+		
+        CGRect btnFrame = CGRectMake(0.0, 0.0, frame.size.width, frame.size.height);
 		UIView *bv = [[UIView alloc] initWithFrame:btnFrame];
-		[bv setBackgroundColor:[UIColor cyanColor]];
+		[bv setBackgroundColor:[UIColor clearColor]];
 		self.containerView = bv;
 		[bv release];
     }
@@ -49,7 +56,6 @@
 	
 	[self.delegate buttonTouched];
 }
-
 
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {

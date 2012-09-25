@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "TAPullButton.h"
 #import "TAPhotoView.h"
+#import "TACommentView.h"
 
+@class JSONFetcher;
 
 @protocol PhotoFrameDelegate
 
@@ -18,19 +20,26 @@
 - (void)usernameButtonClicked;
 - (void)loveButtonTapped:(NSString *)imageID;
 - (void)vouchButtonTapped:(NSString *)imageID;
+- (void)flagButtonTapped:(NSString *)imageID;
+- (void)addPhotoToSelectedGuide:(NSString *)guideID;
 //- (void)loveCountButtonClicked:(NSString *)imageID;
-/*- (void)commentButtonClicked:(NSString *)imageID;
-- (void)cityTagButtonClicked:(NSString *)imageID;
+- (void)commentButtonTapped:(NSString *)imageID commentText:(NSString *)comment;
+/*- (void)cityTagButtonClicked:(NSString *)imageID;
 - (void)optionsButtonClicked:(NSString *)imageID;
 - (void)recommendButtonClicked;
-- (void)flagButtonClicked:(NSString *)imageID;
 
 @optional
 - (void)mapButtonClicked:(NSString *)imageID;*/
 
 @end
 
-@interface TAPhotoFrame : UIView <UIScrollViewDelegate, PullButtonDelegate> {
+@interface TAPhotoFrame : UIView <UIScrollViewDelegate, PullButtonDelegate, CommentViewDelegate> {
+	
+	JSONFetcher *guidesFetcher;
+	NSArray *guides;
+	NSString *selectedCity;
+	NSNumber *selectedTagID;
+	UIView *guidesView;
 	
 	// TEST
 	UIView *containerView;
@@ -51,6 +60,10 @@
 }
 
 @property (nonatomic, retain) id <PhotoFrameDelegate> delegate;
+@property (nonatomic, retain) NSArray *guides;
+@property (nonatomic, retain) NSString *selectedCity;
+@property (nonatomic, retain) NSNumber *selectedTagID;
+@property (nonatomic, retain) UIView *guidesView;
 
 @property (nonatomic, retain) UIView *containerView;
 @property (nonatomic, retain) UIView *container;
