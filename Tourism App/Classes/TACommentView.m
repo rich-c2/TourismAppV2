@@ -50,6 +50,7 @@
 		CGRect fieldFrame = CGRectMake((SIDE_PADDING + leftShadowFrame.size.width), (10.0 + TOP_PADDING), COMMENT_FIELD_WIDTH, 156.0);
 		UITextView *cf = [[UITextView alloc] initWithFrame:fieldFrame];
 		[cf setDelegate:self];
+		[cf setReturnKeyType:UIReturnKeyDone];
 		[cf becomeFirstResponder];
 		
 		self.commentField = cf;

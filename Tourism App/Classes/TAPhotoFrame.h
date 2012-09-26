@@ -46,8 +46,11 @@
 	NSArray *guides;
 	NSString *selectedCity;
 	NSNumber *selectedTagID;
+	NSNumber *latitude;
+	NSNumber *longitude;
+	
 	UIView *guidesView;
-	TACreateGuideForm *newGuideView;
+	TACreateGuideForm *createGuideView;
 	
 	// TEST
 	UIView *containerView;
@@ -71,8 +74,11 @@
 @property (nonatomic, retain) NSArray *guides;
 @property (nonatomic, retain) NSString *selectedCity;
 @property (nonatomic, retain) NSNumber *selectedTagID;
+@property (nonatomic, retain) NSNumber *latitude;
+@property (nonatomic, retain) NSNumber *longitude;
+
 @property (nonatomic, retain) UIView *guidesView;
-@property (nonatomic, retain) TACreateGuideForm *newGuideView;
+@property (nonatomic, retain) TACreateGuideForm *createGuideView;
 
 @property (nonatomic, retain) UIView *containerView;
 @property (nonatomic, retain) UIView *container;

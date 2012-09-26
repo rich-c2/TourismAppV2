@@ -544,6 +544,8 @@
 		TAPhotoFrame *photoView = [[TAPhotoFrame alloc] initWithFrame:viewFrame imageURL:imageURL imageID:[photo photoID] isLoved:loved isVouched:vouched caption:[photo caption] username:[[photo whoTook] username] avatarURL:[[photo whoTook] avatarURL]];
 		[photoView setSelectedCity:[[photo city] title]];
 		[photoView setSelectedTagID:[[photo tag] tagID]];
+		[photoView setLatitude:[photo latitude]];
+		[photoView setLongitude:[photo longitude]];
 		
 		[photoView setDelegate:self];
 		[photoView setTag:(IMAGE_VIEW_TAG + i)];

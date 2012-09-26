@@ -15,6 +15,7 @@
 #import "JSONFetcher.h"
 #import "TAGuideButton.h"
 #import "TACreateGuideForm.h"
+#import "TAMapView.h"
 
 #define MAIN_WIDTH 301
 #define MAIN_HEIGHT 301
@@ -28,7 +29,8 @@
 
 @synthesize imageView, progressView, urlString, delegate, avatarView, container;
 @synthesize containerView, actionsScrollView, actionsView, containerScroll;
-@synthesize imageID, guides, selectedCity, selectedTagID, guidesView, newGuideView;
+@synthesize imageID, guides, selectedCity, selectedTagID, guidesView, createGuideView;
+@synthesize latitude, longitude;
 
 
 - (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString imageID:(NSString *)_imageID isLoved:(BOOL)loved isVouched:(BOOL)vouched caption:(NSString *)caption username:(NSString *)username avatarURL:(NSString *)avatarURL {
@@ -70,7 +72,7 @@
 		
 		
 		// ACTIONS AREA BG
-		CGRect bgFrame = CGRectMake(6.0, 0.0, SCROLL_COLUMN_WIDTH, 350.0);
+		CGRect bgFrame = CGRectMake(5.0, 0.0, SCROLL_COLUMN_WIDTH, 351.0);
 		UIImageView *bgImage = [[UIImageView alloc] initWithFrame:bgFrame];
 		[bgImage setImage:[UIImage imageNamed:@"photo-actions-shadow-bg.png"]];		
 		[self.container addSubview:bgImage];
@@ -100,6 +102,18 @@
 		
 		
 		[self populateActionsView];
+		
+		
+		/*	
+			SHADOW OVERLAY FOR 
+			THE ACTIONS SCROLL VIEW
+		*/
+		CGRect overlayFrame = CGRectMake(5.0, 0.0, SCROLL_COLUMN_WIDTH, 351.0);
+		UIImageView *overlayImage = [[UIImageView alloc] initWithFrame:overlayFrame];
+		[overlayImage setImage:[UIImage imageNamed:@"photo-actions-shadow-overlay.png"]];		
+		[self.container addSubview:overlayImage];
+		[overlayImage release];
+		
 		
 		
 		/*	
@@ -278,7 +292,7 @@
 	
 	else {
 		
-		if (yPos >= 5.0) {
+		if (yPos >= 0.0) {
 			
 			CGRect newFrame = self.containerView.frame;
 			newFrame.origin.y = 0.0;
@@ -581,7 +595,32 @@
 
 - (void)viewOnMapButtonTapped:(id)sender {
 
-	// not implemented
+	// Disable the actions scroll view from 
+	// being interacted with
+	CGSize newSize = self.actionsScrollView.contentSize;
+	newSize.width += MAIN_WIDTH;
+	self.actionsScrollView.contentSize = newSize;
+	self.actionsScrollView.userInteractionEnabled = NO;
+	
+	
+	CGRect commentFrame = CGRectMake(SCROLL_COLUMN_WIDTH, 0.0, MAIN_WIDTH, 350.0);
+	TAMapView *mapView = [[TAMapView alloc] initWithFrame:commentFrame latitude:[self latitude] longitude:[self longitude]];
+	[mapView setTag:INNER_VIEW_TAG];
+	
+	[self.actionsScrollView addSubview:mapView];
+	[mapView release];
+	
+	// Animate across to the comment view
+	CGPoint newOffset = CGPointMake(SCROLL_COLUMN_WIDTH, 0.0);
+	
+	[UIView animateWithDuration:0.25 animations:^{
+		
+		self.actionsScrollView.contentOffset = newOffset;        
+		
+	} completion:^(BOOL finished) {
+		
+		self.actionsScrollView.userInteractionEnabled = YES;
+	}];
 }
 
 
@@ -814,11 +853,11 @@
 	[gv setTag:(INNER_VIEW_TAG+1)];
 	[gv setDelegate:self];
 	
-	self.newGuideView = gv;
+	self.createGuideView = gv;
 	[gv release];
 	
-	[self.actionsScrollView addSubview:self.newGuideView];
-	[self.newGuideView release];
+	[self.actionsScrollView addSubview:self.createGuideView];
+	[self.createGuideView release];
 	
 	//[self initNewGuideView];
 	
@@ -854,7 +893,7 @@
 		UIImageView *fieldViewBG = [[UIImageView alloc] initWithFrame:fieldFrame1];
 		[fieldViewBG setImage:fieldBGImage];
 		
-		[self.newGuideView addSubview:fieldViewBG];
+		[self.createGuideView addSubview:fieldViewBG];
 		[fieldViewBG release];
 		
 		yPos += (bgHeight + padding);

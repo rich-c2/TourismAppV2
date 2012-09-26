@@ -149,6 +149,9 @@
 		9BB4045A15ECA3920080E00E /* City.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB4045915ECA3920080E00E /* City.m */; };
 		9BBC84BD15FF12B10042DEAF /* Venue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBC84BC15FF12B10042DEAF /* Venue.m */; };
 		9BBC84C015FF13130042DEAF /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBC84BF15FF13120042DEAF /* Photo.m */; };
+		9BBF910A1613BEE300DD98E1 /* TAMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BBF91091613BEE300DD98E1 /* TAMapView.m */; };
+		9BBF910E1613C72B00DD98E1 /* photo-actions-shadow-overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BBF910C1613C72B00DD98E1 /* photo-actions-shadow-overlay.png */; };
+		9BBF910F1613C72B00DD98E1 /* photo-actions-shadow-overlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BBF910D1613C72B00DD98E1 /* photo-actions-shadow-overlay@2x.png */; };
 		9BC3B7A8160C1338005C7C5F /* TAPullButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BC3B7A7160C1338005C7C5F /* TAPullButton.m */; };
 		9BC3B7B0160C363E005C7C5F /* TAPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BC3B7AF160C363E005C7C5F /* TAPhotoView.m */; };
 		9BD79FEB15EDAAE50033EB64 /* TAMapVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BD79FE915EDAAE40033EB64 /* TAMapVC.m */; };
@@ -441,6 +444,10 @@
 		9BBC84BC15FF12B10042DEAF /* Venue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Venue.m; path = Classes/Venue.m; sourceTree = "<group>"; };
 		9BBC84BE15FF13120042DEAF /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Photo.h; path = Classes/Photo.h; sourceTree = "<group>"; };
 		9BBC84BF15FF13120042DEAF /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Photo.m; path = Classes/Photo.m; sourceTree = "<group>"; };
+		9BBF91081613BEE300DD98E1 /* TAMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAMapView.h; path = Classes/TAMapView.h; sourceTree = "<group>"; };
+		9BBF91091613BEE300DD98E1 /* TAMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAMapView.m; path = Classes/TAMapView.m; sourceTree = "<group>"; };
+		9BBF910C1613C72B00DD98E1 /* photo-actions-shadow-overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-actions-shadow-overlay.png"; path = "Images/photo-actions-shadow-overlay.png"; sourceTree = "<group>"; };
+		9BBF910D1613C72B00DD98E1 /* photo-actions-shadow-overlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "photo-actions-shadow-overlay@2x.png"; path = "Images/photo-actions-shadow-overlay@2x.png"; sourceTree = "<group>"; };
 		9BC3B7A6160C1338005C7C5F /* TAPullButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAPullButton.h; path = Classes/TAPullButton.h; sourceTree = "<group>"; };
 		9BC3B7A7160C1338005C7C5F /* TAPullButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAPullButton.m; path = Classes/TAPullButton.m; sourceTree = "<group>"; };
 		9BC3B7AE160C363E005C7C5F /* TAPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAPhotoView.h; path = Classes/TAPhotoView.h; sourceTree = "<group>"; };
@@ -744,6 +751,8 @@
 				9BE528BF16118A3E008A81F2 /* TAGuideButton.m */,
 				9B9546AB1612BC0400DFE055 /* TACreateGuideForm.h */,
 				9B9546AC1612BC0400DFE055 /* TACreateGuideForm.m */,
+				9BBF91081613BEE300DD98E1 /* TAMapView.h */,
+				9BBF91091613BEE300DD98E1 /* TAMapView.m */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -810,6 +819,8 @@
 		9B2EEE39160A9F8F00A73991 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				9BBF910C1613C72B00DD98E1 /* photo-actions-shadow-overlay.png */,
+				9BBF910D1613C72B00DD98E1 /* photo-actions-shadow-overlay@2x.png */,
 				9B9546AE1612C04900DFE055 /* form-label-city.png */,
 				9B9546AF1612C04900DFE055 /* form-label-city@2x.png */,
 				9B9546B01612C04900DFE055 /* form-label-private.png */,
@@ -1358,6 +1369,8 @@
 				9B9546BB1612C04900DFE055 /* form-label-tag@2x.png in Resources */,
 				9B9546BC1612C04900DFE055 /* form-label-title.png in Resources */,
 				9B9546BD1612C04900DFE055 /* form-label-title@2x.png in Resources */,
+				9BBF910E1613C72B00DD98E1 /* photo-actions-shadow-overlay.png in Resources */,
+				9BBF910F1613C72B00DD98E1 /* photo-actions-shadow-overlay@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1489,6 +1502,7 @@
 				9BE528A8161129B1008A81F2 /* TACommentView.m in Sources */,
 				9BE528C016118A3F008A81F2 /* TAGuideButton.m in Sources */,
 				9B9546AD1612BC0500DFE055 /* TACreateGuideForm.m in Sources */,
+				9BBF910A1613BEE300DD98E1 /* TAMapView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
