@@ -128,6 +128,19 @@
 		9B7B0A0C15EB49AB001C2E3E /* TASimpleListVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0A15EB49AB001C2E3E /* TASimpleListVC.xib */; };
 		9B7B0A1115EB5BBA001C2E3E /* TACreateGuideVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */; };
 		9B7B0A1215EB5BBA001C2E3E /* TACreateGuideVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */; };
+		9B9546A4161293F500DFE055 /* create-new-guide-button.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546A2161293F500DFE055 /* create-new-guide-button.png */; };
+		9B9546A5161293F500DFE055 /* create-new-guide-button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546A3161293F500DFE055 /* create-new-guide-button@2x.png */; };
+		9B9546A916129B7000DFE055 /* form-field-bg-small.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546A716129B7000DFE055 /* form-field-bg-small.png */; };
+		9B9546AA16129B7000DFE055 /* form-field-bg-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546A816129B7000DFE055 /* form-field-bg-small@2x.png */; };
+		9B9546AD1612BC0500DFE055 /* TACreateGuideForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B9546AC1612BC0400DFE055 /* TACreateGuideForm.m */; };
+		9B9546B61612C04900DFE055 /* form-label-city.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546AE1612C04900DFE055 /* form-label-city.png */; };
+		9B9546B71612C04900DFE055 /* form-label-city@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546AF1612C04900DFE055 /* form-label-city@2x.png */; };
+		9B9546B81612C04900DFE055 /* form-label-private.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546B01612C04900DFE055 /* form-label-private.png */; };
+		9B9546B91612C04900DFE055 /* form-label-private@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546B11612C04900DFE055 /* form-label-private@2x.png */; };
+		9B9546BA1612C04900DFE055 /* form-label-tag.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546B21612C04900DFE055 /* form-label-tag.png */; };
+		9B9546BB1612C04900DFE055 /* form-label-tag@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546B31612C04900DFE055 /* form-label-tag@2x.png */; };
+		9B9546BC1612C04900DFE055 /* form-label-title.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546B41612C04900DFE055 /* form-label-title.png */; };
+		9B9546BD1612C04900DFE055 /* form-label-title@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B9546B51612C04900DFE055 /* form-label-title@2x.png */; };
 		9BA89DCF16098D18001FEC96 /* TAPhotoTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BA89DCE16098D18001FEC96 /* TAPhotoTableCell.m */; };
 		9BA89DD216098D34001FEC96 /* TAPhotoTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9BA89DD116098D34001FEC96 /* TAPhotoTableCell.xib */; };
 		9BB3439615F096DB006BD1FD /* TACameraVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BB3439415F096DB006BD1FD /* TACameraVC.m */; };
@@ -400,6 +413,20 @@
 		9B7B0A0E15EB5BB9001C2E3E /* TACreateGuideVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACreateGuideVC.h; path = Classes/TACreateGuideVC.h; sourceTree = "<group>"; };
 		9B7B0A0F15EB5BB9001C2E3E /* TACreateGuideVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACreateGuideVC.m; path = Classes/TACreateGuideVC.m; sourceTree = "<group>"; };
 		9B7B0A1015EB5BB9001C2E3E /* TACreateGuideVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TACreateGuideVC.xib; path = Classes/TACreateGuideVC.xib; sourceTree = "<group>"; };
+		9B9546A2161293F500DFE055 /* create-new-guide-button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "create-new-guide-button.png"; path = "Images/create-new-guide-button.png"; sourceTree = "<group>"; };
+		9B9546A3161293F500DFE055 /* create-new-guide-button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "create-new-guide-button@2x.png"; path = "Images/create-new-guide-button@2x.png"; sourceTree = "<group>"; };
+		9B9546A716129B7000DFE055 /* form-field-bg-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-field-bg-small.png"; path = "Images/form-field-bg-small.png"; sourceTree = "<group>"; };
+		9B9546A816129B7000DFE055 /* form-field-bg-small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-field-bg-small@2x.png"; path = "Images/form-field-bg-small@2x.png"; sourceTree = "<group>"; };
+		9B9546AB1612BC0400DFE055 /* TACreateGuideForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TACreateGuideForm.h; path = Classes/TACreateGuideForm.h; sourceTree = "<group>"; };
+		9B9546AC1612BC0400DFE055 /* TACreateGuideForm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TACreateGuideForm.m; path = Classes/TACreateGuideForm.m; sourceTree = "<group>"; };
+		9B9546AE1612C04900DFE055 /* form-label-city.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-city.png"; path = "Images/form-label-city.png"; sourceTree = "<group>"; };
+		9B9546AF1612C04900DFE055 /* form-label-city@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-city@2x.png"; path = "Images/form-label-city@2x.png"; sourceTree = "<group>"; };
+		9B9546B01612C04900DFE055 /* form-label-private.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-private.png"; path = "Images/form-label-private.png"; sourceTree = "<group>"; };
+		9B9546B11612C04900DFE055 /* form-label-private@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-private@2x.png"; path = "Images/form-label-private@2x.png"; sourceTree = "<group>"; };
+		9B9546B21612C04900DFE055 /* form-label-tag.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-tag.png"; path = "Images/form-label-tag.png"; sourceTree = "<group>"; };
+		9B9546B31612C04900DFE055 /* form-label-tag@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-tag@2x.png"; path = "Images/form-label-tag@2x.png"; sourceTree = "<group>"; };
+		9B9546B41612C04900DFE055 /* form-label-title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-title.png"; path = "Images/form-label-title.png"; sourceTree = "<group>"; };
+		9B9546B51612C04900DFE055 /* form-label-title@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "form-label-title@2x.png"; path = "Images/form-label-title@2x.png"; sourceTree = "<group>"; };
 		9BA89DCD16098D18001FEC96 /* TAPhotoTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TAPhotoTableCell.h; path = Classes/TAPhotoTableCell.h; sourceTree = "<group>"; };
 		9BA89DCE16098D18001FEC96 /* TAPhotoTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TAPhotoTableCell.m; path = Classes/TAPhotoTableCell.m; sourceTree = "<group>"; };
 		9BA89DD116098D34001FEC96 /* TAPhotoTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TAPhotoTableCell.xib; path = Classes/TAPhotoTableCell.xib; sourceTree = "<group>"; };
@@ -715,6 +742,8 @@
 				9BE528A7161129B1008A81F2 /* TACommentView.m */,
 				9BE528BE16118A3E008A81F2 /* TAGuideButton.h */,
 				9BE528BF16118A3E008A81F2 /* TAGuideButton.m */,
+				9B9546AB1612BC0400DFE055 /* TACreateGuideForm.h */,
+				9B9546AC1612BC0400DFE055 /* TACreateGuideForm.m */,
 			);
 			path = "Tourism App";
 			sourceTree = "<group>";
@@ -752,6 +781,8 @@
 		9B23A71816100D670000ABC8 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
+				9B9546A2161293F500DFE055 /* create-new-guide-button.png */,
+				9B9546A3161293F500DFE055 /* create-new-guide-button@2x.png */,
 				9BE528C516119698008A81F2 /* guide-button-on.png */,
 				9BE528C616119698008A81F2 /* guide-button-on@2x.png */,
 				9BE528C116118B8E008A81F2 /* guide-button.png */,
@@ -779,6 +810,16 @@
 		9B2EEE39160A9F8F00A73991 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				9B9546AE1612C04900DFE055 /* form-label-city.png */,
+				9B9546AF1612C04900DFE055 /* form-label-city@2x.png */,
+				9B9546B01612C04900DFE055 /* form-label-private.png */,
+				9B9546B11612C04900DFE055 /* form-label-private@2x.png */,
+				9B9546B21612C04900DFE055 /* form-label-tag.png */,
+				9B9546B31612C04900DFE055 /* form-label-tag@2x.png */,
+				9B9546B41612C04900DFE055 /* form-label-title.png */,
+				9B9546B51612C04900DFE055 /* form-label-title@2x.png */,
+				9B9546A716129B7000DFE055 /* form-field-bg-small.png */,
+				9B9546A816129B7000DFE055 /* form-field-bg-small@2x.png */,
 				9BE528BA16114734008A81F2 /* bottom-comment-field-shadow.png */,
 				9BE528BB16114734008A81F2 /* bottom-comment-field-shadow@2x.png */,
 				9BE528B216114303008A81F2 /* left-comment-field-shadow.png */,
@@ -1305,6 +1346,18 @@
 				9BE528C416118B8E008A81F2 /* guide-button@2x.png in Resources */,
 				9BE528C716119698008A81F2 /* guide-button-on.png in Resources */,
 				9BE528C816119698008A81F2 /* guide-button-on@2x.png in Resources */,
+				9B9546A4161293F500DFE055 /* create-new-guide-button.png in Resources */,
+				9B9546A5161293F500DFE055 /* create-new-guide-button@2x.png in Resources */,
+				9B9546A916129B7000DFE055 /* form-field-bg-small.png in Resources */,
+				9B9546AA16129B7000DFE055 /* form-field-bg-small@2x.png in Resources */,
+				9B9546B61612C04900DFE055 /* form-label-city.png in Resources */,
+				9B9546B71612C04900DFE055 /* form-label-city@2x.png in Resources */,
+				9B9546B81612C04900DFE055 /* form-label-private.png in Resources */,
+				9B9546B91612C04900DFE055 /* form-label-private@2x.png in Resources */,
+				9B9546BA1612C04900DFE055 /* form-label-tag.png in Resources */,
+				9B9546BB1612C04900DFE055 /* form-label-tag@2x.png in Resources */,
+				9B9546BC1612C04900DFE055 /* form-label-title.png in Resources */,
+				9B9546BD1612C04900DFE055 /* form-label-title@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1435,6 +1488,7 @@
 				9BC3B7B0160C363E005C7C5F /* TAPhotoView.m in Sources */,
 				9BE528A8161129B1008A81F2 /* TACommentView.m in Sources */,
 				9BE528C016118A3F008A81F2 /* TAGuideButton.m in Sources */,
+				9B9546AD1612BC0500DFE055 /* TACreateGuideForm.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

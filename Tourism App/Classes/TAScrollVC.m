@@ -18,6 +18,7 @@
 #import "TAMapVC.h"
 #import "TAUsersVC.h"
 #import "TAProfileVC.h"
+#import <MessageUI/MessageUI.h>
 
 #define IMAGE_WIDTH 320
 #define IMAGE_HEIGHT 290
@@ -178,6 +179,14 @@
 }
 
 
+- (void)createGuideWithPhoto:(NSString *)imageID title:(NSString *)title isPrivate:(BOOL)isPrivate {
+
+	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
+	
+	[self initAddGuideAPI:title photo:currPhoto];
+}
+
+
 - (void)loveButtonTapped:(NSString *)imageID {
 	
 	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
@@ -212,6 +221,37 @@
 }
 
 
+- (void)tweetButtonTapped:(NSString *)imageID {
+
+	[self showTweetSheet:nil];
+}
+
+
+- (void)emailButtonTapped:(NSString *)imageID {
+
+	// Email message here
+	MFMailComposeViewController *picker = [[MFMailComposeViewController alloc] init];
+	picker.mailComposeDelegate = self;
+	
+	// SUBJECT
+	[picker setSubject:@"RE: Tourism App"];
+	
+	// TO ADDRESS...
+	NSArray *recipients = [[NSArray alloc] initWithObjects:@"hello@c2.net.au", nil];
+	[picker setToRecipients:recipients];
+	[recipients release];
+	
+	// BODY TEXT
+	NSString *bodyContent = @"I was using the Tourism App...";
+	NSString *emailBody = [NSString stringWithFormat:@"%@\n\n", bodyContent];
+	[picker setMessageBody:emailBody isHTML:NO];
+	
+	// SHOW INTERFACE
+	[self presentModalViewController:picker animated:YES];
+	[picker release];
+}
+
+
 - (void)addPhotoToSelectedGuide:(NSString *)guideID {
 	
 	Photo *currPhoto = [self.photos objectAtIndex:scrollIndex];
@@ -232,6 +272,34 @@
 }
 
 
+
+#pragma mark MFMailComposeViewControllerDelegate
+
+// Dismisses the email composition interface when users tap Cancel or Send. Proceeds to update the message field with the result of the operation.
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {	
+    
+    // Notifies users about errors associated with the interface
+    switch (result) {
+            
+        case MFMailComposeResultCancelled:
+            NSLog(@"Result: canceled");
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(@"Result: saved");
+            break;
+        case MFMailComposeResultSent:
+            NSLog(@"Result: sent");
+            break;
+        case MFMailComposeResultFailed:
+            NSLog(@"Result: failed");
+            break;
+        default:
+            NSLog(@"Result: not sent");
+            break;
+    }
+    
+    [self dismissModalViewControllerAnimated:YES];
+}
 
 
 #pragma PullButtonDelegate methods 
@@ -1141,6 +1209,106 @@
 	
 	[addToGuideFetcher release];
 	addToGuideFetcher = nil;
+}
+
+
+- (void)initAddGuideAPI:(NSString *)guideTitle photo:(Photo *)photo {
+	
+	NSString *username = [self appDelegate].loggedInUsername;
+	NSString *title = guideTitle;
+	NSString *city = [[photo city] title];
+	NSInteger tagID = [[[photo tag] tagID] intValue];
+	NSString *imageIDs = [photo photoID];
+	
+	NSString *postString = [NSString stringWithFormat:@"username=%@&title=%@&city=%@&tag=%i&imageIDs=%@&private=0&token=%@", username, title, city, tagID, imageIDs, [self appDelegate].sessionToken];
+		
+	NSLog(@"ADD GUIDE DATA:%@", postString);
+	
+	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+	
+	// Create the URL that will be used to authenticate this user
+	NSString *methodName = [NSString stringWithString:@"addguide"];
+	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
+	
+	// Initialiase the URL Request
+	NSMutableURLRequest *request = [[self appDelegate] createPostRequestWithURL:url postData:postData];
+	
+	// JSONFetcher
+	createGuidefetcher = [[JSONFetcher alloc] initWithURLRequest:request
+											 receiver:self
+											   action:@selector(receivedAddGuideResponse:)];
+	[createGuidefetcher start];
+}
+
+
+// Example fetcher response handling
+- (void)receivedAddGuideResponse:(HTTPFetcher *)aFetcher {
+    
+    JSONFetcher *theJSONFetcher = (JSONFetcher *)aFetcher;
+	
+	NSLog(@"SAVE RESPONSE:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+    
+	NSAssert(aFetcher == createGuidefetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
+	
+	// New image data;
+	NSDictionary *guideData;
+	BOOL submissionSuccess;
+	
+	if ([theJSONFetcher.data length] > 0) {
+		
+		// Store incoming data into a string
+		NSString *jsonString = [[NSString alloc] initWithData:theJSONFetcher.data encoding:NSUTF8StringEncoding];
+		
+		// Create a dictionary from the JSON string
+		NSDictionary *results = [jsonString JSONValue];
+		
+		if ([[results objectForKey:@"result"] isEqualToString:@"ok"]) {
+			
+			submissionSuccess = YES;
+			
+			guideData = [results objectForKey:@"guide"];
+		}
+		
+		[jsonString release];
+	}
+	
+	NSString *responseMessage;
+	NSString *responseTitle = ((submissionSuccess) ? @"Success!" : @"Sorry!");
+	
+	// If the submission was successful
+	if (submissionSuccess) responseMessage = @"Your guide was successfully created.";
+	else responseMessage = @"There was an error creating your guide.";
+	
+	
+	// FOR NOW: Kick off the "Recommend" API on the back of this one.
+	// These two function will probably have to be combined
+	/*if (submissionSuccess && [self.recommendToUsernames count] > 0) {
+	 
+	 [self initRecommendAPI:[guideData objectForKey:@"guideID"]];
+	 }*/
+	
+	
+	// Show pop up for submission result
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:responseTitle
+														message:responseMessage
+													   delegate:self
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+	[alertView show];
+	[alertView release];
+	
+	
+	// Create Image object and store
+	if (submissionSuccess) {
+		
+		// Pop to root view controller (photo picker/camera)
+		//[self.navigationController popToRootViewControllerAnimated:YES];
+	}
+	
+	// Clean up
+	[createGuidefetcher release];
+	createGuidefetcher = nil;
+    
 }
 
 

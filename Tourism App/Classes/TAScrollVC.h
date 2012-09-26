@@ -11,10 +11,11 @@
 #import <Twitter/Twitter.h>
 #import <Accounts/Accounts.h>
 #import "TAPhotoFrame.h"
+#import <MessageUI/MessageUI.h>
 
 @class JSONFetcher;
 
-@interface TAScrollVC : UIViewController <RecommendsDelegate, PhotoFrameDelegate, UIActionSheetDelegate, PullButtonDelegate> {
+@interface TAScrollVC : UIViewController <RecommendsDelegate, PhotoFrameDelegate, UIActionSheetDelegate, PullButtonDelegate, MFMailComposeViewControllerDelegate> {
 	
 	// Test views
 	UIImageView *mainView;
@@ -34,6 +35,7 @@
 	JSONFetcher *flagFetcher;
 	JSONFetcher *addCommentFetcher;
 	JSONFetcher *addToGuideFetcher;
+	JSONFetcher *createGuidefetcher;
 	
 	NSInteger fetchSize;
 	NSInteger imagesPageIndex;

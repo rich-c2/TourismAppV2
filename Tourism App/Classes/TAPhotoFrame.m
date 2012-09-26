@@ -14,6 +14,7 @@
 #import "SBJson.h"
 #import "JSONFetcher.h"
 #import "TAGuideButton.h"
+#import "TACreateGuideForm.h"
 
 #define MAIN_WIDTH 301
 #define MAIN_HEIGHT 301
@@ -27,7 +28,7 @@
 
 @synthesize imageView, progressView, urlString, delegate, avatarView, container;
 @synthesize containerView, actionsScrollView, actionsView, containerScroll;
-@synthesize imageID, guides, selectedCity, selectedTagID, guidesView;
+@synthesize imageID, guides, selectedCity, selectedTagID, guidesView, newGuideView;
 
 
 - (id)initWithFrame:(CGRect)frame imageURL:(NSString *)imageURLString imageID:(NSString *)_imageID isLoved:(BOOL)loved isVouched:(BOOL)vouched caption:(NSString *)caption username:(NSString *)username avatarURL:(NSString *)avatarURL {
@@ -459,6 +460,16 @@
 }
 
 
+#pragma CreateGuideFormDelegate methods 
+
+- (void)createGuide:(NSString *)title privateGuide:(BOOL)privateGuide {
+
+	[self returnToActions];
+	
+	[self.delegate createGuideWithPhoto:self.imageID title:title isPrivate:privateGuide];
+}
+
+
 #pragma GuideButtonDelegate methods 
 
 - (void)selectedGuide:(NSString *)guideID {
@@ -551,6 +562,10 @@
 		
 		UIView *innerView = [self.actionsScrollView viewWithTag:INNER_VIEW_TAG];
 		[innerView removeFromSuperview];
+		
+		UIView *innerView2 = [self.actionsScrollView viewWithTag:(INNER_VIEW_TAG+1)];
+		if (innerView2) [innerView removeFromSuperview];
+
 	}];
 }
 
@@ -572,13 +587,13 @@
 
 - (void)tweetButtonTapped:(id)sender {
 
-	// not implemented
+	[self.delegate tweetButtonTapped:self.imageID];
 }
 
 
 - (void)emailButtonTapped:(id)sender {
 	
-	// not implemented
+	[self.delegate emailButtonTapped:self.imageID];
 }
 
 
@@ -764,6 +779,16 @@
 		
 		yPos += (buttonHeight + buttonPadding);
 	}
+	
+	
+	// 'CREATE A NEW GUIDE' BUTTON
+	CGRect newFrame = CGRectMake(xPos, yPos, buttonWidth, 37.0);
+	UIButton *addToNewBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+	[addToNewBtn setFrame:newFrame];
+	[addToNewBtn setImage:[UIImage imageNamed:@"create-new-guide-button.png"] forState:UIControlStateNormal];
+	[addToNewBtn addTarget:self action:@selector(goToNewGuide:) forControlEvents:UIControlEventTouchUpInside];
+	[addToNewBtn setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];		
+	[self.guidesView addSubview:addToNewBtn];
 }
 
 
@@ -771,6 +796,72 @@
 
 	NSLog(@"HEY");
 }
+
+
+- (void)goToNewGuide:(id)sender {
+	
+	// Disable the actions scroll view from 
+	// being interacted with
+	CGSize newSize = self.actionsScrollView.contentSize;
+	newSize.width += MAIN_WIDTH;
+	self.actionsScrollView.contentSize = newSize;
+	self.actionsScrollView.userInteractionEnabled = NO;
+	
+	
+	CGRect guidesFrame = CGRectMake((SCROLL_COLUMN_WIDTH*2), 0.0, MAIN_WIDTH, 330.0);
+	
+	TACreateGuideForm *gv = [[TACreateGuideForm alloc] initWithFrame:guidesFrame];
+	[gv setTag:(INNER_VIEW_TAG+1)];
+	[gv setDelegate:self];
+	
+	self.newGuideView = gv;
+	[gv release];
+	
+	[self.actionsScrollView addSubview:self.newGuideView];
+	[self.newGuideView release];
+	
+	//[self initNewGuideView];
+	
+	// Animate across to the comment view
+	CGPoint newOffset = CGPointMake(guidesFrame.origin.x, 0.0);
+	
+	[UIView animateWithDuration:0.25 animations:^{
+		
+		self.actionsScrollView.contentOffset = newOffset;        
+		
+	} completion:^(BOOL finished) {
+		
+		self.actionsScrollView.userInteractionEnabled = YES;
+	}];
+}
+
+
+- (void)initNewGuideView {
+	
+	CGFloat xPos = 8.0;
+	CGFloat yPos = 10.0;
+	CGFloat bgWidth = 274.0;
+	CGFloat bgHeight = 45.0;
+	CGFloat padding = 1.0;
+
+	// Add form field bgs
+	UIImage *fieldBGImage = [UIImage imageNamed:@"form-field-bg-small.png"];
+	
+	
+	for (int i = 0; i < 4; i++) {
+	
+		CGRect fieldFrame1 = CGRectMake(xPos, yPos, bgWidth, bgHeight);
+		UIImageView *fieldViewBG = [[UIImageView alloc] initWithFrame:fieldFrame1];
+		[fieldViewBG setImage:fieldBGImage];
+		
+		[self.newGuideView addSubview:fieldViewBG];
+		[fieldViewBG release];
+		
+		yPos += (bgHeight + padding);
+	}
+}
+
+
 
 
 @end

@@ -10,6 +10,10 @@
 #import "TAPullButton.h"
 #import "TAPhotoView.h"
 #import "TACommentView.h"
+#import <Twitter/Twitter.h>
+#import <Accounts/Accounts.h>
+#import "TAGuideButton.h"
+#import "TACreateGuideForm.h"
 
 @class JSONFetcher;
 
@@ -22,6 +26,9 @@
 - (void)vouchButtonTapped:(NSString *)imageID;
 - (void)flagButtonTapped:(NSString *)imageID;
 - (void)addPhotoToSelectedGuide:(NSString *)guideID;
+- (void)tweetButtonTapped:(NSString *)imageID;
+- (void)emailButtonTapped:(NSString *)imageID;
+- (void)createGuideWithPhoto:(NSString *)imageID title:(NSString *)title isPrivate:(BOOL)isPrivate;
 //- (void)loveCountButtonClicked:(NSString *)imageID;
 - (void)commentButtonTapped:(NSString *)imageID commentText:(NSString *)comment;
 /*- (void)cityTagButtonClicked:(NSString *)imageID;
@@ -33,13 +40,14 @@
 
 @end
 
-@interface TAPhotoFrame : UIView <UIScrollViewDelegate, PullButtonDelegate, CommentViewDelegate> {
+@interface TAPhotoFrame : UIView <UIScrollViewDelegate, PullButtonDelegate, CommentViewDelegate, GuideButtonDelegate, CreateGuideFormDelegate> {
 	
 	JSONFetcher *guidesFetcher;
 	NSArray *guides;
 	NSString *selectedCity;
 	NSNumber *selectedTagID;
 	UIView *guidesView;
+	TACreateGuideForm *newGuideView;
 	
 	// TEST
 	UIView *containerView;
@@ -64,6 +72,7 @@
 @property (nonatomic, retain) NSString *selectedCity;
 @property (nonatomic, retain) NSNumber *selectedTagID;
 @property (nonatomic, retain) UIView *guidesView;
+@property (nonatomic, retain) TACreateGuideForm *newGuideView;
 
 @property (nonatomic, retain) UIView *containerView;
 @property (nonatomic, retain) UIView *container;
