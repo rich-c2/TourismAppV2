@@ -15,6 +15,7 @@
 #import "TAImageDetailsVC.h"
 #import "TATimelineVC.h"
 #import "Photo.h"
+#import	"CustomTabBarItem.h"
 
 
 #define IMAGE_VIEW_TAG 7000
@@ -41,6 +42,19 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 	
     if (self) {
 		
+		//self.tabBarItem.image = [UIImage imageNamed:@"feed_tab_button.png"];
+		//self.tabBarItem.imageInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0);
+		
+		
+		/*
+		CustomTabBarItem *tabItem = [[CustomTabBarItem alloc] initWithTitle:@"" image:nil tag:0];
+        
+        tabItem.customHighlightedImage = [UIImage imageNamed:@"feed_tab_button-on.png"];
+        tabItem.customStdImage = [UIImage imageNamed:@"feed_tab_button.png"];
+        self.tabBarItem = tabItem;
+        [tabItem release];
+        tabItem = nil;
+		*/
 		// Observe when the user has actually logged-in
 		// so we can then start loading data
 		[self initLoginObserver];

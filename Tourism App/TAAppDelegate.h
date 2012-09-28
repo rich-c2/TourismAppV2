@@ -31,7 +31,7 @@ extern NSString* const TEST_API_ADDRESS;
 	IBOutlet TALandingVC *landingVC;
 	IBOutlet UINavigationController *landingNav;
 
-	UITabBarController *tabBarController;
+	IBOutlet UITabBarController *tabBarController;
 	
 	TAFeedVC *feedVC;
 	TAExploreVC *exploreVC;
@@ -51,7 +51,7 @@ extern NSString* const TEST_API_ADDRESS;
 @property (nonatomic, retain) IBOutlet TALandingVC *landingVC;
 @property (nonatomic, retain) IBOutlet UINavigationController *landingNav;
 
-@property (nonatomic, retain) UITabBarController *tabBarController;
+@property (nonatomic, retain) IBOutlet UITabBarController *tabBarController;
 
 @property (nonatomic, retain) TAFeedVC *feedVC;
 @property (nonatomic, retain) TAExploreVC *exploreVC;

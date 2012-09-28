@@ -13,6 +13,7 @@
 #import "TAShareVC.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "MyCoreLocation.h"
+#import "CustomTabBarItem.h"
 
 
 @interface TACameraVC ()
@@ -30,6 +31,14 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
 	
     if (self) {
+		/*
+		CustomTabBarItem *tabItem = [[CustomTabBarItem alloc] initWithTitle:@"" image:nil tag:0];
+        
+        tabItem.customHighlightedImage = [UIImage imageNamed:@"feed_tab_button-on.png"];
+        tabItem.customStdImage = [UIImage imageNamed:@"feed_tab_button.png"];
+        self.tabBarItem = tabItem;
+        [tabItem release];
+        tabItem = nil;*/
         
 		self.title = @"Share";
     }

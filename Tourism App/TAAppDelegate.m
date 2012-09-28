@@ -123,7 +123,34 @@ static NSString *kTwitterAccountIDKey = @"twitterAccountIDKey";
 	
 	
 	// Create a tabbar controller and an array to contain the view controllers
-	tabBarController = [[UITabBarController alloc] init];
+	
+    
+    CGFloat screenWidth = 320.0;
+    CGFloat screenHeight = 480.0;
+    
+    /*self.tabBarController = [[UITabBarController alloc] init];
+    self.tabBarController.view.frame = CGRectMake(0, 0, screenWidth, screenHeight);
+	self.tabBarController.view.backgroundColor = [UIColor redColor];*/
+    
+    // Adding custom tab bar imagery
+    /*UIImageView *bgImageView = [[ UIImageView alloc ] initWithImage: [UIImage imageNamed:@"tab-bar-bg.png"]];
+	bgImageView.frame = CGRectMake(0, 0, screenWidth, 44);
+	
+	// Detect what iOS the iPad is running and insert the tab bar background
+	// image at the appropriate index. If it's OS5 then the image has to be
+	// placed at index 1.
+	if ([[[UIDevice currentDevice] systemVersion] floatValue] < 5)
+		[[self.tabBarController tabBar] insertSubview:bgImageView atIndex:0];
+	else
+		[[self.tabBarController tabBar] insertSubview:bgImageView atIndex:1];*/
+	
+	self.tabBarController.tabBar.backgroundImage = [UIImage imageNamed:@"tab-bar-bg.png"];
+	self.tabBarController.tabBar.frame = CGRectMake(0, (screenHeight - 44), screenWidth, 44);
+	//[bgImageView release];
+	
+	NSLog(@"TAB HEIGHT:%.2f", self.tabBarController.tabBar.frame.size.height);
+	
+	
 	NSMutableArray *localViewControllersArray = [[NSMutableArray alloc] initWithCapacity:5];
 	[localViewControllersArray addObject:navcon];
 	[localViewControllersArray addObject:navcon2];

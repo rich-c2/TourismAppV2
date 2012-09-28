@@ -17,6 +17,7 @@
 #import "TAImageDetailsVC.h"
 #import "AsyncCell.h"
 #import "TAGuideDetailsVC.h"
+#import "CustomTabBarItem.h"
 
 @interface TANotificationsVC ()
 
@@ -31,7 +32,16 @@
 	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
+		
+		/*
+		CustomTabBarItem *tabItem = [[CustomTabBarItem alloc] initWithTitle:@"" image:nil tag:0];
         
+        tabItem.customHighlightedImage = [UIImage imageNamed:@"feed_tab_button-on.png"];
+        tabItem.customStdImage = [UIImage imageNamed:@"feed_tab_button.png"];
+        self.tabBarItem = tabItem;
+        [tabItem release];
+        tabItem = nil;
+        */
 		self.title = @"Notifications";
     }
     return self;

@@ -16,6 +16,7 @@
 #import "XMLFetcher.h"
 #import "StringHelper.h"
 #import "SVProgressHUD.h"
+#import "CustomTabBarItem.h"
 
 @interface TAExploreVC ()
 
@@ -27,11 +28,20 @@
 @synthesize nearbyBtn, exploreMode, images, photos, delegate;
 
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+	
     if (self) {
-       
+		/*
+		CustomTabBarItem *tabItem = [[CustomTabBarItem alloc] initWithTitle:@"" image:nil tag:0];
+        
+        tabItem.customHighlightedImage = [UIImage imageNamed:@"feed_tab_button-on.png"];
+        tabItem.customStdImage = [UIImage imageNamed:@"feed_tab_button.png"];
+        self.tabBarItem = tabItem;
+        [tabItem release];
+        tabItem = nil;
+       */
 		self.title = @"Explore";
     }
     return self;

@@ -23,6 +23,7 @@
 #import "TASettingsVC.h"
 #import "TASimpleListVC.h"
 #import "TAFriendsVC.h"
+#import "CustomTabBarItem.h"
 
 @interface TAProfileVC ()
 
@@ -42,7 +43,22 @@
     if (self) {
         
 		// Listen for when the user has logged-in
-		if (observe) [self initLoginObserver];
+		if (observe) {
+			
+			/*
+			CustomTabBarItem *tabItem = [[CustomTabBarItem alloc] initWithTitle:@"" image:nil tag:0];
+			
+			tabItem.customHighlightedImage = [UIImage imageNamed:@"feed_tab_button-on.png"];
+			tabItem.customStdImage = [UIImage imageNamed:@"feed_tab_button.png"];
+			self.tabBarItem = tabItem;
+			[tabItem release];
+			tabItem = nil;
+			*/
+			
+			self.title = @"Profile";
+			
+			[self initLoginObserver];
+		}
     }
     return self;
 }

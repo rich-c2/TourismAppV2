@@ -25,17 +25,14 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+	
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
+	
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -43,8 +40,19 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+
+	// Hide the default navigation bar
+	[self initNavBar];
+}
+
 
 #pragma MY METHODS
+
+- (void)initNavBar {
+
+	self.navigationController.navigationBarHidden = YES;
+}
 
 - (IBAction)loginButtonTapped:(id)sender {
 
