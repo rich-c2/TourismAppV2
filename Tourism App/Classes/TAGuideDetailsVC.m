@@ -53,6 +53,8 @@
 	
 	self.photos = [NSMutableArray array];
 	
+	self.guideData = [NSDictionary dictionary];
+	
 	// FOR NOW: Add an "save" button to the top-right of the nav bar
 	// if this is a guide NOT created by the logged-in user
 	if (self.guideMode == GuideModeViewing) {
@@ -77,14 +79,14 @@
 	self.photos = nil;
 	self.guideData = nil;
 	
-    [self.imagesView release];
+    //[self.imagesView release];
     self.imagesView = nil;
-    [self.authorBtn release];
+    //[self.authorBtn release];
     self.authorBtn = nil;
-    [self.titleLabel release];
+    //[self.titleLabel release];
     self.titleLabel = nil;
 	
-	[self.gridScrollView release];
+	//[self.gridScrollView release];
 	self.gridScrollView = nil;
 	
 	[self.authorBtn release];
@@ -110,7 +112,6 @@
 	[guideID release];
 	[photos release];
     [imagesView release];
-    [authorBtn release];
     [titleLabel release];
 	[gridScrollView release];
 	[authorBtn release];
@@ -123,7 +124,7 @@
 - (void)viewWillAppear:(BOOL)animated {
 	
     [super viewDidAppear:animated];
-	/*
+	
 	if (!guideLoaded && !loading) {
 			
 		// Show loading animation
@@ -135,7 +136,7 @@
 		[self initIsLovedAPI];
 	}
 	
-	[self.photosTable deselectRowAtIndexPath:[self.photosTable indexPathForSelectedRow] animated:YES];*/
+	//[self.photosTable deselectRowAtIndexPath:[self.photosTable indexPathForSelectedRow] animated:YES];
 }
 
 
@@ -160,10 +161,7 @@
 	NSString *title = photo.venue.title;
 	if ([title length] == 0) title = @"[untitled]";
 	
-	NSString *details = [NSString stringWithFormat:@"%i loves   %i vouches", [[photo lovesCount] intValue], [[photo vouchesCount] intValue]];
-	
 	[cell.titleLabel setText:title];
-	[cell.detailsLabel setText:details];
 	
 	[cell initImage:photo.thumbURL];
 }
@@ -308,6 +306,12 @@
 
 #pragma MY-METHODS
 
+- (IBAction)goBack:(id)sender {
+	
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
+
 - (void)imageLoaded:(UIImage *)image withURL:(NSURL *)url {
 	
 	NSArray *cells = [self.photosTable visibleCells];
@@ -420,7 +424,7 @@
 	NSData *jsonData = [NSData dataWithBytes:[jsonString UTF8String] length:[jsonString length]];
 	
 	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"Guide"];
+	NSString *methodName = @"Guide";
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
 	
 	// Create URL request with URL and the JSON data
@@ -470,7 +474,6 @@
 	[self updateUIElements];
 	
 	// Create the grid of images using the results
-	//[self updateImageGrid];
 	[self.photosTable reloadData];
 	
 	[self initMapLocations];

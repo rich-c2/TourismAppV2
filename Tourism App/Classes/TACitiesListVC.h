@@ -36,4 +36,7 @@
 @property (nonatomic, retain) IBOutlet UITableView *citiesTable;
 @property (nonatomic, retain) NSArray *cities;
 
+- (IBAction)goBack:(id)sender;
+- (IBAction)setButtonTapped:(id)sender;
+
 @end

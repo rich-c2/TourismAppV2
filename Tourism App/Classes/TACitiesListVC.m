@@ -69,6 +69,15 @@
 }
 
 
+- (void)viewWillAppear:(BOOL)animated {
+
+	[super viewWillAppear:animated];
+	
+	// Remove default nav bar
+	[self initNavBar];
+}
+
+
 #pragma mark Search Bar Delegate methods
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
 	
@@ -199,6 +208,28 @@
     
     [citiesFetcher release];
     citiesFetcher = nil;
+}
+
+
+- (IBAction)goBack:(id)sender {
+
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
+
+- (void)initNavBar {
+
+	self.navigationController.navigationBarHidden = YES;
+}
+
+
+- (IBAction)setButtonTapped:(id)sender {
+	/*
+	// Pass the selected city to our delegate
+	[self.delegate locationSelected:city];
+	
+	// Go back to the previous screen
+	[self.navigationController popViewControllerAnimated:YES];*/
 }
 
 

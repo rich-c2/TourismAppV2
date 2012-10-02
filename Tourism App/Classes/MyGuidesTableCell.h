@@ -1,25 +1,27 @@
 //
-//  TAPhotoTableCell.h
+//  MyGuidesTableCell.h
 //  Tourism App
 //
-//  Created by Richard Lee on 19/09/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
+//  Created by Richard Lee on 1/10/12.
+//
 //
 
 #import <UIKit/UIKit.h>
 
-#define PHOTO_CELL_IDENTIFIER @"Photo Cell Identifier"
- 
-@interface TAPhotoTableCell : UITableViewCell {
+#define GUIDE_CELL_IDENTIFIER @"Guide Cell Identifier"
+
+@interface MyGuidesTableCell : UITableViewCell {
 	
 	NSURL *imageURL;
 	UILabel *titleLabel;
+	UILabel *authorLabel;
 	UIImageView *thumbView;
 	UIActivityIndicatorView *cellSpinner;
 }
 
 @property (nonatomic, retain) NSURL *imageURL;
 @property (nonatomic, retain) IBOutlet UILabel *titleLabel;
+@property (nonatomic, retain) IBOutlet UILabel *authorLabel;
 @property (nonatomic, retain) IBOutlet UIImageView *thumbView;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *cellSpinner;
 

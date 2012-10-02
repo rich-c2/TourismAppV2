@@ -25,6 +25,8 @@
 	UITextField *firstNameField, *lastNameField, *emailField;
 	UITextField *currentTextField;
 	
+	UIImageView *avatarView;
+	
 	NSString *selectedCity;
 	IBOutlet UIButton *cityBtn;
 	
@@ -38,6 +40,8 @@
 @property (nonatomic, retain) IBOutlet UITextField *lastNameField; 
 @property (nonatomic, retain) IBOutlet UITextField *emailField; 
 @property (nonatomic, retain) UITextField *currentTextField;
+
+@property (nonatomic, retain) UIImageView *avatarView;
 
 @property (nonatomic, retain) NSString *selectedCity;
 @property (nonatomic, retain) IBOutlet UIButton *cityBtn;

@@ -17,6 +17,7 @@
 #import "Guide.h"
 #import "City.h"
 #import "Tag.h"
+#import "MyGuidesTableCell.h"
 
 @interface TAGuidesListVC ()
 
@@ -24,7 +25,7 @@
 
 @implementation TAGuidesListVC
 
-@synthesize guidesMode, guidesTable, guides, username;
+@synthesize guidesMode, guidesTable, guides, username, loadCell;
 @synthesize selectedTag, selectedCity, selectedTagID, selectedPhotoID;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -39,7 +40,9 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+	// Remove the default nav bar
+	[self initNavBar];
 	
 	//self.guides = [NSMutableArray array];
 }
@@ -131,7 +134,7 @@
 }
 
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
+- (void)configureCell:(MyGuidesTableCell *)cell atIndexPath:(NSIndexPath *)indexPath {
 	
 	NSString *guideTitle;
 	NSString *subtitle;
@@ -151,7 +154,7 @@
 			Guide *guide = [self.guides objectAtIndex:[indexPath row]];
 			
 			guideTitle = [guide title];
-			subtitle = [NSString stringWithFormat:@"City:%@/Tag:%@", [guide.city title], [guide.tag title]];
+			subtitle = [NSString stringWithFormat:@"By %@ / 0 photos / 0 days", [[guide author] username]];
 		}
 	}
 	
@@ -159,31 +162,47 @@
 		
 		// Retrieve the Dictionary at the given index that's in self.guides
 		NSDictionary *guide = [self.guides objectAtIndex:[indexPath row]];
+		NSDictionary *authorDict = [guide objectForKey:@"author"];
 		
 		guideTitle = [guide objectForKey:@"title"];
-		subtitle = [NSString stringWithFormat:@"City:%@/Tag:%@", [guide objectForKey:@"city"], [guide objectForKey:@"tag"]];
+		subtitle = [NSString stringWithFormat:@"By %@ / 0 photos / 0 days", [authorDict objectForKey:@"username"]];
 	}
 	
-	[cell.textLabel setText:guideTitle];
-	[cell.detailTextLabel setText:subtitle];
+	[cell.titleLabel setText:guideTitle];
+	[cell.authorLabel setText:subtitle];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-    static NSString *CellIdentifier = @"Cell";
+    MyGuidesTableCell *cell = (MyGuidesTableCell *)[tableView dequeueReusableCellWithIdentifier:[MyGuidesTableCell reuseIdentifier]];
 	
-	UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-	
-    if (cell == nil) {
+	if (cell == nil) {
 		
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
-    }
+		[[NSBundle mainBundle] loadNibNamed:@"MyGuidesTableCell" owner:self options:nil];
+        cell = loadCell;
+        self.loadCell = nil;
+	}
     
     // Retrieve Track object and set it's name to the cell
 	[self configureCell:cell atIndexPath:indexPath];
     
     return cell;
+}
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+
+	return 9.0;
+}
+
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 9.0)];
+	[headerView setBackgroundColor:[UIColor clearColor]];
+	
+	return [headerView autorelease];
 }
 
 
@@ -239,13 +258,26 @@
 }
 
 
+
+#pragma MY METHODS
+
+- (IBAction)goBack:(id)sender {
+
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)initNavBar {
+
+	self.navigationController.navigationBarHidden = YES;
+}
+
 - (void)initMyGuidesAPI {
 
 	NSString *postString = [NSString stringWithFormat:@"username=%@&token=%@", self.username, [[self appDelegate] sessionToken]];
 	NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
 	
 	// Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"MyGuides"];
+	NSString *methodName = @"MyGuides";
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
 	
 	// Initialiase the URL Request
@@ -265,7 +297,7 @@
 	
 	NSAssert(aFetcher == guidesFetcher,  @"In this example, aFetcher is always the same as the fetcher ivar we set above");
 	
-	//NSLog(@"PRINTING MY GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
+	NSLog(@"PRINTING MY GUIDES:%@",[[NSString alloc] initWithData:theJSONFetcher.data encoding:NSASCIIStringEncoding]);
 	
 	loading = NO;
 	

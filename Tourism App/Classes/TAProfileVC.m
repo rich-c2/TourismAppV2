@@ -206,6 +206,11 @@
 
 #pragma mark MY-METHODS
 
+- (IBAction)goBack:(id)sender {
+
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)initLoginObserver {
 	
 	// Get an iVar of TAAppDelegate
@@ -573,12 +578,6 @@
 	// Hide default nav bar
 	self.navigationController.navigationBarHidden = YES;
 	
-}
-
-
-- (IBAction)goBack:(id)sender {
-	
-	[self.navigationController popViewControllerAnimated:YES];
 }
 
 

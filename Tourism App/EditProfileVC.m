@@ -27,6 +27,7 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 @synthesize managedObjectContext, formScrollView, currentTextField, bioView;
 @synthesize firstNameField, lastNameField, emailField, cityBtn, selectedCity;
+@synthesize avatarView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -73,6 +74,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 - (void)viewDidUnload {
 	
+	self.avatarView = nil;
+	
 	self.bioView = nil;
 	self.selectedCity = nil;
 	self.managedObjectContext = nil;
@@ -99,6 +102,8 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 
 
 - (void)dealloc {
+	
+	[avatarView release];
 	
 	[bioView release];
 	[selectedCity release];

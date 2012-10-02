@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @class JSONFetcher;
+@class MyGuidesTableCell;
 
 typedef enum  {
 	GuidesModeMyGuides = 0,
@@ -19,6 +20,8 @@ typedef enum  {
 } GuidesMode;
 
 @interface TAGuidesListVC : UIViewController {
+	
+	MyGuidesTableCell *loadCell;
 	
 	GuidesMode guidesMode;
 	
@@ -38,6 +41,8 @@ typedef enum  {
 	IBOutlet UITableView *guidesTable;
 }
 
+@property (nonatomic, retain) IBOutlet MyGuidesTableCell *loadCell;
+
 @property GuidesMode guidesMode;
 
 @property (nonatomic, retain) NSString *username;
@@ -50,6 +55,7 @@ typedef enum  {
 
 @property (nonatomic, retain) IBOutlet UITableView *guidesTable;
 
+- (IBAction)goBack:(id)sender;
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath;
 
 @end

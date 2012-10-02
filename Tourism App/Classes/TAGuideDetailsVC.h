@@ -63,6 +63,7 @@ typedef enum  {
 @property (nonatomic, retain) IBOutlet UILabel *titleLabel;
 @property (nonatomic, retain) IBOutlet UIView *imagesView;
 
+- (IBAction)goBack:(id)sender;
 - (IBAction)authorButtonTapped:(id)sender;
 - (IBAction)optionsButtonTapped:(id)sender;
 - (IBAction)initFollowersList:(id)sender;

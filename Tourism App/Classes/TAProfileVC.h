@@ -72,6 +72,8 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil observeLogin:(BOOL)observe;
 
+- (IBAction)goBack:(id)sender;
+
 - (void)showLoading;
 - (void)hideLoading;
 
