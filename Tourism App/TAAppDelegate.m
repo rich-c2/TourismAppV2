@@ -160,6 +160,9 @@ static NSString *kTwitterAccountIDKey = @"twitterAccountIDKey";
 
 	[navcon release];
 	[navcon2 release];
+	[navcon3 release];
+	[navcon4 release];
+	[navcon5 release];
 
 	
 	// set the tab bar controller view controller array to the localViewControllersArray

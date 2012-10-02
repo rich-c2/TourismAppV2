@@ -224,6 +224,14 @@ static NSString *kUserDefaultCityKey = @"userDefaultCityKey";
 		TACitiesListVC *citiesListVC = [[TACitiesListVC alloc] initWithNibName:@"TACitiesListVC" bundle:nil];
 		[citiesListVC setDelegate:self];
 		
+		// Look for the user's default city
+		NSString *defaultCity = [self getUsersDefaultCity];
+		
+		if ([defaultCity length] > 0) {
+		
+			[citiesListVC setSelectedCity:[NSDictionary dictionaryWithObjectsAndKeys:defaultCity, @"city", nil]];
+		}
+		
 		[self.navigationController pushViewController:citiesListVC animated:YES];
 		[citiesListVC release];
 	}

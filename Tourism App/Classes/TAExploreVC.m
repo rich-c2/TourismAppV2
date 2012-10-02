@@ -18,6 +18,9 @@
 #import "SVProgressHUD.h"
 #import "CustomTabBarItem.h"
 
+#define START_FILTER_Y_POS -156.0
+#define END_FILTER_Y_POS 44.0
+
 @interface TAExploreVC ()
 
 @end
@@ -26,6 +29,7 @@
 
 @synthesize tagBtn, selectedTag, selectedCity, cityBtn, locationManager, currentLocation;
 @synthesize nearbyBtn, exploreMode, images, photos, delegate;
+@synthesize filterView, filtering, filterBtn;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -53,6 +57,11 @@
 	
 	// Setup nav bar
 	[self initNavBar];
+	
+	
+	// Added interactive states for buttons ///////////////////////////////////////////////////
+    [self.filterBtn setImage:[UIImage imageNamed:@"explore-search-button-on.png"] forState:(UIControlStateHighlighted|UIControlStateSelected|UIControlStateDisabled)];
+	
 	
 	if (self.exploreMode == ExploreModeSubset) {
 	
@@ -88,6 +97,7 @@
 	self.currentLocation = nil;
 	self.images = nil;
 	self.photos = nil;
+	self.filterBtn = nil;
 	
 	self.selectedTag = nil;
 	self.selectedCity = nil;
@@ -99,6 +109,9 @@
 	
 	[nearbyBtn release];
 	self.nearbyBtn = nil;
+	
+    [filterView release];
+    filterView = nil;
 	
     [super viewDidUnload];
 }
@@ -121,6 +134,7 @@
 
 - (void)dealloc {
 	
+	[filterBtn release];
 	[photos release];
 	[images release];
 	[currentLocation release];
@@ -130,6 +144,7 @@
 	[tagBtn release];
 	[cityBtn release];
 	[nearbyBtn release];
+    [filterView release];
 	[super dealloc];
 }
 
@@ -141,6 +156,9 @@
     currentLocation = [loc retain];
 	
 	[self.locationManager stopUpdating];
+	
+	[self.nearbyBtn setSelected:NO];
+	[self.nearbyBtn setHighlighted:NO];
 	
 	NSLog(@"FOUND LOCATION:%f\%f", self.currentLocation.coordinate.latitude, self.currentLocation.coordinate.longitude);
 }
@@ -172,7 +190,6 @@
 }
 
 
-
 - (void)initNavBar {
 	
 	// Hide default nav bar
@@ -191,6 +208,7 @@
     
     [self.navigationController popToRootViewControllerAnimated:NO];
 }
+
 
 - (IBAction)selectTagButtonTapped:(id)sender {
 
@@ -243,10 +261,13 @@
 
 
 - (IBAction)nearbyButtonTapped:(id)sender {
-
-	//useCurrentLocation = YES;
+	
+	
 	
 	if (!self.locationManager.updating) {
+		
+		[self.nearbyBtn setSelected:YES];
+		[self.nearbyBtn setHighlighted:NO];
 		
 		[self showLoading];
 		
@@ -260,6 +281,74 @@
 		[av show];
 		[av release];
 	}
+}
+
+
+- (IBAction)filterButtonTapped:(id)sender {
+
+	if (filtering) {
+		
+		[self.filterBtn setSelected:NO];
+		[self.filterBtn setHighlighted:NO];
+		
+		[self hideFilterView];
+	}
+	
+	else {
+		
+		[self.filterBtn setSelected:YES];
+		[self.filterBtn setHighlighted:NO];
+		
+		[self showFilterView];
+	}
+	
+	filtering = !filtering;
+}
+
+
+- (void)showFilterView {
+
+	CGFloat animationDuration = 0.25;
+	
+	// Set the new frame for the table
+	CGRect newFrame = self.filterView.frame;
+	newFrame.origin.y = END_FILTER_Y_POS;
+	
+	[UIView animateWithDuration:animationDuration animations:^{
+		
+		self.filterView.frame = newFrame;
+		
+	} completion:^(BOOL finished) {
+		
+		// enable nearby btn?
+		
+		// enable city search field?
+		
+		// enable tag search field?
+	}];
+}
+
+
+- (void)hideFilterView {
+	
+	CGFloat animationDuration = 0.25;
+	
+	// Set the new frame for the table
+	CGRect newFrame = self.filterView.frame;
+	newFrame.origin.y = START_FILTER_Y_POS;
+	
+	[UIView animateWithDuration:animationDuration animations:^{
+		
+		self.filterView.frame = newFrame;
+		
+	} completion:^(BOOL finished) {
+		
+		// enable nearby btn?
+		
+		// enable city search field?
+		
+		// enable tag search field?
+	}];
 }
 
 
@@ -360,6 +449,10 @@
 	else [self.cityBtn setTitle:@"Could not assign city." forState:UIControlStateNormal];
 	
 	[self hideLoading];
+	
+	// Deselect nearby button
+	[self.nearbyBtn setSelected:NO];
+	[self.nearbyBtn setHighlighted:NO];
     
     [cityFetcher release];
     cityFetcher = nil;	

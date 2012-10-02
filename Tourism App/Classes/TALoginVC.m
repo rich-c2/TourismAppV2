@@ -147,7 +147,7 @@ static NSString *kSkipLoginLandingKey = @"skipLoginLandingKey";
     NSData *jsonData = [jsonString dataUsingEncoding:NSASCIIStringEncoding];
     
     // Create the URL that will be used to authenticate this user
-	NSString *methodName = [NSString stringWithString:@"Login"];
+	NSString *methodName = @"Login";
 	NSURL *url = [[self appDelegate] createRequestURLWithMethod:methodName testMode:NO];
     
     // Initialiase the URL Request

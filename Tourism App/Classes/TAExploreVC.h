@@ -32,6 +32,9 @@ typedef enum {
 	
 	id <ExploreDelegate> delegate;
 	
+	IBOutlet UIView *filterView;
+	BOOL filtering;
+	
 	XMLFetcher *cityFetcher;
 	
 	ExploreMode exploreMode;
@@ -44,6 +47,7 @@ typedef enum {
 	IBOutlet UIButton *cityBtn;
 	
 	IBOutlet UIButton *nearbyBtn;
+	IBOutlet UIButton *filterBtn;
 	
 	MyCoreLocation *locationManager;
 	CLLocation *currentLocation;
@@ -51,6 +55,9 @@ typedef enum {
 }
 
 @property (nonatomic, retain) id <ExploreDelegate> delegate;
+
+@property (nonatomic, retain) IBOutlet UIView *filterView;
+@property (assign) BOOL filtering;
 
 @property ExploreMode exploreMode;
 @property (nonatomic, retain) NSMutableArray *images;
@@ -62,10 +69,12 @@ typedef enum {
 @property (nonatomic, retain) IBOutlet UIButton *cityBtn;
 
 @property (nonatomic, retain) IBOutlet UIButton *nearbyBtn;
+@property (nonatomic, retain) IBOutlet UIButton *filterBtn;
 
 @property (nonatomic, retain) MyCoreLocation *locationManager;
 @property (nonatomic, retain) CLLocation *currentLocation;
 
+- (IBAction)filterButtonTapped:(id)sender;
 - (IBAction)exploreButtonTapped:(id)sender;
 - (IBAction)nearbyButtonTapped:(id)sender;
 - (void)willLogout;
